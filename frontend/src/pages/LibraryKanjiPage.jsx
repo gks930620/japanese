@@ -46,7 +46,7 @@ export function LibraryKanjiPage() {
       {loading && !page && (
         <div aria-hidden="true" className="kanji-tile-grid">
           {Array.from({ length: 12 }, (_, i) => (
-            <div key={i} className="skeleton sk-tile" />
+            <div key={i} className="k-skeleton sk-tile" />
           ))}
         </div>
       )}

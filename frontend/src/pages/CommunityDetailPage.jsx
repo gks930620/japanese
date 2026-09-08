@@ -5,6 +5,7 @@ import { Pagination } from "../components/Pagination.jsx";
 import { useAuth } from "../context/authStore.js";
 import { callApi, callPublicApi } from "../lib/http.js";
 import { formatDateTime, formatFileSize, getErrorMessage } from "../lib/format.js";
+import { btnClass, emptyClass } from "../components/ui/kitClass.js";
 
 export function CommunityDetailPage() {
   const navigate = useNavigate();
@@ -153,20 +154,20 @@ export function CommunityDetailPage() {
 
   if (loading) {
     return (
-      <div className="empty-state" style={{ paddingTop: 40, paddingBottom: 40 }}>
-        <div style={{ fontSize: 14 }}>로딩 중...</div>
+      <div className={emptyClass()}>
+        <div>로딩 중...</div>
       </div>
     );
   }
 
   if (error && !post) {
     return (
-      <div className="empty-state">
+      <div className={emptyClass()}>
         <span className="material-icons">error</span>
         <h3>{notFound ? "찾을 수 없는 글이에요" : "게시글을 불러오지 못했습니다"}</h3>
         <p className="error-text">{notFound ? "주소가 바뀌었거나 지워진 글이에요" : error}</p>
         {/* 되돌릴 수 없는 실패에도 나갈 길은 준다(08 C-12 ④ — B-L9) */}
-        <Link className="btn btn-primary" to="/community">
+        <Link className={btnClass({ variant: "primary" })} to="/community">
           커뮤니티 목록으로
         </Link>
       </div>
@@ -215,18 +216,18 @@ export function CommunityDetailPage() {
         )}
 
         <div className="post-nav-actions">
-          <Link className="btn btn-secondary" to="/community">
+          <Link className={btnClass({ variant: "secondary" })} to="/community">
             <span className="material-icons">list</span>
             목록
           </Link>
           <div className="post-edit-actions">
             {isMine && (
               <>
-                <Link className="btn btn-primary" to={`/community/edit?id=${communityId}`}>
+                <Link className={btnClass({ variant: "primary" })} to={`/community/edit?id=${communityId}`}>
                   <span className="material-icons">edit</span>
                   수정
                 </Link>
-                <button className="btn btn-danger" type="button" onClick={onDeletePost}>
+                <button className={btnClass({ variant: "danger" })} type="button" onClick={onDeletePost}>
                   <span className="material-icons">delete</span>
                   삭제
                 </button>
@@ -247,7 +248,7 @@ export function CommunityDetailPage() {
         {isAuthenticated && (
           <div className="comment-write">
             <textarea
-              className="comment-textarea"
+              className="k-textarea comment-textarea"
               placeholder="댓글을 입력하세요..."
               rows={3}
               value={commentInput}
@@ -255,7 +256,7 @@ export function CommunityDetailPage() {
             />
             <div className="comment-write-actions">
               <button
-                className="btn btn-primary"
+                className={btnClass({ variant: "primary" })}
                 disabled={commentSending}
                 type="button"
                 onClick={onSubmitComment}
@@ -270,7 +271,7 @@ export function CommunityDetailPage() {
         {!isAuthenticated && <p className="muted-text">로그인 후 댓글 작성이 가능합니다.</p>}
 
         <div className="comment-list">
-          {comments.length === 0 && <p style={{ textAlign: "center", color: "#9e9e9e", padding: "40px 0" }}>첫 댓글을 작성해보세요!</p>}
+          {comments.length === 0 && <p className="comment-empty">첫 댓글을 작성해보세요!</p>}
           {comments.map((comment) => {
             const mine = user?.id === comment.userId;
             return (

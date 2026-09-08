@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { callApi } from "../lib/http.js";
 import { useAccount, providerLabel } from "../hooks/useAccount.js";
 import { ApiErrorCard } from "../components/StateCards.jsx";
+import { btnClass, cardClass, fieldClass, helpClass, inputClass } from "../components/ui/kitClass.js";
 
 const FIELDS = { current: "current", next: "next", confirm: "confirm" };
 
@@ -44,10 +45,10 @@ export function PasswordChangePage() {
   if (loading) {
     return (
       <section aria-hidden="true">
-        <div className="panel padded">
-          <div className="skeleton sk-line w40" />
-          <div className="skeleton sk-line w70" />
-          <div className="skeleton sk-line w70" />
+        <div className={cardClass()}>
+          <div className="k-skeleton sk-line w40" />
+          <div className="k-skeleton sk-line w70" />
+          <div className="k-skeleton sk-line w70" />
         </div>
       </section>
     );
@@ -55,12 +56,12 @@ export function PasswordChangePage() {
   if (error || !account) return <ApiErrorCard onRetry={reload} />;
 
   const header = (
-    <div className="page-header">
-      <div aria-hidden="true" className="page-avatar">
+    <div className="k-flex page-header">
+      <div aria-hidden="true" className="k-avatar page-avatar">
         ◎
       </div>
       <div className="page-head-text">
-        <h1>비밀번호 변경</h1>
+        <h1 className="k-page-title">비밀번호 변경</h1>
         {account.passwordChangeable && !notSupported && <p>바꾸면 다른 기기에서는 다시 로그인해야 해요</p>}
       </div>
     </div>
@@ -72,14 +73,14 @@ export function PasswordChangePage() {
     return (
       <section>
         {header}
-        <div className="panel padded">
+        <div className={cardClass()}>
           <p>이 계정은 비밀번호를 사용하지 않아요.</p>
           <p>
             {label} 계정으로 로그인하고 있어서 비밀번호는 {label}에서 관리해요.
           </p>
           <div className="form-actions">
             {/* 막다른 화면의 유일한 출구에 그라디언트를 얹지 않는다(§3-7) */}
-            <Link className="btn" to="/mypage">
+            <Link className={btnClass({ variant: "secondary" })} to="/mypage">
               마이페이지로
             </Link>
           </div>
@@ -152,11 +153,11 @@ export function PasswordChangePage() {
   };
 
   const passwordField = (field, label, hint) => (
-    <div className="field">
+    <div className={fieldClass()}>
       <label htmlFor={field}>{label}</label>
       <input
         aria-describedby={fieldError?.field === field ? `${field}-error` : undefined}
-        className="input"
+        className={inputClass()}
         id={field}
         ref={refs[field]}
         type="password"
@@ -165,7 +166,7 @@ export function PasswordChangePage() {
       />
       {hint && !(fieldError?.field === field) && <p className="field-hint">{hint}</p>}
       {fieldError?.field === field && (
-        <p className="field-error" id={`${field}-error`}>
+        <p className={helpClass({ error: true })} id={`${field}-error`}>
           {fieldError.message}
         </p>
       )}
@@ -175,7 +176,7 @@ export function PasswordChangePage() {
   return (
     <section>
       {header}
-      <form className="panel padded form-panel" onSubmit={onSubmit}>
+      <form className={cardClass({ className: "form-panel" })} onSubmit={onSubmit}>
         {alertText && (
           <div className="inline-alert" role="alert">
             {alertText}
@@ -187,10 +188,10 @@ export function PasswordChangePage() {
         {passwordField(FIELDS.confirm, "새 비밀번호 확인")}
 
         <div className="form-actions">
-          <button className="btn primary" disabled={saving} type="submit">
+          <button className={btnClass({ variant: "primary" })} disabled={saving} type="submit">
             {saving ? "변경 중…" : "변경"}
           </button>
-          <Link className="btn ghost" to="/mypage">
+          <Link className={btnClass({ variant: "ghost" })} to="/mypage">
             취소
           </Link>
         </div>

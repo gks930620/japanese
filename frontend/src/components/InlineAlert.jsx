@@ -1,4 +1,7 @@
 import { useUserData } from "../context/userDataStore.js";
+import { Alert } from "./ui/Alert.jsx";
+import { Button } from "./ui/Button.jsx";
+import { btnClass } from "./ui/kitClass.js";
 
 /**
  * 인라인 알림 (설계/05 §8) — 담기 실패·200개 상한 전용 한 줄.
@@ -9,18 +12,18 @@ export function InlineAlert() {
   if (!alert) return null;
 
   return (
-    <div className={`inline-alert${alert.tone === "warn" ? " warn" : ""}`} role="status">
+    <Alert className="inline-alert" role="status" tone={alert.tone === "warn" ? "warn" : undefined}>
       <span>{alert.message}</span>
-      <span className="notice-actions">
+      <span className="k-flex notice-actions">
         {!isAuthenticated && alert.tone === "warn" && (
-          <a className="btn" href="/login">
+          <a className={btnClass({ variant: "secondary", size: "sm" })} href="/login">
             로그인
           </a>
         )}
-        <button className="btn ghost" type="button" onClick={dismissAlert}>
+        <Button size="sm" variant="ghost" onClick={dismissAlert}>
           닫기
-        </button>
+        </Button>
       </span>
-    </div>
+    </Alert>
   );
 }

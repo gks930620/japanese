@@ -11,6 +11,7 @@ import { useUserData } from "../context/userDataStore.js";
 import { PAGE_SIZE, buildLibrarySearch, parseLibraryParams } from "../lib/libraryQuery.js";
 import { appliedChips } from "../lib/libraryChips.js";
 import * as userData from "../lib/userData.js";
+import { alertClass, btnClass, cardClass, emptyClass, selectClass, toolbarClass } from "../components/ui/kitClass.js";
 
 const TABS = [
   { key: "kanji", label: "한자", unit: "자", to: "/library/kanji" },
@@ -121,7 +122,7 @@ export function BookmarksPage() {
   const undoBlock = (item) => (
     <div key={`undo-${item.id}`} className={`bm-undo${tab.key === "kanji" ? "" : " row"}`}>
       <span>「{removedEntry(item.id).name}」을 뺐어요</span>
-      <button className="btn ghost" type="button" onClick={() => handleUndo(item.id)}>
+      <button className={btnClass({ variant: "ghost" })} type="button" onClick={() => handleUndo(item.id)}>
         되돌리기
       </button>
     </div>
@@ -131,22 +132,21 @@ export function BookmarksPage() {
     <section>
       <MergeBanner />
 
-      <div className="page-header">
-        <div aria-hidden="true" className="page-avatar">
+      <div className="k-flex page-header">
+        <div aria-hidden="true" className="k-avatar page-avatar">
           ★
         </div>
         <div className="page-head-text">
-          <h1>내 보관함</h1>
-          <p>자료실이나 학습 중에 ☆를 누른 한자·문법·어휘가 모여요</p>
+          <h1 className="k-page-title">내 보관함</h1>
+          <p className="k-page-desc">자료실이나 학습 중에 ☆를 누른 한자·문법·어휘가 모여요</p>
         </div>
       </div>
 
-      <nav aria-label="보관함 종류" className="ref-tabs chip-row">
+      <nav aria-label="보관함 종류" className="k-tabs ref-tabs">
         {TABS.map((item) => (
           <Link
             key={item.key}
             aria-current={item.key === tab.key ? "page" : undefined}
-            className={`chip${item.key === tab.key ? " on" : ""}`}
             to={`/bookmarks?tab=${item.key}`}
           >
             {item.label} ({bookmarkCounts[item.key] ?? 0})
@@ -156,9 +156,9 @@ export function BookmarksPage() {
 
       {/* 비로그인 안내 — 사실 진술이라 닫기가 없다 (§4-1) */}
       {!isAuthenticated && (
-        <div className="notice info row">
+        <div className={alertClass({ className: "row-alert" })}>
           <span>이 기록은 지금 쓰는 브라우저에만 저장돼요.</span>
-          <span className="notice-actions">
+          <span className="k-flex notice-actions">
             <Link state={{ from: "/bookmarks" }} to="/login">
               로그인하고 계정에 저장 ›
             </Link>
@@ -178,7 +178,7 @@ export function BookmarksPage() {
           <span className="filter-group-label">정렬</span>
           <select
             aria-label="정렬"
-            className="filter-select"
+            className={selectClass()}
             value={params.sort === "LEARNING" ? "LEARNING" : "RECENT"}
             onChange={(e) => setParams({ sort: e.target.value === "LEARNING" ? "LEARNING" : "RECENT" })}
           >
@@ -198,17 +198,17 @@ export function BookmarksPage() {
       />
 
       {(bookmarkCounts[tab.key] ?? 0) > 0 && (
-        <div className="toolbar">
-          <button className="btn bm-clear" type="button" onClick={() => setConfirmOpen(true)}>
+        <div className={toolbarClass()}>
+          <button className={btnClass({ variant: "secondary", className: "bm-clear" })} type="button" onClick={() => setConfirmOpen(true)}>
             {tab.label} 전체 비우기
           </button>
         </div>
       )}
 
       {loading && !page && (
-        <div aria-hidden="true" className="panel ref-list">
+        <div aria-hidden="true" className={cardClass({ flush: true, className: "ref-list" })}>
           {Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className="skeleton sk-row" />
+            <div key={i} className="k-skeleton sk-row" />
           ))}
         </div>
       )}
@@ -216,13 +216,13 @@ export function BookmarksPage() {
       {error && <ApiErrorCard onRetry={() => setAttempt((n) => n + 1)} />}
 
       {listEmpty && nothingSaved && (
-        <div className="panel empty-block">
+        <div className={emptyClass("empty-block")}>
           <div aria-hidden="true" className="empty-glyph">
             ☆
           </div>
           <h2>아직 담은 것이 없어요</h2>
           <p>자료실이나 학습 중에 ☆를 누르면 여기에 모여요.</p>
-          <Link className="btn primary" to={tab.to}>
+          <Link className={btnClass({ variant: "primary" })} to={tab.to}>
             자료실 열기
           </Link>
         </div>
@@ -250,7 +250,7 @@ export function BookmarksPage() {
       )}
 
       {!error && visible.length > 0 && tab.key === "grammar" && (
-        <div className="panel ref-list">
+        <div className={cardClass({ flush: true, className: "ref-list" })}>
           {visible.map((item) =>
             removedEntry(item.id) ? (
               undoBlock(item)
@@ -262,7 +262,7 @@ export function BookmarksPage() {
       )}
 
       {!error && visible.length > 0 && tab.key === "vocabulary" && (
-        <div className="table-wrap">
+        <div>
           <VocabTable
             items={visible}
             listKey={search}

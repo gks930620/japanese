@@ -1,7 +1,7 @@
 // 사이트명 — `日本語 학습`으로 확정(설계/08 결정기록 F-1). 바꾸려면 이 파일과 index.html <title> 두 곳.
 //    (index.html은 정적 파일이라 이 상수를 참조하지 못한다)
 export const SITE_NAME = "日本語 학습";
-export const LOGO_GLYPH = "語";
+// LOGO_GLYPH(그라디언트 로고 배지)는 Lets 전환에서 사라졌다 — 킷이 로고를 강조색 글자로 칠한다.
 
 // 시드 고정 ID 계약 (설계/03_데이터모델.md §5) — 왕초보(N5)의 course.id.
 // 준비중 안내 화면의 "왕초보(N5) 시작" 링크가 의존한다.

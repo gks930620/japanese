@@ -13,6 +13,7 @@ import { ExpressionRow } from "../components/library/ListItems.jsx";
 import { useLibraryList } from "../hooks/useLibraryList.js";
 import { PAGE_SIZE, levelOptions } from "../lib/libraryQuery.js";
 import { appliedChips } from "../lib/libraryChips.js";
+import { cardClass } from "../components/ui/kitClass.js";
 
 const PLACEHOLDER = "표현·한국어 뜻으로 검색 (예: get up, 일어나다)";
 
@@ -49,9 +50,9 @@ export function EnLibraryExpressionsPage() {
       <ResultBar chips={chips} page={page} sortLabel="학습 순서" unit="개" onReset={reset} />
 
       {loading && !page && (
-        <div aria-hidden="true" className="panel ref-list">
+        <div aria-hidden="true" className={cardClass({ flush: true, className: "ref-list" })}>
           {Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className="skeleton sk-row" />
+            <div key={i} className="k-skeleton sk-row" />
           ))}
         </div>
       )}
@@ -84,7 +85,7 @@ export function EnLibraryExpressionsPage() {
 
       {!error && items.length > 0 && (
         <>
-          <div className={`panel ref-list${loading ? " list-loading" : ""}`}>
+          <div className={cardClass({ flush: true, className: `ref-list${loading ? " list-loading" : ""}` })}>
             {items.map((expression) => (
               <ExpressionRow
                 key={expression.id}

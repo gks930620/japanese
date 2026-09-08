@@ -17,6 +17,11 @@ import { useUserData } from "../context/userDataStore.js";
 import { isUnitCompleted, resolveStepIndex } from "../lib/progressView.js";
 import { buildUnitQuizSet } from "../lib/quiz.js";
 import { dismissLoginHint, isLoginHintDismissed } from "../lib/guestStore.js";
+import { Alert } from "../components/ui/Alert.jsx";
+import { Button } from "../components/ui/Button.jsx";
+import { Chip } from "../components/ui/Chip.jsx";
+import { Table, TableWrap } from "../components/ui/Table.jsx";
+import { btnClass, cardClass } from "../components/ui/kitClass.js";
 
 const STEP_NUMERALS = ["①", "②", "③", "④", "⑤"];
 const LOGIN_HINT_AT = 3; // 완료 유닛 3개째의 정리 스텝에서 한 번 (설계/01 §6)
@@ -44,16 +49,16 @@ function ExternalLink({ to, label, className, children }) {
 function LoadingSkeleton() {
   return (
     <section aria-hidden="true">
-      <div className="step-bar chip-row">
+      <div className="k-flex step-bar">
         {Array.from({ length: 6 }, (_, i) => (
-          <span key={i} className="skeleton sk-pill" />
+          <span key={i} className="k-skeleton sk-pill" />
         ))}
       </div>
-      <div className="panel padded">
-        <div className="skeleton sk-line w40" />
-        <div className="skeleton sk-line w70" />
-        <div className="skeleton sk-line w70" />
-        <div className="skeleton sk-line w40" />
+      <div className={cardClass()}>
+        <div className="k-skeleton sk-line w40" />
+        <div className="k-skeleton sk-line w70" />
+        <div className="k-skeleton sk-line w70" />
+        <div className="k-skeleton sk-line w40" />
       </div>
     </section>
   );
@@ -63,7 +68,7 @@ function LoadingSkeleton() {
 
 function GrammarStep({ grammar, order, count, bookmark, onEdited, latin = false }) {
   return (
-    <div className="panel padded">
+    <div className={cardClass()}>
       <GrammarBody
         caption={`문법 ${order + 1} / ${count}`}
         grammar={grammar}
@@ -95,7 +100,7 @@ function DialogStep({ dialog, onEdited, latin = false }) {
   const speakers = [...new Set(dialog.lines.map((line) => line.speaker))];
   const [playingLine, setPlayingLine] = useState(null);
   return (
-    <div className="panel padded">
+    <div className={cardClass()}>
       {/* 영어에는 전체 재생·편집이 없다 — 캡션 줄이 .row-caption이 아니라 단독이다(§3-1) */}
       {latin ? (
         <div className="step-caption">회화</div>
@@ -136,7 +141,7 @@ function DialogStep({ dialog, onEdited, latin = false }) {
  */
 function ExpressionStep({ expressions }) {
   return (
-    <div className="panel padded">
+    <div className={cardClass()}>
       <div className="step-caption">표현</div>
       <h2 className="step-title">통째로 외워 쓰는 덩어리 {expressions.length}개</h2>
       <div className="expr-list">
@@ -222,8 +227,8 @@ function VocabStep({ vocabularies, bookmark, onEdited, latin = false }) {
     <>
       {/* 셀 안에는 ↗를 넣지 않는다 — 표는 조용해야 한다 (설계/05 §11) */}
       <p className="table-caption">단어를 누르면 자료실에서 열려요</p>
-      <div className="table-wrap">
-        <table className={`data-table vocab-table${latin ? " latin" : ""}`}>
+      <TableWrap>
+        <Table className={`vocab-table${latin ? " latin" : ""}`}>
           <thead>
             <tr>
               <th>단어</th>
@@ -297,8 +302,8 @@ function VocabStep({ vocabularies, bookmark, onEdited, latin = false }) {
               );
             })}
           </tbody>
-        </table>
-      </div>
+        </Table>
+      </TableWrap>
     </>
   );
 }
@@ -309,15 +314,15 @@ function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHin
   const nextCourse = data.nextCourse ?? null;
 
   return (
-    <div className="panel padded">
+    <div className={cardClass()}>
       <div className="step-caption">정리</div>
       <h2 className="step-title">이번 유닛에서 배운 것</h2>
       <div className="summary-rows">
         <div className="summary-row">
           <span className="summary-label">문법</span>
-          <div className="chip-row">
+          <div className="k-flex chip-row">
             {data.grammars.map((grammar) => (
-              <span key={grammar.id} className={`chip static ${latin ? "latin" : "jp"}`}>
+              <span key={grammar.id} className={`k-chip chip-static ${latin ? "latin" : "jp"}`}>
                 {grammar.name}
               </span>
             ))}
@@ -353,9 +358,9 @@ function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHin
           <div className="review-range">
             유닛 {data.review.fromUnitNo}~{data.review.toUnitNo} 문법
           </div>
-          <div className="chip-row">
+          <div className="k-flex chip-row">
             {data.review.grammarNames.map((name, i) => (
-              <span key={i} className="chip static jp">
+              <span key={i} className="k-chip chip-static jp">
                 {name}
               </span>
             ))}
@@ -364,13 +369,13 @@ function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHin
       )}
 
       {/* 완료 토글 — primary가 아니다(이 화면의 primary는 [다음 유닛]). 확인 없이 즉시 토글된다 */}
-      <div className="done-toggle">
+      <div className="k-flex done-toggle">
         <span className={`done-toggle-text ${completed ? "on" : "off"}`}>
           {completed ? "✓ 이 유닛을 마쳤어요" : "이 유닛은 완료로 표시되지 않았어요"}
         </span>
-        <button className="btn" type="button" onClick={() => onToggleCompleted(!completed)}>
+        <Button variant="secondary" onClick={() => onToggleCompleted(!completed)}>
           {completed ? "완료 취소" : "완료로 표시하기"}
-        </button>
+        </Button>
       </div>
       {toggleError && (
         <p className="done-toggle-error" role="status">
@@ -380,7 +385,7 @@ function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHin
 
       {/* 완주 축하는 이 유닛이 아니라 코스에 대한 말이라 완료 토글보다 아래에 둔다 */}
       {completedCourse && (
-        <div className="notice ok">
+        <Alert tone="ok">
           🎉 {data.courseTitle} 코스를 끝까지 봤어요!{" "}
           {nextCourse == null && "준비된 모든 코스를 완주했어요."}
           {/* 영어는 레벨 괄호 없이 코스명만 — 코스명이 곧 단계 이름이다(§3-4) */}
@@ -388,24 +393,24 @@ function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHin
             `다음 코스 ${withJosa(courseLabelOf(nextCourse, latin), "로/으로")} 바로 이어갈 수 있어요.`}
           {nextCourse?.status === "PREPARING" &&
             `다음 코스 ${withJosa(courseLabelOf(nextCourse, latin), "은/는")} 지금 준비하고 있어요.`}
-        </div>
+        </Alert>
       )}
 
       {/* 비로그인 로그인 유도 띠 — 완료 3개째의 정리 스텝에서 한 번만, 패널 맨 아래 (§4-2) */}
       {loginHint != null && (
-        <div className="notice info row">
+        <Alert className="row-alert">
           <span>
             지금까지 {loginHint}개 유닛을 마쳤어요. 로그인하면 다른 기기에서도 이어서 볼 수 있어요.
           </span>
-          <span className="notice-actions">
-            <Link className="btn" state={{ from: loginFrom }} to="/login">
+          <span className="k-flex notice-actions">
+            <Link className={btnClass({ variant: "secondary", size: "sm" })} state={{ from: loginFrom }} to="/login">
               로그인
             </Link>
-            <button className="btn ghost" type="button" onClick={onDismissHint}>
+            <Button size="sm" variant="ghost" onClick={onDismissHint}>
               나중에
-            </button>
+            </Button>
           </span>
-        </div>
+        </Alert>
       )}
     </div>
   );
@@ -445,13 +450,13 @@ function QuizStep({ data, quizSet, started, onStart, onRestart, onNext, visible 
   if (quizSet.questions.length === 0) {
     // 재료 극단 부족 — 결핍을 사과하지 않는다(05 §12)
     return visible ? (
-      <div className="panel padded quiz-card">
+      <div className={cardClass({ className: "quiz-card" })}>
         <div className="step-caption">확인 문제</div>
         <p>이 유닛에서는 아직 문제를 만들 수 없어요</p>
-        <div className="quiz-result-actions">
-          <button className="btn primary" type="button" onClick={onNext}>
+        <div className="k-flex quiz-result-actions">
+          <Button variant="primary" onClick={onNext}>
             다음 ›
-          </button>
+          </Button>
         </div>
       </div>
     ) : null;
@@ -459,7 +464,7 @@ function QuizStep({ data, quizSet, started, onStart, onRestart, onNext, visible 
 
   if (!started) {
     return visible ? (
-      <div className="panel padded quiz-card">
+      <div className={cardClass({ className: "quiz-card" })}>
         <div className="step-caption">확인 문제</div>
         <h2 className="step-title">
           이번 유닛에서 배운 문법 {data.grammars.length}개
@@ -467,14 +472,14 @@ function QuizStep({ data, quizSet, started, onStart, onRestart, onNext, visible 
           {(data.expressions?.length ?? 0) > 0 ? ` · 표현 ${data.expressions.length}개` : ""} · 어휘{" "}
           {data.vocabularies.length}개에서 {quizSet.questions.length}문제
         </h2>
-        <div className="quiz-result-actions">
-          <button className="btn primary" type="button" onClick={onStart}>
+        <div className="k-flex quiz-result-actions">
+          <Button variant="primary" onClick={onStart}>
             문제 풀기
-          </button>
+          </Button>
           {/* 문제를 풀기 싫은 사용자를 가두지 않는다 — 기존 진행 버튼이 카드 안으로 이사한 것 */}
-          <button className="btn ghost" type="button" onClick={onNext}>
+          <Button variant="ghost" onClick={onNext}>
             다음 ›
-          </button>
+          </Button>
         </div>
       </div>
     ) : null;
@@ -485,9 +490,9 @@ function QuizStep({ data, quizSet, started, onStart, onRestart, onNext, visible 
     <div hidden={!visible}>
       <QuizRunner
         key={onRestart.nonce}
-        footerActions={<button className="btn primary" type="button" onClick={onNext}>
+        footerActions={<Button variant="primary" onClick={onNext}>
             다음 ›
-          </button>}
+          </Button>}
         labelChoices
         newTabLinks
         questions={quizSet.questions}
@@ -729,8 +734,8 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
       <MergeBanner />
       <InlineAlert />
 
-      <div className="unit-topbar">
-        <Link className="btn ghost" to={`${pathBase}/${data.courseId}`}>
+      <div className="k-flex unit-topbar">
+        <Link className={btnClass({ variant: "ghost", size: "sm" })} to={`${pathBase}/${data.courseId}`}>
           ‹ 유닛 목록
         </Link>
         <span className="unit-topbar-title">
@@ -742,40 +747,34 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
 
       {/* 진입 안내 줄 — 한 번에 하나만 뜬다 (§2-4) */}
       {showResumeBand && (
-        <div className="notice info row">
+        <Alert className="row-alert">
           <span>
             보던 곳부터 이어서 보고 있어요 ({current + 1}/{steps.length})
           </span>
-          <span className="notice-actions">
-            <button className="btn ghost" type="button" onClick={() => setUserStep(0)}>
+          <span className="k-flex notice-actions">
+            <Button size="sm" variant="ghost" onClick={() => setUserStep(0)}>
               처음부터 보기
-            </button>
+            </Button>
           </span>
-        </div>
+        </Alert>
       )}
       {showDoneBand && (
-        <div className="notice ok row">
+        <Alert className="row-alert" tone="ok">
           <span>이 유닛은 마쳤어요</span>
-          <span className="notice-actions">
-            <button className="btn ghost" type="button" onClick={() => handleToggleCompleted(false)}>
+          <span className="k-flex notice-actions">
+            <Button size="sm" variant="ghost" onClick={() => handleToggleCompleted(false)}>
               완료 취소
-            </button>
+            </Button>
           </span>
-        </div>
+        </Alert>
       )}
 
-      {/* 스텝 진행 표시줄 — 모든 칩 클릭 가능 (인수 16), 현재 스텝만 그라디언트 */}
-      <div className="step-bar chip-row" ref={stepBarRef}>
+      {/* 스텝 진행 표시줄 — 모든 칩 클릭 가능 (인수 16). 현재 스텝은 aria-pressed 로만 표시한다 */}
+      <div className="k-flex step-bar" ref={stepBarRef}>
         {steps.map((s, i) => (
-          <button
-            key={s.key}
-            className={`chip${i === current ? " on" : ""}`}
-            aria-pressed={i === current}
-            type="button"
-            onClick={() => setUserStep(i)}
-          >
+          <Chip key={s.key} on={i === current} onClick={() => setUserStep(i)}>
             {s.label}
-          </button>
+          </Chip>
         ))}
       </div>
 
@@ -834,29 +833,20 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
         />
       )}
 
-      <div className="unit-nav">
-        <button
-          className="btn"
-          disabled={current === 0}
-          type="button"
-          onClick={() => setUserStep(Math.max(0, current - 1))}
-        >
+      <div className="k-flex unit-nav">
+        <Button disabled={current === 0} variant="secondary" onClick={() => setUserStep(Math.max(0, current - 1))}>
           ‹ 이전
-        </button>
+        </Button>
         <span className="unit-nav-pos">
           스텝 {current + 1} / {steps.length}
         </span>
         {!isSummary && !isQuiz && (
-          <button
-            className="btn primary"
-            type="button"
-            onClick={() => setUserStep(Math.min(steps.length - 1, current + 1))}
-          >
+          <Button variant="primary" onClick={() => setUserStep(Math.min(steps.length - 1, current + 1))}>
             다음 ›
-          </button>
+          </Button>
         )}
         {/* 코스 완료 — nextCourse 분기 (설계/04 §2-3): AVAILABLE이면 다음 코스 상세로, 그 외는 코스 목록으로 */}
-        {isSummary && <AdvanceLink className="btn primary" data={data} latin={en} pathBase={pathBase} />}
+        {isSummary && <AdvanceLink className={btnClass({ variant: "primary" })} data={data} latin={en} pathBase={pathBase} />}
       </div>
     </section>
   );

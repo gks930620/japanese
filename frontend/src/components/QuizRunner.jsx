@@ -3,6 +3,9 @@ import { JpSentence } from "./JpSentence.jsx";
 import { buildRetrySet } from "../lib/quiz.js";
 import { TtsButton, TtsRateChip } from "./TtsControls.jsx";
 import { speechTextOf } from "../lib/tts.js";
+import { Button } from "./ui/Button.jsx";
+import { Card } from "./ui/Card.jsx";
+import { Stat } from "./ui/Stat.jsx";
 
 /**
  * 공용 문제·결과 카드 (설계/05 §15-1) — 유닛 확인 문제·자료실 퀴즈가 공유한다.
@@ -49,17 +52,12 @@ export function QuizRunner({ questions, newTabLinks = false, onRestart, footerAc
   if (phase === "result") {
     const wrongCount = answers.filter((a) => !a.correct).length;
     return (
-      <div className="panel padded quiz-card">
+      <Card className="quiz-card">
         <div className="step-caption row-caption">
           결과
           <TtsRateChip />
         </div>
-        <div className="count-big">
-          <span className="v">
-            {correctCount} / {list.length}
-          </span>
-          <span className="l">맞은 개수</span>
-        </div>
+        <Stat className="quiz-score" label="맞은 개수" point value={`${correctCount} / ${list.length}`} />
         <ul className="quiz-result-list">
           {list.map((q) => {
             const a = answers.find((item) => item.questionId === q.id);
@@ -92,22 +90,22 @@ export function QuizRunner({ questions, newTabLinks = false, onRestart, footerAc
         </ul>
         <div className="quiz-result-actions">
           {wrongCount > 0 && (
-            <button className="btn" type="button" onClick={retryWrong}>
+            <Button variant="secondary" onClick={retryWrong}>
               틀린 문제만 다시 풀기
-            </button>
+            </Button>
           )}
-          <button className="btn ghost" type="button" onClick={onRestart}>
+          <Button variant="ghost" onClick={onRestart}>
             새 문제로 다시 풀기
-          </button>
+          </Button>
           {footerActions}
         </div>
         <p className="quiz-note">결과는 저장되지 않아요. 새로고침하면 사라져요.</p>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className="panel padded quiz-card">
+    <Card className="quiz-card">
       {/* 진행·맞은 개수 상시 (Q12) */}
       <p className="quiz-progress">
         {index + 1} / {list.length} · 맞은 개수 {correctCount}개
@@ -146,13 +144,13 @@ export function QuizRunner({ questions, newTabLinks = false, onRestart, footerAc
           </p>
           <Evidence question={question} />
           <div className="quiz-result-actions">
-            <button className="btn primary" type="button" onClick={next}>
+            <Button variant="primary" onClick={next}>
               다음 문제
-            </button>
+            </Button>
           </div>
         </>
       )}
-    </div>
+    </Card>
   );
 }
 

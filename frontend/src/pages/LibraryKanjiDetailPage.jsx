@@ -7,14 +7,15 @@ import { TtsButton, TtsRateChip } from "../components/TtsControls.jsx";
 import { EditorLauncher } from "../components/EditorLauncher.jsx";
 import { speechTextOf } from "../lib/tts.js";
 import { useApiQuery } from "../hooks/useApiQuery.js";
+import { cardClass } from "../components/ui/kitClass.js";
 
 function LoadingSkeleton() {
   return (
-    <div aria-hidden="true" className="panel padded">
-      <div className="skeleton sk-hero" />
-      <div className="skeleton sk-line w40" />
-      <div className="skeleton sk-line w70" />
-      <div className="skeleton sk-line w70" />
+    <div aria-hidden="true" className={cardClass()}>
+      <div className="k-skeleton sk-hero" />
+      <div className="k-skeleton sk-line w40" />
+      <div className="k-skeleton sk-line w70" />
+      <div className="k-skeleton sk-line w70" />
     </div>
   );
 }
@@ -48,7 +49,7 @@ export function LibraryKanjiDetailPage() {
 
       {data && (
         <>
-          <div className="panel padded kanji-detail">
+          <div className={cardClass({ className: "kanji-detail" })}>
             <div className="kanji-detail-head">
               <span aria-hidden="true" className="kanji-hero">
                 {data.letter}

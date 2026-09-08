@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ApiErrorCard } from "../components/StateCards.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
 import { canDoChoices } from "../lib/enStart.js";
+import { Card } from "../components/ui/Card.jsx";
 
 /**
  * 영어 자가진단 `/en/start` (설계/06 §11-12) — **진단이 아니라 자기 선택**이다.
@@ -17,27 +18,27 @@ export function EnStartPage() {
 
   return (
     <section>
-      <div className="page-header">
-        <div aria-hidden="true" className="page-avatar">
+      <div className="k-flex page-header">
+        <div aria-hidden="true" className="k-avatar page-avatar">
           EN
         </div>
         <div className="page-head-text">
-          <h1>지금 영어로 어디까지 되나요?</h1>
-          <p>가장 가까운 문장을 고르면 그 코스로 데려다 드려요</p>
+          <h1 className="k-page-title">지금 영어로 어디까지 되나요?</h1>
+          <p className="k-page-desc">가장 가까운 문장을 고르면 그 코스로 데려다 드려요</p>
         </div>
       </div>
 
       {loading && (
         <div aria-hidden="true">
           {Array.from({ length: 5 }, (_, i) => (
-            <div key={i} className="skeleton sk-row" />
+            <div key={i} className="k-skeleton sk-row" />
           ))}
         </div>
       )}
       {!loading && error && <ApiErrorCard onRetry={reload} />}
 
       {!loading && !error && (
-        <div className="panel padded">
+        <Card>
           <div className="en-choices">
             {choices.map((choice) => (
               <button
@@ -52,7 +53,7 @@ export function EnStartPage() {
             ))}
           </div>
           <p className="en-start-note">채점하지 않아요 — 결과는 저장되지 않아요.</p>
-        </div>
+        </Card>
       )}
     </section>
   );

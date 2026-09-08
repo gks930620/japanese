@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { callApi } from "../lib/http.js";
 import { useAccount, providerLabel } from "../hooks/useAccount.js";
 import { ApiErrorCard } from "../components/StateCards.jsx";
+import { btnClass, cardClass, fieldClass, helpClass, inputClass } from "../components/ui/kitClass.js";
 
 const NICKNAME_MIN = 2;
 const NICKNAME_MAX = 20;
@@ -35,10 +36,10 @@ export function ProfileEditPage() {
   if (loading || (!form && !error)) {
     return (
       <section aria-hidden="true">
-        <div className="panel padded">
-          <div className="skeleton sk-line w40" />
-          <div className="skeleton sk-line w70" />
-          <div className="skeleton sk-line w70" />
+        <div className={cardClass()}>
+          <div className="k-skeleton sk-line w40" />
+          <div className="k-skeleton sk-line w70" />
+          <div className="k-skeleton sk-line w70" />
         </div>
       </section>
     );
@@ -99,17 +100,17 @@ export function ProfileEditPage() {
 
   return (
     <section>
-      <div className="page-header">
-        <div aria-hidden="true" className="page-avatar">
+      <div className="k-flex page-header">
+        <div aria-hidden="true" className="k-avatar page-avatar">
           ◎
         </div>
         <div className="page-head-text">
-          <h1>회원정보 수정</h1>
-          <p>닉네임과 이메일을 고칠 수 있어요</p>
+          <h1 className="k-page-title">회원정보 수정</h1>
+          <p className="k-page-desc">닉네임과 이메일을 고칠 수 있어요</p>
         </div>
       </div>
 
-      <form className="panel padded form-panel" onSubmit={onSubmit}>
+      <form className={cardClass({ className: "form-panel" })} onSubmit={onSubmit}>
         {/* 실패 알림은 오버레이가 아니라 패널 맨 위에 끼어들어 폼을 아래로 민다 */}
         {alertText && (
           <div className="inline-alert" role="alert">
@@ -125,11 +126,11 @@ export function ProfileEditPage() {
           </span>
         </div>
 
-        <div className="field">
+        <div className={fieldClass()}>
           <label htmlFor="nickname">닉네임</label>
           <input
             aria-describedby={fieldError?.field === "nickname" ? "nickname-error" : undefined}
-            className="input"
+            className={inputClass()}
             id="nickname"
             ref={nicknameRef}
             type="text"
@@ -137,17 +138,17 @@ export function ProfileEditPage() {
             onChange={(e) => setForm({ ...form, nickname: e.target.value })}
           />
           {fieldError?.field === "nickname" && (
-            <p className="field-error" id="nickname-error">
+            <p className={helpClass({ error: true })} id="nickname-error">
               {fieldError.message}
             </p>
           )}
         </div>
 
-        <div className="field">
+        <div className={fieldClass()}>
           <label htmlFor="email">이메일</label>
           <input
             aria-describedby={fieldError?.field === "email" ? "email-error" : undefined}
-            className="input"
+            className={inputClass()}
             id="email"
             readOnly={!account.emailEditable}
             ref={emailRef}
@@ -160,17 +161,17 @@ export function ProfileEditPage() {
             <p className="field-hint">{providerLabel(account.provider)}에서 가져온 정보예요</p>
           )}
           {fieldError?.field === "email" && (
-            <p className="field-error" id="email-error">
+            <p className={helpClass({ error: true })} id="email-error">
               {fieldError.message}
             </p>
           )}
         </div>
 
         <div className="form-actions">
-          <button className="btn primary" disabled={saving} type="submit">
+          <button className={btnClass({ variant: "primary" })} disabled={saving} type="submit">
             {saving ? "저장 중…" : "저장"}
           </button>
-          <Link className="btn ghost" to="/mypage">
+          <Link className={btnClass({ variant: "ghost" })} to="/mypage">
             취소
           </Link>
         </div>

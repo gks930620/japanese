@@ -7,6 +7,8 @@ import { useUserData } from "../context/userDataStore.js";
 import { entryCourseNo } from "../lib/courses.js";
 import { completedCount, courseBadges } from "../lib/progressView.js";
 import { isEntryBadge } from "../lib/badgeView.js";
+import { Alert } from "../components/ui/Alert.jsx";
+import { btnClass } from "../components/ui/kitClass.js";
 
 // 코스 목록 (설계/05 §7 + §8) — 경로 순서(courseNo) 고정 6장 (인수 8)
 export function CoursesPage() {
@@ -30,40 +32,40 @@ export function CoursesPage() {
     <section>
       <MergeBanner />
 
-      <div className="page-header">
-        <div aria-hidden="true" className="page-avatar">
+      <div className="k-flex page-header">
+        <div aria-hidden="true" className="k-avatar page-avatar">
           学
         </div>
         <div className="page-head-text">
-          <h1>학습 코스</h1>
-          <p>입문부터 N1까지, 순서대로 하나의 길입니다</p>
+          <h1 className="k-page-title">학습 코스</h1>
+          <p className="k-page-desc">입문부터 N1까지, 순서대로 하나의 길입니다</p>
         </div>
       </div>
 
       {/* 상단 안내 띠는 한 번에 하나 (설계/05 §8 + 학습도구 판정 B — 진단 배너 병합) */}
       {!loading && !error && !hasProgress && entryLabel && (
-        <div className="notice info row courses-start-notice">
+        <Alert className="row-alert courses-start-notice">
           <span>✎ 처음이면 {entryLabel}부터 시작하세요 — 내 실력이 애매하다면 3분만에 확인해 보세요</span>
-          <span className="notice-actions">
-            <Link className="btn" to="/diagnosis">
+          <span className="k-flex notice-actions">
+            <Link className={btnClass({ variant: "secondary", size: "sm" })} to="/diagnosis">
               내 시작점 찾기
             </Link>
           </span>
-        </div>
+        </Alert>
       )}
       {!loading && !error && hasProgress && hasHighlight && (
-        <div className="notice info row courses-start-notice">
+        <Alert className="row-alert courses-start-notice">
           <span>어디서 시작할지 고민되나요? 3분이면 알 수 있어요</span>
-          <span className="notice-actions">
-            <Link className="btn" to="/diagnosis">
+          <span className="k-flex notice-actions">
+            <Link className={btnClass({ variant: "secondary", size: "sm" })} to="/diagnosis">
               내 시작점 찾기
             </Link>
           </span>
-        </div>
+        </Alert>
       )}
       {/* 전부 완주 — 완주자에게 시작점 찾기는 무의미하므로 진단 배너 생략(판정 B) */}
       {!loading && !error && hasProgress && !hasHighlight && (
-        <div className="notice info courses-start-notice">✎ 준비된 코스를 모두 마쳤어요</div>
+        <Alert className="courses-start-notice">✎ 준비된 코스를 모두 마쳤어요</Alert>
       )}
 
       {loading && <CourseCardSkeletonGrid />}

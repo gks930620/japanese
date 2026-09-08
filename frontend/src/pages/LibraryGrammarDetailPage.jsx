@@ -7,14 +7,15 @@ import { ItemStar } from "../components/library/ListItems.jsx";
 import { TtsRateChip } from "../components/TtsControls.jsx";
 import { EditorLauncher } from "../components/EditorLauncher.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
+import { cardClass } from "../components/ui/kitClass.js";
 
 function LoadingSkeleton() {
   return (
-    <div aria-hidden="true" className="panel padded">
-      <div className="skeleton sk-line w40" />
-      <div className="skeleton sk-line w70" />
-      <div className="skeleton sk-line w70" />
-      <div className="skeleton sk-row" />
+    <div aria-hidden="true" className={cardClass()}>
+      <div className="k-skeleton sk-line w40" />
+      <div className="k-skeleton sk-line w70" />
+      <div className="k-skeleton sk-line w70" />
+      <div className="k-skeleton sk-row" />
     </div>
   );
 }
@@ -54,7 +55,7 @@ export function LibraryGrammarDetailPage({ lang = "ja" }) {
 
       {data && (
         <>
-          <div className="panel padded">
+          <div className={cardClass()}>
             <GrammarBody
               grammar={data}
               latin={en}
@@ -69,7 +70,7 @@ export function LibraryGrammarDetailPage({ lang = "ja" }) {
                       onSaved={(saved) => setEdited({ ...data, ...saved })}
                     />
                   )}
-                  {data.rules?.length > 0 && <span className="tag">활용표</span>}
+                  {data.rules?.length > 0 && <span className="k-badge">활용표</span>}
                   <LevelBadge level={data.level} />
                 </>
               }

@@ -4,6 +4,7 @@ import { Pagination } from "../components/Pagination.jsx";
 import { useAuth } from "../context/authStore.js";
 import { callPublicApi } from "../lib/http.js";
 import { formatRelativeTime, getErrorMessage } from "../lib/format.js";
+import { btnClass, emptyClass, selectClass } from "../components/ui/kitClass.js";
 
 /**
  * 커뮤니티 목록.
@@ -81,14 +82,14 @@ export function CommunityListPage() {
 
   return (
     <section>
-      <div className="page-header">
+      <div className="k-flex page-header">
         <h1>
           <span className="material-icons">forum</span>
           커뮤니티
         </h1>
         {isAuthenticated && (
           <div>
-            <Link className="btn btn-primary" to="/community/write">
+            <Link className={btnClass({ variant: "primary" })} to="/community/write">
               <span className="material-icons">edit</span>
               글쓰기
             </Link>
@@ -97,13 +98,14 @@ export function CommunityListPage() {
       </div>
 
       <div className="search-filter-section">
-        <select className="filter-select" value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+        <select className={selectClass()} value={searchType} onChange={(e) => setSearchType(e.target.value)}>
           <option value="title">제목</option>
           <option value="nickname">작성자</option>
         </select>
         <div className="search-input-wrapper">
           <span className="material-icons">search</span>
           <input
+            className="k-input"
             placeholder="검색어를 입력하세요..."
             type="text"
             value={keyword}
@@ -113,19 +115,19 @@ export function CommunityListPage() {
             }}
           />
         </div>
-        <button className="btn btn-primary" type="button" onClick={onSearch}>
+        <button className={btnClass({ variant: "primary" })} type="button" onClick={onSearch}>
           <span className="material-icons">search</span>
           검색
         </button>
       </div>
 
       {loading && (
-        <div className="empty-state" style={{ paddingTop: 40, paddingBottom: 40 }}>
-          <div style={{ fontSize: 14 }}>로딩 중...</div>
+        <div className={emptyClass()}>
+          <div>로딩 중...</div>
         </div>
       )}
       {!loading && error && (
-        <div className="empty-state">
+        <div className={emptyClass()}>
           <span className="material-icons">error</span>
           <h3>목록을 불러오지 못했습니다</h3>
           <p className="error-text">{error}</p>
@@ -134,7 +136,7 @@ export function CommunityListPage() {
       {/* "없음"의 말투는 자료실과 같다(2026-09 판정 D-5 · 08 C-12):
           조건 때문이면 **조건을 되읽고 지우는 길**을 주고, 정말 비었으면 **할 수 있는 사람에게만** 다음 행동을 준다. */}
       {!loading && !error && pageData.content?.length === 0 && (
-        <div className="empty-state">
+        <div className={emptyClass()}>
           <span className="material-icons">article</span>
           {urlKeyword ? (
             <>
@@ -142,7 +144,7 @@ export function CommunityListPage() {
               <p>
                 &lsquo;{urlKeyword}&rsquo;(으)로 찾은 글이 없어요
               </p>
-              <button className="btn" type="button" onClick={resetSearch}>
+              <button className={btnClass({ variant: "secondary" })} type="button" onClick={resetSearch}>
                 검색 조건 초기화
               </button>
             </>

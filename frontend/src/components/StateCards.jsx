@@ -1,17 +1,26 @@
 import { Link } from "react-router-dom";
 import { N5_COURSE_ID } from "../constants/site.js";
 import { useApiQuery } from "../hooks/useApiQuery.js";
+import { Button } from "./ui/Button.jsx";
+import { Card } from "./ui/Card.jsx";
+import { Empty } from "./ui/Empty.jsx";
+import { btnClass } from "./ui/kitClass.js";
 
-/** 상태별 공통 UI의 중앙 카드 골격 (설계/05 §8) */
+/**
+ * 상태별 공통 UI의 중앙 카드 골격 (설계/05 §8) — 킷 `.k-card` 안에 `.k-empty`.
+ * 카드 안 카드의 경계가 겹치지 않게 안쪽 `.k-empty`의 점선 테두리는 `.center-card`가 지운다(매핑 §8 위험 3).
+ */
 function CenterCard({ glyph, title, children }) {
   return (
-    <div className="panel center-card">
-      <div className="center-card-glyph" aria-hidden="true">
-        {glyph}
-      </div>
-      <h2>{title}</h2>
-      {children}
-    </div>
+    <Card className="center-card">
+      <Empty>
+        <div className="center-card-glyph" aria-hidden="true">
+          {glyph}
+        </div>
+        <h2>{title}</h2>
+        {children}
+      </Empty>
+    </Card>
   );
 }
 
@@ -21,9 +30,9 @@ export function ApiErrorCard({ title = "불러오지 못했어요", description 
     <CenterCard glyph="⚠" title={title}>
       <p>{description}</p>
       <div className="center-card-actions">
-        <button className="btn primary" type="button" onClick={onRetry}>
+        <Button variant="primary" onClick={onRetry}>
           다시 시도
-        </button>
+        </Button>
       </div>
     </CenterCard>
   );
@@ -43,10 +52,10 @@ export function NotFoundCard({
     <CenterCard glyph="？" title={title}>
       <p>{description}</p>
       <div className="center-card-actions">
-        <Link className="btn primary" to={to}>
+        <Link className={btnClass({ variant: "primary" })} to={to}>
           {label}
         </Link>
-        <Link className="btn ghost" to="/">
+        <Link className={btnClass({ variant: "ghost" })} to="/">
           홈으로
         </Link>
       </div>
@@ -76,7 +85,7 @@ export function PreparingCard({
         </p>
       )}
       <div className="center-card-actions">
-        <Link className="btn primary" to={listTo}>
+        <Link className={btnClass({ variant: "primary" })} to={listTo}>
           {listLabel}
         </Link>
       </div>
@@ -103,9 +112,9 @@ export function FilterErrorCard({ message, onReset }) {
     <CenterCard glyph="⚠" title="조건이 올바르지 않아요">
       <p>{message}</p>
       <div className="center-card-actions">
-        <button className="btn primary" type="button" onClick={onReset}>
+        <Button variant="primary" onClick={onReset}>
           조건 초기화
-        </button>
+        </Button>
       </div>
     </CenterCard>
   );

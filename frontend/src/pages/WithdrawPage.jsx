@@ -4,6 +4,7 @@ import { callApi } from "../lib/http.js";
 import { useAuth } from "../context/authStore.js";
 import { ApiErrorCard } from "../components/StateCards.jsx";
 import { ConfirmDialog } from "../components/ConfirmDialog.jsx";
+import { btnClass, cardClass, fieldClass, helpClass, inputClass } from "../components/ui/kitClass.js";
 
 const CONFIRM_TEXT = "탈퇴합니다"; // 계약 상수 — 서버가 검증하는 값과 화면 문구가 같아야 한다
 
@@ -47,10 +48,10 @@ export function WithdrawPage() {
   if (!preview) {
     return (
       <section aria-hidden="true">
-        <div className="panel padded">
-          <div className="skeleton sk-line w70" />
-          <div className="skeleton sk-line w70" />
-          <div className="skeleton sk-line w40" />
+        <div className={cardClass()}>
+          <div className="k-skeleton sk-line w70" />
+          <div className="k-skeleton sk-line w70" />
+          <div className="k-skeleton sk-line w40" />
         </div>
       </section>
     );
@@ -130,16 +131,16 @@ export function WithdrawPage() {
 
   return (
     <section>
-      <div className="page-header">
-        <div aria-hidden="true" className="page-avatar">
+      <div className="k-flex page-header">
+        <div aria-hidden="true" className="k-avatar page-avatar">
           ◎
         </div>
         <div className="page-head-text">
-          <h1>회원 탈퇴</h1>
+          <h1 className="k-page-title">회원 탈퇴</h1>
         </div>
       </div>
 
-      <div className="panel padded">
+      <div className={cardClass()}>
         <h2 className="panel-title">탈퇴하면 아래 기록이 지워져요</h2>
         {removing.length > 0 ? (
           removing.map((row) => (
@@ -155,7 +156,7 @@ export function WithdrawPage() {
 
       {/* 남을 것이 없으면 패널째 없앤다(빈 블록 금지) */}
       {staying.length > 0 && (
-        <div className="panel padded">
+        <div className={cardClass()}>
           <h2 className="panel-title">아래는 지워지지 않고 &lsquo;탈퇴한 회원&rsquo; 이름으로 남아요</h2>
           {staying.map((row) => (
             <div key={row.label} className="kv-row">
@@ -184,18 +185,18 @@ export function WithdrawPage() {
       {/* 소셜은 다시 로그인하면 새 계정이 된다(설계/04 §4-1) — 아이디 재가입 문구는 로컬에만 */}
       {!isText && <p className="withdraw-final">같은 아이디로 다시 가입할 수 없어요.</p>}
 
-      <div className="panel padded">
+      <div className={cardClass()}>
         {alertText && (
           <div className="inline-alert" role="alert">
             {alertText}
           </div>
         )}
 
-        <div className="field">
+        <div className={fieldClass()}>
           <label htmlFor="confirmation">{isText ? "확인 문구" : "비밀번호"}</label>
           <input
             aria-describedby={fieldError ? "confirmation-error" : undefined}
-            className="input"
+            className={inputClass()}
             id="confirmation"
             ref={confirmRef}
             type={isText ? "text" : "password"}
@@ -207,15 +208,16 @@ export function WithdrawPage() {
           />
           {isText && !fieldError && <p className="field-hint">&lsquo;{CONFIRM_TEXT}&rsquo; 를 그대로 입력해 주세요</p>}
           {fieldError && (
-            <p className="field-error" id="confirmation-error">
+            <p className={helpClass({ error: true })} id="confirmation-error">
               {fieldError}
             </p>
           )}
         </div>
 
-        <div className="check-row">
+        <div className="k-check-row check-row">
           <input
             checked={checked}
+            className="k-checkbox"
             id="withdraw-check"
             type="checkbox"
             onChange={(e) => setChecked(e.target.checked)}
@@ -224,10 +226,10 @@ export function WithdrawPage() {
         </div>
 
         <div className="form-actions">
-          <button className="btn btn-danger" disabled={!canSubmit} type="button" onClick={() => setDialogOpen(true)}>
+          <button className={btnClass({ variant: "danger" })} disabled={!canSubmit} type="button" onClick={() => setDialogOpen(true)}>
             탈퇴하기
           </button>
-          <Link className="btn ghost" to="/mypage">
+          <Link className={btnClass({ variant: "ghost" })} to="/mypage">
             취소
           </Link>
         </div>

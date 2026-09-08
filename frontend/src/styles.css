@@ -1,123 +1,79 @@
 /* ═══════════════════════════════════════════════════════════════════
-   화면별 스타일 — halo-tokens.css → halo-components.css 다음에 로드된다.
-   색·그림자·둥글기는 전부 var(--토큰) 참조 (#hex 하드코딩 금지 — HALO 가이드 §3-4).
-   예외 2곳뿐: 그라디언트 위 글자 #fff(가이드가 명시한 의도된 하드코딩),
-   카카오 브랜드 색(테마 무관 브랜드 고정색 — 아래 주석 참조).
+   화면별 스타일 — Lets 킷(base → components → tokens → extras)과
+   styles/project-tokens.css 다음, 맨 마지막에 로드된다.
+
+   구조는 전부 킷의 `.k-*` 가 담당한다. 이 파일에는 **킷에 대응이 없는 도메인만** 둔다
+   (일본어 조판·한자·퀴즈·진단·TTS·편집·자료실·영어 표현 — 진행사항/디자인전환_Lets_매핑 §4).
+
+   색은 예외 없이 var(--토큰) 이다 — `#hex`·`rgb(`·`color-mix(` 는 카카오 하나를 빼면 0건이다.
+   치수도 토큰을 쓰되, 아래 세 가지만 리터럴로 남는다(킷 §11-2 의 "사유를 적는다" 규칙):
+     ① 카카오 브랜드 색 — 브랜드 가이드 고정값이라 테마에 종속되지 않는다
+     ② .tts-btn / .speaker-badge 28px — 3줄 병기의 줄 머리를 맞추는 값(매핑 §4 명시 예외)
+     ③ **표시용 글리프 크기** (.tile-glyph 40 · .kanji-glyph 44 · .quiz-prompt.glyph 64 ·
+        .kanji-hero 76 · .jp-line ≤768px 19 등) — 킷의 --t-* 는 본문용 스케일이라
+        한자 한 글자를 크게 보여 주는 자리를 담지 못한다. 이 제품 고유의 조판 값이고
+        모드와 무관하므로 토큰으로 올리지 않고 그 자리에 둔다(설계/05 §6).
    ═══════════════════════════════════════════════════════════════════ */
 
-.app-root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.main-content {
-  flex: 1;
-  max-width: 1360px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 24px 20px 40px;
-}
-
-/* 푸터 — 배경 없음 (설계/05 §2 원칙 ③ — 유리는 헤더에만) */
-.app-footer {
-  margin-top: auto;
-  padding: 20px 0 26px;
-  text-align: center;
-  font-size: 12.5px;
-  color: var(--muted2);
-}
-.app-footer p {
-  margin: 0;
-}
-
 /* ─────────────────────────────────────────────
-   GNB (설계/05 §2 원칙 ③ · §7) — 유리 컨테이너는 halo-components의
-   .app-header/.header-container. 아래는 신규 구성 요소만.
+   셸 보정 — 킷 .k-topnav / .k-footer 위에 이 제품에만 필요한 것만 얹는다
    ───────────────────────────────────────────── */
-.logo-badge {
-  width: 24px;
-  height: 24px;
-  border-radius: 8px;
-  background: var(--grad);
-  color: #fff; /* 그라디언트 위 글자 — 의도된 하드코딩 */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: var(--sh-acc);
+
+/* 모바일 드롭 패널을 헤더 안에 절대배치한다 — 킷의 ≤900px `overflow-x:auto` 가 이를 잘라낸다.
+   그래서 **패널이 실제로 뜨는 폭(≤768px)에서만** 자르지 않는다.
+   769~900px 에서는 킷의 가로 스크롤을 그대로 살려 둔다 — 로그인 상태에서 헤더 항목이 늘고
+   킷 버튼이 --touch(46px)로 커져 그 구간에서 넘칠 수 있다(매핑 §8 위험 5). */
+@media (max-width: 768px) {
+  .k-topnav {
+    overflow: visible;
+  }
 }
 
-.header-nav {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.k-footer {
+  text-align: center;
 }
 
-.nav-pill {
-  padding: 7px 15px;
-  border-radius: 999px;
+/* 과정 스위처 (설계/05 §16) — 킷 .k-segment 는 button 만 칠한다.
+   여기는 주소가 바뀌는 링크라(설계/05 §11: 링크를 버튼으로 바꾸지 않는다) 같은 표현을 a 에도 준다. */
+.k-segment a {
+  padding: var(--sp-2) var(--sp-4);
+  font-size: var(--t-sm);
+  font-weight: var(--w-medium);
   color: var(--muted);
-  font-size: 13.5px;
-  font-weight: 600;
+  background: var(--surface);
 }
-.nav-pill:hover {
-  background: var(--glass-chip);
+.k-segment a:hover {
+  background: var(--surface-hover);
   color: var(--text);
   text-decoration: none;
 }
-/* ② 활성 메뉴 하나만 그라디언트 */
-.nav-pill.active {
-  background: var(--grad);
-  color: #fff;
-  box-shadow: var(--sh-acc);
+.k-segment a + a {
+  border-left: var(--bw) solid var(--border);
 }
-.nav-pill.active:hover {
-  color: #fff;
+.k-segment a[aria-current] {
+  background: var(--active-bg);
+  color: var(--active-fg);
+  font-weight: var(--w-bold);
+}
+.track-switch {
+  flex: none;
 }
 
-.header-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* 헤더 우측 인증 영역 — 줄바꿈 없이 한 줄로 */
 .header-auth {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.theme-toggle {
-  background: var(--glass-chip);
-  border: none;
-  border-radius: 999px;
-  padding: 5px 12px;
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--muted);
-  cursor: pointer;
-  font-family: inherit;
-}
-.theme-toggle:hover {
-  color: var(--point);
+  flex-wrap: nowrap;
+  gap: var(--sp-2);
 }
 
 .mobile-menu-btn {
   display: none;
-  background: none;
-  border: none;
-  color: var(--text);
-  cursor: pointer;
-  padding: 6px;
 }
 .mobile-menu-btn .material-icons {
-  font-size: 24px;
+  font-size: var(--t-xl);
   display: block;
 }
 
-/* 모바일 드롭 패널 — 불투명 카드 (유리 금지, 원칙 ③) */
+/* 모바일 드롭 패널 — 불투명 면 + 1px 선 (Lets 는 평상시 그림자를 쓰지 않는다) */
 .mobile-nav-backdrop {
   position: fixed;
   inset: 0;
@@ -128,65 +84,63 @@
 }
 .mobile-nav-panel {
   position: absolute;
-  top: calc(100% + 8px);
-  left: 14px;
-  right: 14px;
+  top: 100%;
+  left: var(--sp-4);
+  right: var(--sp-4);
   z-index: 40;
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh-lg);
-  padding: 10px;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-2);
+  padding: var(--sp-2);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--sp-1);
 }
 .mobile-nav-item {
   display: flex;
   align-items: center;
-  padding: 10px 15px;
-  border-radius: 999px;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r);
   color: var(--muted);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
   background: none;
   border: none;
   cursor: pointer;
   font-family: inherit;
 }
 .mobile-nav-item:hover {
-  background: var(--soft);
+  background: var(--surface-hover);
+  color: var(--text);
   text-decoration: none;
 }
-.mobile-nav-item.active {
-  background: var(--grad);
-  color: #fff;
-  box-shadow: var(--sh-acc);
+.mobile-nav-item[aria-current] {
+  background: var(--active-bg);
+  color: var(--active-fg);
 }
 .mobile-nav-divider {
-  border-top: 1px solid var(--border);
-  margin: 8px 4px;
+  border-top: var(--bw) solid var(--border);
+  margin: var(--sp-2) var(--sp-1);
 }
 .mobile-nav-auth {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 6px;
+  gap: var(--sp-2);
 }
 .mobile-nav-auth .hdr-badge {
   align-self: flex-start;
-  background: var(--soft);
 }
-.mobile-nav-auth .btn {
+.mobile-nav-auth .k-btn {
   justify-content: center;
 }
-
+.mobile-nav-panel .track-switch {
+  align-self: stretch;
+}
 /* ─────────────────────────────────────────────
    공통 유틸
    ───────────────────────────────────────────── */
-.panel.padded {
-  padding: 22px 24px;
-}
-
 .error-text {
   color: var(--err);
 }
@@ -197,17 +151,23 @@
   color: var(--muted2);
 }
 
-.section-heading {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted2);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin: 26px 2px 10px;
+/* 알림의 가로 배치 — 킷 .k-alert 는 flex 라 오른쪽 액션만 밀어내면 된다.
+   (가로 배치 변형 클래스는 없앴다 — 매핑 §3-5) */
+.row-alert {
+  justify-content: space-between;
+}
+.notice-actions {
+  flex: none;
+  gap: var(--sp-2);
 }
 
 /* 커뮤니티 페이지 헤더의 우측 액션(글쓰기 버튼)을 오른쪽 끝으로.
    코스 페이지는 .page-head-text(flex:1)라 영향 없음 */
+.page-header {
+  align-items: flex-start;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
 .page-header > div:last-child {
   margin-left: auto;
 }
@@ -218,91 +178,76 @@
 }
 .page-header h1 .material-icons {
   color: var(--point);
-  font-size: 26px;
+  font-size: var(--t-xl);
   vertical-align: -4px;
-  margin-right: 4px;
+  margin-right: var(--sp-1);
+}
+/* 페이지 제목 옆 큰 글리프 — 킷 .k-avatar(연회색 라운드 스퀘어)를 키운 것 */
+.page-avatar {
+  width: var(--sp-10);
+  height: var(--sp-10);
+  flex: 0 0 var(--sp-10);
+  font-size: var(--t-lg);
 }
 
-/* 기존 화면의 버튼 변형 — halo .btn(알약) 위에 색만 얹는다 */
-.btn .material-icons {
-  font-size: 18px;
+/* 키·값 2단 목록 — 킷에 대응이 없다(매핑 §3-4).
+   킷 `.k-row`(rank/main/sub)와 의미가 달라 도메인으로 남긴다:
+   한자 상세의 음독/훈독, 계정 화면의 항목/값이 쓴다.
+   행 구분은 아래 1px 선 하나뿐이다 — 카드 안에서 면을 한 겹 더 만들지 않는다(매핑 §8 위험 3). */
+.kv-row {
+  display: flex;
+  gap: var(--sp-4);
+  padding: var(--sp-3) 0;
+  border-bottom: var(--bw) solid var(--border);
 }
-.btn-primary {
-  background: var(--grad);
-  color: #fff;
-  box-shadow: var(--sh-acc);
+.kv-row:last-child {
+  border-bottom: none;
 }
-.btn-primary:hover {
-  background: var(--grad-hot);
-  color: #fff;
-}
-.btn-secondary {
-  background: var(--soft);
-  color: var(--muted);
-  box-shadow: none;
-}
-.btn-secondary:hover {
-  color: var(--point);
-}
-.btn-danger {
-  background: color-mix(in srgb, var(--err) 12%, transparent);
-  color: var(--err);
-  box-shadow: none;
-}
-.btn-danger:hover {
-  color: var(--err);
-  background: color-mix(in srgb, var(--err) 20%, transparent);
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
+.kv-label {
+  flex: 0 0 150px;
   color: var(--muted2);
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
 }
-.empty-state .material-icons {
-  font-size: 72px;
-  opacity: 0.5;
-  margin-bottom: 14px;
-}
-.empty-state h3 {
-  font-size: 17px;
-  font-weight: 600;
-  margin: 0 0 8px;
-  color: var(--muted);
+.kv-value {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
 }
 
-/* 로딩 스켈레톤 (설계/05 §8 — 로딩은 2종) — --soft 하나만, 펄스 */
-.skeleton {
-  background: var(--soft);
-  border-radius: var(--radius-sm);
-  animation: sk-pulse 1.4s ease-in-out infinite;
+.section-heading {
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
+  color: var(--muted2);
+  letter-spacing: var(--label-tracking);
+  margin: var(--sp-6) 0 var(--sp-3);
 }
-@keyframes sk-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.55;
-  }
+
+.k-btn .material-icons {
+  font-size: var(--t-lg);
 }
+
+/* 로딩 스켈레톤 (설계/05 §8) — 색·펄스는 킷 `.k-skeleton`이 맡고 여기는 치수만 잡는다 */
 .sk-card {
   height: 200px;
-  border-radius: var(--radius);
+  border-radius: var(--r-lg);
 }
 .sk-row {
-  height: 48px;
-  margin-bottom: 8px;
+  height: var(--sp-10);
+  margin-bottom: var(--sp-2);
+  display: block;
 }
 .sk-pill {
   width: 74px;
   height: 34px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
+  display: inline-block;
 }
 .sk-line {
-  height: 14px;
-  border-radius: 999px;
-  margin-bottom: 10px;
+  height: var(--sp-4);
+  border-radius: var(--r-pill);
+  margin-bottom: var(--sp-3);
+  display: block;
 }
 .sk-line.w40 {
   width: 40%;
@@ -311,180 +256,148 @@
   width: 70%;
 }
 .sk-avatar {
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
-  border-radius: 19px;
+  width: var(--sp-10);
+  height: var(--sp-10);
+  flex: 0 0 var(--sp-10);
+  border-radius: var(--r-lg);
 }
 .sk-auth {
   width: 88px;
   height: 33px;
-  border-radius: 999px;
+  border-radius: var(--r);
   display: inline-block;
 }
 
-/* 상태별 중앙 카드 (설계/05 §8 — 상태별 UI 규칙) */
+/* 상태별 중앙 카드 (설계/05 §8 — 상태별 UI 규칙).
+   카드 안에 `.k-empty`가 들어가므로 안쪽의 점선 테두리를 지운다 —
+   면 경계가 그림자에서 1px 선으로 바뀌어 두 겹이 겹쳐 보인다(매핑 §8 위험 3). */
 .center-card {
   max-width: 480px;
-  margin: 48px auto;
-  padding: 36px 28px;
+  margin: var(--sp-10) auto;
   text-align: center;
 }
+.center-card .k-empty {
+  border: 0;
+  padding: var(--sp-5) 0;
+  color: inherit;
+}
 .center-card-glyph {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  width: var(--sp-10);
+  height: var(--sp-10);
+  border-radius: var(--r);
+  background: var(--surface-alt);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
-  margin: 0 auto 14px;
+  font-size: var(--t-xl);
+  margin: 0 auto var(--sp-3);
 }
 .center-card h2 {
-  margin: 0 0 6px;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  margin: 0 0 var(--sp-2);
+  font-size: var(--t-lg);
 }
 .center-card p {
-  margin: 0 0 8px;
+  margin: 0 0 var(--sp-2);
   color: var(--muted);
 }
 .center-card-actions {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
 }
 
 /* ─────────────────────────────────────────────
-   홈 (설계/05 §3-2 — 히어로 위에는 primary를 두지 않는다) — 히어로 CTA는 흰 알약
+   홈 — 히어로는 킷 `.k-hero`(연보라 면). 그 위 주 버튼은 `.k-btn--primary` 그대로다:
+   그라디언트가 사라져 "그라디언트 위 그라디언트" 문제가 없어졌다(매핑 §3-2).
    ───────────────────────────────────────────── */
 .hero-cta {
-  position: relative;
-  display: inline-flex;
-  margin-top: 20px;
-  padding: 12px 28px;
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--point);
-  font-size: 15px;
-  font-weight: 700;
-  box-shadow: var(--sh-lg);
-  transition: transform 0.16s;
+  margin-top: var(--sp-5);
 }
-.hero-cta:hover {
-  text-decoration: none;
-  transform: translateY(-2px);
+.hero-resume {
+  font-weight: var(--w-bold);
 }
 
 /* 코스 목록 시작점 안내 (확장 기획 A'-2) */
 .courses-start-notice {
-  margin: 0 0 16px;
+  margin: 0 0 var(--sp-4);
 }
 
 /* ─────────────────────────────────────────────
-   코스 카드 (설계/05 §7) — 세로형 카드, disabled는 --soft
+   코스 카드 (설계/05 §7) — 세로형. 면 경계는 킷 `.k-card`의 1px 선이고
+   여기서는 배치와 준비중 톤 다운만 얹는다.
    ───────────────────────────────────────────── */
 .course-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: var(--sp-4);
 }
 
 .course-card {
-  position: relative;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 18px;
-  background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh);
+  gap: var(--sp-2);
   color: var(--text);
-  transition: box-shadow 0.16s, transform 0.16s;
-}
-/* ④ 윗변 그라디언트 선 — 좌우 16px 띄움 */
-.course-card::before {
-  content: "";
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 0;
-  height: 2px;
-  border-radius: 0 0 3px 3px;
-  background: var(--grad);
-  opacity: 0.16;
-  transition: opacity 0.2s;
 }
 a.course-card:hover {
   text-decoration: none;
-  box-shadow: var(--sh-lg);
-  transform: translateY(-3px);
-}
-a.course-card:hover::before {
-  opacity: 0.85;
 }
 .course-card.disabled {
-  background: var(--soft);
-  box-shadow: none;
+  background: var(--surface-alt);
   cursor: default;
-}
-.course-card.disabled::before {
-  display: none;
 }
 
 .course-card-top {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 .course-num {
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  border-radius: var(--radius-sm);
+  width: var(--sp-10);
+  height: var(--sp-10);
+  flex: 0 0 var(--sp-10);
+  border-radius: var(--r);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: var(--t-lg);
+  font-weight: var(--w-heavy);
   font-variant-numeric: tabular-nums;
-}
-/* ② 그라디언트 배지는 시작점 코스 1장에만 (설계/05 §3-3 — 목록 그라디언트 7→4) */
-.course-card.entry .course-num {
-  background: var(--grad);
-  color: #fff;
-  box-shadow: var(--sh-acc);
-}
-.course-card:not(.disabled):not(.entry) .course-num {
-  background: var(--soft);
+  background: var(--surface-alt);
   color: var(--muted);
 }
+/* 시작점 코스 1장만 강조 — 킷이 오렌지(--point-2)를 허용하는 유일한 자리가
+   "여기부터"의 표시다(매핑 §4·§8 위험 8). 화면당 한 개를 넘기지 않는다. */
+.course-card.entry .course-num {
+  background: var(--point-2);
+  color: var(--on-point);
+}
 .course-card.disabled .course-num {
-  background: var(--surface);
+  background: var(--bg-sunken);
   color: var(--muted2);
 }
 /* 중립 배지 — 시작점이 아닌 AVAILABLE 코스 */
 .status-badge.neutral {
-  background: var(--soft);
+  background: var(--surface-alt);
   color: var(--muted);
 }
+.status-badge.ok {
+  background: var(--ok-soft);
+  color: var(--ok-text);
+}
 .course-level {
-  font-size: 12.5px;
+  font-size: var(--t-sm);
   color: var(--muted2);
 }
 .course-name {
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
 }
 .course-line {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .course-card.disabled .course-name,
@@ -492,27 +405,22 @@ a.course-card:hover::before {
   color: var(--muted2);
 }
 .course-notice {
-  margin: 2px 0 0;
+  margin: var(--sp-1) 0 0;
   align-self: flex-start;
-  font-size: 12.5px;
-  color: var(--point-dark);
+  font-size: var(--t-sm);
+  color: var(--point-text);
   background: var(--point-soft);
-  border-radius: var(--radius-sm);
-  padding: 5px 12px;
+  border-radius: var(--r);
+  padding: var(--sp-1) var(--sp-3);
 }
 .course-foot {
   margin-top: auto;
-  padding-top: 6px;
+  padding-top: var(--sp-2);
   display: flex;
   justify-content: flex-end;
 }
 .preparing-badge {
-  display: inline-block;
-  padding: 4px 13px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 600;
-  background: var(--surface);
+  background: var(--surface-alt);
   color: var(--muted2);
 }
 
@@ -520,38 +428,37 @@ a.course-card:hover::before {
    코스 상세 (설계/05 §7)
    ───────────────────────────────────────────── */
 .course-cta-row {
-  display: flex;
   justify-content: flex-end;
-  margin: 16px 0;
+  margin: var(--sp-4) 0;
 }
 
 .unit-list {
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-2);
 }
 .unit-row {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 13px 18px;
-  border-bottom: 1px solid var(--border);
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  border-bottom: var(--bw) solid var(--border);
   color: var(--text);
 }
 .unit-row:last-child {
   border-bottom: none;
 }
 .unit-row:hover {
-  background: var(--soft);
+  background: var(--surface-hover);
   text-decoration: none;
 }
 .unit-num {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  width: var(--sp-8);
+  height: var(--sp-8);
+  flex: 0 0 var(--sp-8);
+  border-radius: var(--r-sm);
+  background: var(--surface-alt);
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
   font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
@@ -563,31 +470,29 @@ a.course-card:hover::before {
 .unit-title {
   flex: 1;
   min-width: 0;
-  font-size: 14.5px;
-  font-weight: 600;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
 }
 .unit-meta {
-  font-size: 12.5px;
+  font-size: var(--t-sm);
   color: var(--muted2);
   white-space: nowrap;
 }
 .unit-chevron {
   color: var(--muted2);
-  font-size: 16px;
+  font-size: var(--t-lg);
 }
 
 /* ─────────────────────────────────────────────
    유닛 학습 (설계/05 §6·§7)
    ───────────────────────────────────────────── */
 .unit-topbar {
-  display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
 }
 .unit-topbar-title {
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted);
   min-width: 0;
   overflow: hidden;
@@ -595,72 +500,76 @@ a.course-card:hover::before {
   white-space: nowrap;
 }
 
-/* 스텝 바 — 칩 자체가 불투명 알약이라 배경 불필요 (유리 금지) */
+/* 스텝 바 — 칩이 불투명이라 배경이 필요 없다. GNB(--nav-h) 아래에 붙는다 */
 .step-bar {
   position: sticky;
-  top: 80px;
+  top: var(--nav-h);
   z-index: 20;
-  margin-bottom: 16px;
+  padding: var(--sp-2) 0;
+  gap: var(--sp-2);
+  background: var(--bg);
+  margin-bottom: var(--sp-4);
 }
 
 .step-caption {
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--t-xs);
+  font-weight: var(--w-bold);
   color: var(--muted2);
-  margin-bottom: 6px;
+  letter-spacing: var(--label-tracking);
+  margin-bottom: var(--sp-1);
 }
 .step-title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 750;
-  letter-spacing: -0.02em;
+  font-size: var(--t-xl);
 }
 .step-subtitle {
-  margin: 2px 0 0;
-  font-size: 14px;
+  margin: var(--sp-1) 0 0;
+  font-size: var(--t-md);
   color: var(--muted);
 }
 
-/* 일본어 자형 (설계/05 §4 — --font-jp 토큰) */
+/* 일본어 자형 (설계/05 §4 — project-tokens.css 의 --font-jp).
+   본문이 14.5→15px(--t-md)로 커졌으므로 3줄 병기의 급간을 22 / 15 / 13.5 로 다시 잡는다
+   (매핑 §8 위험 2 — 크기 차이가 눌리지 않게). */
 .jp {
   font-family: var(--font-jp);
 }
 
 /* 3줄 병기 블록 (설계/05 §6) */
 .jp-sentence-list {
-  margin: 14px 0 18px;
+  margin: var(--sp-4) 0 var(--sp-5);
 }
 .jp-sentence {
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
+  padding: var(--sp-4) 0;
+  border-bottom: var(--bw) solid var(--border);
 }
 .jp-sentence:last-child {
   border-bottom: none;
 }
 .jp-sentence .jp-line {
   font-family: var(--font-jp);
-  font-size: 22px;
-  line-height: 1.6;
+  font-size: var(--t-xl);
+  line-height: var(--lh-tight);
   color: var(--text);
 }
 .jp-sentence .kana-line {
   font-family: var(--font-jp);
-  font-size: 15px;
+  font-size: var(--t-md);
   color: var(--muted);
 }
 .jp-sentence .mean-line {
-  font-size: 14.5px;
+  font-size: var(--t-sm);
   color: var(--muted2);
 }
 
-/* 회화 스크립트 (설계/05 §3-2 — 반복 요소) — 화자 배지는 의미색 soft, 그라디언트 금지 */
+/* 회화 스크립트 (설계/05 §3-2 — 반복 요소) — 화자 배지는 의미색 soft */
 .dialog-list {
-  margin-top: 14px;
+  margin-top: var(--sp-4);
 }
 .dialog-line {
   display: flex;
-  gap: 12px;
-  border-bottom: 1px solid var(--border);
+  gap: var(--sp-3);
+  border-bottom: var(--bw) solid var(--border);
 }
 .dialog-line:last-child {
   border-bottom: none;
@@ -671,71 +580,59 @@ a.course-card:hover::before {
   border-bottom: none;
 }
 .speaker-badge {
-  width: 28px;
+  width: 28px; /* .tts-btn 과 같은 폭 — 3줄 병기의 줄 머리를 맞춘다 */
   height: 28px;
   flex: 0 0 28px;
-  margin-top: 16px;
-  border-radius: 50%;
+  margin-top: var(--sp-4);
+  border-radius: var(--r-pill);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12.5px;
-  font-weight: 700;
+  font-size: var(--t-xs);
+  font-weight: var(--w-bold);
   font-family: var(--font-jp);
 }
 .speaker-badge.sp-0 {
   background: var(--point-soft);
-  color: var(--point-dark);
+  color: var(--point-text);
 }
 .speaker-badge.sp-1 {
   background: var(--ok-soft);
   color: var(--ok-text);
 }
 .speaker-badge.sp-2 {
-  background: color-mix(in srgb, var(--warn) 14%, transparent);
-  color: color-mix(in srgb, var(--warn) 82%, var(--text));
+  background: var(--warn-soft);
+  color: var(--warn-text);
 }
 .speaker-badge.hide {
   visibility: hidden;
 }
 
-/* 한자 카드 (설계/05 §3-2 — 반복 요소) — 글자 배지는 --soft, 그라디언트 금지 */
+/* 한자 카드 (설계/05 §3-2 — 반복 요소) — 면 경계는 1px 선, 그림자 없음 */
 .kanji-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px;
+  gap: var(--sp-4);
 }
 .kanji-card {
   position: relative;
-  overflow: hidden;
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh);
-  padding: 16px;
-}
-.kanji-card::before {
-  content: "";
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 0;
-  height: 2px;
-  border-radius: 0 0 3px 3px;
-  background: var(--grad);
-  opacity: 0.16;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
 }
 .kanji-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
 }
 .kanji-glyph {
   width: 72px;
   height: 72px;
   flex: 0 0 72px;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  border-radius: var(--r);
+  background: var(--surface-alt);
   color: var(--text);
   font-family: var(--font-jp);
   font-size: 44px;
@@ -745,89 +642,93 @@ a.course-card:hover::before {
   justify-content: center;
 }
 .kanji-meaning {
-  font-size: 14.5px;
-  font-weight: 700;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
 }
 .kanji-read {
   display: flex;
-  gap: 10px;
+  gap: var(--sp-3);
   padding: 2px 0;
-  font-size: 13.5px;
+  font-size: var(--t-sm);
 }
 .kanji-read .label {
   flex: 0 0 34px;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--t-xs);
+  font-weight: var(--w-bold);
   color: var(--muted2);
 }
 .kanji-read .val {
   font-family: var(--font-jp);
 }
 .kanji-words {
-  border-top: 1px solid var(--border);
-  margin-top: 10px;
-  padding-top: 10px;
+  border-top: var(--bw) solid var(--border);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--sp-3);
 }
 .kanji-word .w {
   font-family: var(--font-jp);
-  font-size: 16px;
+  font-size: var(--t-lg);
 }
 .kanji-word .r {
   font-family: var(--font-jp);
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .kanji-word .m {
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted2);
 }
 
-/* 활용 규칙표 (API 명세 §7-7) — 기성 .data-table 재사용, 행 구분선만 --border(기성 규칙).
+/* 활용 규칙표 (API 명세 §7-7) — 킷 `.k-table` 재사용.
    좁은 화면은 줄바꿈 대신 가로 스크롤(표가 화면을 깨지 않게) */
 .rules-table-wrap {
-  overflow-x: auto;
-  margin-bottom: 18px;
+  margin-bottom: var(--sp-5);
 }
 .rules-table th,
 .rules-table td {
   white-space: nowrap;
 }
 .rules-table .g {
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .rules-table .p,
 .rules-table .e {
-  font-size: 14.5px;
+  font-size: var(--t-md);
 }
 .rules-table .arrow {
   color: var(--muted2);
 }
 
-/* 어휘 표 (설계/05 §7) — 기성 .data-table 확장 */
+/* 문법 포인트 설명 — 킷 `.k-alert` 기본형 위에 여백만 */
+.grammar-point {
+  margin-top: var(--sp-4);
+}
+
+/* 어휘 표 (설계/05 §7) — 킷 `.k-table` 확장 */
 .vocab-table .w {
   font-family: var(--font-jp);
-  font-size: 16px;
+  font-size: var(--t-lg);
 }
 .vocab-table .r {
   font-family: var(--font-jp);
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 
 /* 정리 스텝 (설계/05 §7) */
 .summary-rows {
-  margin-top: 16px;
+  margin-top: var(--sp-4);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 .summary-row {
   display: flex;
-  gap: 14px;
+  gap: var(--sp-4);
   align-items: baseline;
 }
 .summary-row .chip-row {
@@ -835,145 +736,121 @@ a.course-card:hover::before {
 }
 .summary-label {
   flex: 0 0 44px;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--t-xs);
+  font-weight: var(--w-bold);
   color: var(--muted2);
 }
 .summary-kanji {
   font-family: var(--font-jp);
-  font-size: 18px;
+  font-size: var(--t-lg);
 }
-.chip.static {
+/* 누를 수 없는 표기용 칩 — 킷 `.k-chip` 위에 상호작용만 뺀다 */
+.chip-static {
   cursor: default;
 }
-.summary-rows + .notice {
-  margin-top: 18px;
+.chip-static:hover {
+  background: var(--surface);
+}
+.summary-rows + .k-alert {
+  margin-top: var(--sp-5);
+}
+.chip-row {
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
 }
 
 /* 하단 내비 */
 .unit-nav {
-  display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 18px;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
 }
 .unit-nav-pos {
-  font-size: 12.5px;
+  font-size: var(--t-sm);
   color: var(--muted2);
 }
-
 /* ─────────────────────────────────────────────
-   로그인 / 회원가입 (재도색)
+   로그인 / 회원가입 — 면 경계는 1px 선(Lets 는 평상시 그림자를 쓰지 않는다)
    ───────────────────────────────────────────── */
 .login-container,
 .signup-container {
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-lg);
   max-width: 450px;
   width: 100%;
-  margin: 40px auto;
-  padding: 40px;
+  margin: var(--sp-10) auto;
+  padding: var(--sp-8);
 }
 
 .logo-section {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--sp-8);
 }
+/* 로고 글리프 — 킷 `.k-avatar` 와 같은 표현(연회색 면 + 강조색 글자) */
 .logo-icon {
-  background: var(--grad);
-  color: #fff;
+  background: var(--surface-alt);
+  color: var(--point);
   width: 64px;
   height: 64px;
-  border-radius: 19px;
-  box-shadow: var(--sh-acc);
+  border-radius: var(--r-lg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--sp-4);
 }
 .logo-icon .material-icons {
-  font-size: 34px;
+  font-size: var(--t-2xl);
 }
 .logo-title {
-  font-size: 23px;
-  font-weight: 750;
-  letter-spacing: -0.02em;
+  font-size: var(--t-2xl);
   color: var(--text);
-  margin: 0 0 6px;
+  margin: 0 0 var(--sp-2);
 }
 .logo-subtitle {
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted);
   margin: 0;
 }
 
 .input-group {
-  margin-bottom: 18px;
+  margin-bottom: var(--sp-5);
 }
 .input-group label {
   display: block;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--muted2);
-  margin-bottom: 7px;
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
+  color: var(--text);
+  margin-bottom: var(--sp-1);
 }
 .input-wrapper {
   position: relative;
 }
 .input-wrapper .material-icons {
   position: absolute;
-  left: 14px;
+  left: var(--sp-3);
   top: 50%;
   transform: translateY(-50%);
   color: var(--muted2);
-  font-size: 20px;
+  font-size: var(--t-lg);
+  pointer-events: none;
+  z-index: 1;
 }
+/* 아이콘 자리만큼 왼쪽 여백을 준다 — 나머지 표현은 킷 `.k-input` */
 .input-field {
-  width: 100%;
-  padding: 13px 15px 13px 44px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
-  color: var(--text);
-  font-size: 14px;
-  font-family: inherit;
-}
-.input-field:focus {
-  outline: none;
-  background: var(--point-soft);
-  box-shadow: 0 0 0 3px rgba(109, 94, 252, 0.18);
+  padding-left: var(--sp-10);
 }
 
 .submit-btn {
-  width: 100%;
-  padding: 13px;
-  background: var(--grad);
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow: var(--sh-acc);
-  margin-top: 8px;
-}
-.submit-btn:hover {
-  background: var(--grad-hot);
-}
-.submit-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+  margin-top: var(--sp-2);
 }
 
 .divider {
   display: flex;
   align-items: center;
-  margin: 24px 0;
+  margin: var(--sp-6) 0;
   color: var(--muted2);
-  font-size: 13px;
+  font-size: var(--t-sm);
 }
 .divider::before,
 .divider::after {
@@ -983,52 +860,33 @@ a.course-card:hover::before {
   background: var(--border);
 }
 .divider span {
-  padding: 0 16px;
+  padding: 0 var(--sp-4);
 }
 
 .social-login {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--sp-3);
 }
-.social-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 999px;
-  background: var(--soft);
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-}
-.social-btn:hover {
-  text-decoration: none;
-  box-shadow: var(--sh);
-}
-/* 카카오 브랜드 색 — 라이트·다크 공통 고정(브랜드 가이드), 테마 종속 아님 */
+/* 카카오 브랜드 색 — 브랜드 가이드 고정값이라 라이트·다크 공통이다(테마 종속 아님).
+   이 파일에서 색을 하드코딩하는 유일한 자리다. */
 .social-btn.kakao {
   background: #fee500;
+  border-color: #fee500;
   color: #191919;
 }
-.social-btn.google {
-  background: var(--surface);
-  box-shadow: var(--sh);
+.social-btn.kakao:hover {
+  background: #f3dc00;
 }
 .social-btn .icon {
-  width: 20px;
-  height: 20px;
+  width: var(--sp-5);
+  height: var(--sp-5);
 }
 
 .error-message {
-  color: var(--err);
-  font-size: 13px;
-  margin-top: 8px;
+  color: var(--err-text);
+  font-size: var(--t-sm);
+  margin-top: var(--sp-2);
   display: none;
 }
 .error-message.show {
@@ -1038,107 +896,88 @@ a.course-card:hover::before {
 .home-link,
 .login-link {
   text-align: center;
-  margin-top: 22px;
-  font-size: 13.5px;
+  margin-top: var(--sp-6);
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .home-link a,
 .login-link a {
   color: var(--point);
-  font-weight: 600;
+  font-weight: var(--w-bold);
 }
 
 /* ─────────────────────────────────────────────
-   마이페이지 (재도색)
+   마이페이지
    ───────────────────────────────────────────── */
 .mypage-container {
   max-width: 800px;
-  margin: 40px auto;
-  padding: 28px;
+  margin: var(--sp-10) auto;
+  padding: var(--sp-6);
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-lg);
 }
 .mypage-header {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 14px;
-  margin-bottom: 22px;
+  border-bottom: var(--bw) solid var(--border);
+  padding-bottom: var(--sp-4);
+  margin-bottom: var(--sp-6);
 }
 .mypage-header h1 {
   margin: 0;
-  font-size: 25px;
-  font-weight: 750;
-  letter-spacing: -0.025em;
+  font-size: var(--t-2xl);
 }
 
 /* ─────────────────────────────────────────────
-   커뮤니티 (재도색)
+   커뮤니티
    ───────────────────────────────────────────── */
 .search-filter-section {
   background: var(--surface);
-  padding: 14px 16px;
-  border-radius: var(--radius);
-  box-shadow: var(--sh);
-  margin-bottom: 20px;
+  border: var(--bw) solid var(--border);
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  margin-bottom: var(--sp-5);
   display: flex;
-  gap: 12px;
+  gap: var(--sp-3);
   flex-wrap: wrap;
   align-items: center;
 }
+.search-filter-section .k-select {
+  width: auto;
+}
+/* 검색 입력 — 표현은 킷 `.k-input`, 여기는 아이콘 자리만 만든다 */
 .search-input-wrapper {
   flex: 1;
   min-width: 250px;
   position: relative;
 }
-.search-input-wrapper input {
-  width: 100%;
-  padding: 11px 16px 11px 42px;
-  border: none;
-  border-radius: 999px;
-  background: var(--soft);
-  color: var(--text);
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-}
-.search-input-wrapper input:focus {
-  background: var(--point-soft);
-  box-shadow: 0 0 0 3px rgba(109, 94, 252, 0.18);
+.search-input-wrapper .k-input {
+  padding-left: var(--sp-10);
 }
 .search-input-wrapper .material-icons {
   position: absolute;
-  left: 14px;
+  left: var(--sp-3);
   top: 50%;
   transform: translateY(-50%);
   color: var(--muted2);
-  font-size: 20px;
-}
-.filter-select {
-  padding: 11px 16px;
-  border: none;
-  border-radius: 999px;
-  background: var(--soft);
-  color: var(--text);
-  font-size: 13.5px;
-  font-family: inherit;
-  outline: none;
-  cursor: pointer;
+  font-size: var(--t-lg);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .post-list {
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-lg);
   overflow: hidden;
 }
 .post-item {
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--border);
+  padding: var(--sp-5);
+  border-bottom: var(--bw) solid var(--border);
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color var(--dur-fast) var(--ease);
 }
 .post-item:hover {
-  background: var(--soft);
+  background: var(--surface-hover);
 }
 .post-item:last-child {
   border-bottom: none;
@@ -1147,95 +986,59 @@ a.course-card:hover::before {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 10px;
+  margin-bottom: var(--sp-3);
 }
 .post-title {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
   color: var(--text);
-  margin-bottom: 7px;
+  margin-bottom: var(--sp-1);
 }
 .post-meta {
   display: flex;
-  gap: 16px;
-  font-size: 12.5px;
+  gap: var(--sp-4);
+  font-size: var(--t-sm);
   color: var(--muted2);
 }
 .post-meta-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--sp-1);
 }
 .post-meta-item .material-icons {
-  font-size: 15px;
+  font-size: var(--t-md);
 }
 .post-stats {
   display: flex;
-  gap: 16px;
-  font-size: 12.5px;
+  gap: var(--sp-4);
+  font-size: var(--t-sm);
   color: var(--muted2);
 }
 .post-stat {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--sp-1);
 }
 .post-stat .material-icons {
-  font-size: 15px;
+  font-size: var(--t-md);
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 22px;
-}
-.pagination-btn {
-  min-width: 36px;
-  height: 36px;
-  border: none;
-  background: var(--surface);
-  color: var(--muted);
-  border-radius: 999px;
-  box-shadow: var(--sh);
-  cursor: pointer;
-  font-size: 13.5px;
-  font-family: inherit;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 10px;
-}
-.pagination-btn .material-icons {
-  font-size: 18px;
-}
-.pagination-btn:hover {
-  color: var(--point);
-}
-.pagination-btn.active {
-  background: var(--grad);
-  color: #fff;
-  box-shadow: var(--sh-acc);
-}
-.pagination-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+/* 페이지네이션은 킷 `.k-pager` 가 전부 담당한다 — 여기 규칙이 없다(현재 쪽은 aria-current) */
 
 /* 커뮤니티 상세 */
 .post-detail {
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-lg);
   overflow: hidden;
 }
 .post-detail-header {
-  padding: 24px;
-  border-bottom: 1px solid var(--border);
+  padding: var(--sp-6);
+  border-bottom: var(--bw) solid var(--border);
 }
 .post-detail-title {
-  font-size: 22px;
-  font-weight: 750;
+  font-size: var(--t-xl);
+  font-weight: var(--w-heavy);
   letter-spacing: -0.02em;
   color: var(--text);
   margin: 0 0 14px;
@@ -1243,61 +1046,61 @@ a.course-card:hover::before {
 .post-detail-meta {
   display: flex;
   gap: 22px;
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted2);
   flex-wrap: wrap;
 }
 .post-detail-stats {
   display: flex;
-  gap: 16px;
+  gap: var(--sp-4);
   padding: 14px 24px;
-  background: var(--soft);
-  border-bottom: 1px solid var(--border);
+  background: var(--surface-alt);
+  border-bottom: var(--bw) solid var(--border);
 }
 .post-detail-content {
   padding: 30px 24px;
   line-height: 1.8;
   color: var(--text);
-  font-size: 14.5px;
+  font-size: var(--t-md);
 }
 .post-detail-content img {
   max-width: 100%;
-  border-radius: var(--radius-sm);
+  border-radius: var(--r);
   margin: 16px 0;
 }
 .post-nav-actions {
   display: flex;
   justify-content: space-between;
   padding: 20px 24px;
-  border-top: 1px solid var(--border);
+  border-top: var(--bw) solid var(--border);
 }
 .post-edit-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--sp-2);
 }
 .post-attachments {
   padding: 0 24px 24px;
 }
 .post-attachments-inner {
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  background: var(--soft);
+  border-radius: var(--r);
+  padding: var(--sp-4);
+  background: var(--surface-alt);
 }
 .post-attachments-inner h4 {
   margin: 0 0 12px;
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .attachment-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: 13.5px;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+  font-size: var(--t-sm);
 }
 .attachment-item .material-icons {
-  font-size: 20px;
+  font-size: var(--t-xl);
   color: var(--muted2);
 }
 .attachment-item a {
@@ -1305,24 +1108,24 @@ a.course-card:hover::before {
 }
 .attachment-size {
   color: var(--muted2);
-  font-size: 12px;
+  font-size: var(--t-xs);
 }
 
 /* 댓글 */
 .comments-section {
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh);
+  border-radius: var(--r-lg);
+  border: var(--bw) solid var(--border);
   margin-top: 22px;
-  padding: 24px;
+  padding: var(--sp-6);
 }
 .comments-header {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: var(--t-lg);
+  font-weight: var(--w-bold);
   margin-bottom: 18px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   color: var(--text);
 }
 .comments-header .material-icons {
@@ -1335,10 +1138,10 @@ a.course-card:hover::before {
   width: 100%;
   padding: 13px 17px;
   border: none;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  border-radius: var(--r);
+  background: var(--surface-alt);
   color: var(--text);
-  font-size: 14px;
+  font-size: var(--t-md);
   font-family: inherit;
   resize: vertical;
   min-height: 80px;
@@ -1347,20 +1150,20 @@ a.course-card:hover::before {
 }
 .comment-textarea:focus {
   background: var(--point-soft);
-  box-shadow: 0 0 0 3px rgba(109, 94, 252, 0.18);
+  box-shadow: var(--sh-point);
 }
 .comment-write-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 8px;
+  margin-top: var(--sp-2);
 }
 .comment-list {
-  border-top: 1px solid var(--border);
+  border-top: var(--bw) solid var(--border);
   padding-top: 18px;
 }
 .comment-item {
   padding: 15px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--bw) solid var(--border);
 }
 .comment-item:last-child {
   border-bottom: none;
@@ -1369,69 +1172,69 @@ a.course-card:hover::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-2);
 }
 .comment-author {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13.5px;
-  font-weight: 600;
+  gap: var(--sp-2);
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
   color: var(--text);
 }
 .comment-author .material-icons {
-  font-size: 20px;
+  font-size: var(--t-xl);
   color: var(--muted2);
 }
 .comment-date {
-  font-size: 12px;
+  font-size: var(--t-xs);
   color: var(--muted2);
 }
 .comment-content {
-  font-size: 14px;
+  font-size: var(--t-md);
   color: var(--muted);
   line-height: 1.7;
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-2);
   white-space: pre-wrap;
 }
 .comment-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 .comment-action-btn {
   background: none;
   border: none;
   padding: 4px 8px;
-  font-size: 12px;
+  font-size: var(--t-xs);
   font-family: inherit;
   color: var(--muted2);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
-  border-radius: 999px;
+  gap: var(--sp-1);
+  border-radius: var(--r-pill);
 }
 .comment-action-btn:hover {
   color: var(--point);
 }
 .comment-action-btn .material-icons {
-  font-size: 16px;
+  font-size: var(--t-lg);
 }
 
 /* 커뮤니티 글쓰기/수정 */
 .write-form {
   background: var(--surface);
-  border-radius: var(--radius);
+  border-radius: var(--r-lg);
   padding: 30px;
-  box-shadow: var(--sh);
+  border: var(--bw) solid var(--border);
 }
 .form-group {
   margin-bottom: 22px;
 }
 .form-label {
   display: block;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--t-xs);
+  font-weight: var(--w-bold);
   color: var(--muted2);
   margin-bottom: 7px;
 }
@@ -1444,10 +1247,10 @@ a.course-card:hover::before {
   width: 100%;
   padding: 13px 17px;
   border: none;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  border-radius: var(--r);
+  background: var(--surface-alt);
   color: var(--text);
-  font-size: 14px;
+  font-size: var(--t-md);
   font-family: inherit;
   outline: none;
   line-height: 1.7;
@@ -1455,61 +1258,70 @@ a.course-card:hover::before {
 .form-input:focus,
 .form-textarea:focus {
   background: var(--point-soft);
-  box-shadow: 0 0 0 3px rgba(109, 94, 252, 0.18);
+  box-shadow: var(--sh-point);
 }
 .form-textarea {
   min-height: 300px;
   resize: vertical;
 }
 .form-help {
-  font-size: 12px;
+  font-size: var(--t-xs);
   color: var(--muted2);
   margin-top: 6px;
 }
 
 .file-upload-area {
   border: 2px dashed var(--border);
-  border-radius: var(--radius-sm);
-  padding: 24px;
+  border-radius: var(--r);
+  padding: var(--sp-6);
   text-align: center;
   cursor: pointer;
   transition: background-color 0.15s, border-color 0.15s;
 }
 .file-upload-area:hover {
   border-color: var(--point);
-  background: var(--soft);
+  background: var(--surface-alt);
 }
 .file-upload-area .material-icons {
   font-size: 36px;
   color: var(--muted2);
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-2);
 }
 .file-upload-area p {
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted);
   margin: 4px 0;
+}
+.comment-empty {
+  text-align: center;
+  color: var(--muted2);
+  padding: var(--sp-10) 0;
+}
+.file-upload-hint {
+  font-size: var(--t-xs);
+  margin-top: var(--sp-2);
 }
 .file-input {
   display: none;
 }
 .uploaded-files {
-  margin-top: 16px;
+  margin-top: var(--sp-4);
 }
 .uploaded-file {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  background: var(--soft);
-  border-radius: var(--radius-sm);
-  margin-bottom: 8px;
+  background: var(--surface-alt);
+  border-radius: var(--r);
+  margin-bottom: var(--sp-2);
 }
 .uploaded-file-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   flex: 1;
-  font-size: 13.5px;
+  font-size: var(--t-sm);
 }
 .uploaded-file-info .material-icons {
   color: var(--muted2);
@@ -1519,10 +1331,10 @@ a.course-card:hover::before {
   border: none;
   color: var(--err);
   cursor: pointer;
-  padding: 4px;
+  padding: var(--sp-1);
 }
 .remove-file-btn .material-icons {
-  font-size: 20px;
+  font-size: var(--t-xl);
 }
 .existing-file {
   display: flex;
@@ -1530,11 +1342,11 @@ a.course-card:hover::before {
   justify-content: space-between;
   padding: 12px 14px;
   background: var(--point-soft);
-  border-radius: var(--radius-sm);
-  margin-bottom: 8px;
+  border-radius: var(--r);
+  margin-bottom: var(--sp-2);
 }
 .existing-file .uploaded-file-info {
-  color: var(--point-dark);
+  color: var(--point-text);
 }
 .file-deleted {
   opacity: 0.5;
@@ -1559,14 +1371,14 @@ a.course-card:hover::before {
 
 @media (max-width: 768px) {
   /* GNB — 메뉴·계정 영역은 햄버거 패널로, 토글·로고는 헤더에 유지 */
-  .header-nav {
+  .k-topnav nav {
     display: none;
   }
   .header-auth {
     display: none;
   }
   .mobile-menu-btn {
-    display: block;
+    display: inline-flex;
   }
 
   .course-grid {
@@ -1577,7 +1389,7 @@ a.course-card:hover::before {
   .course-cta-row {
     justify-content: stretch;
   }
-  .course-cta-row .btn {
+  .course-cta-row .k-btn {
     flex: 1;
     justify-content: center;
   }
@@ -1604,7 +1416,7 @@ a.course-card:hover::before {
   .step-bar::-webkit-scrollbar {
     display: none;
   }
-  .step-bar .chip {
+  .step-bar .k-chip {
     flex-shrink: 0;
   }
   .jp-sentence .jp-line {
@@ -1615,12 +1427,12 @@ a.course-card:hover::before {
   }
   .vocab-table th,
   .vocab-table td {
-    font-size: 13px;
+    font-size: var(--t-sm);
     padding: 8px 10px;
   }
   .rules-table th,
   .rules-table td {
-    font-size: 13px;
+    font-size: var(--t-sm);
     padding: 8px 10px;
   }
   .unit-nav {
@@ -1634,7 +1446,7 @@ a.course-card:hover::before {
 
   .login-container,
   .signup-container {
-    padding: 24px;
+    padding: var(--sp-6);
   }
   .mobile-nav-panel {
     /* 헤더 컨테이너 좌우 패딩(14px)과 정렬 */
@@ -1648,25 +1460,38 @@ a.course-card:hover::before {
    반복 요소(타일 60·행 20·표 50)에 그라디언트를 쓰지 않는다 (설계/05 §3-2).
    ═══════════════════════════════════════════════════════════════════ */
 
-/* 탭 줄 — 기성 .chip/.chip-row 재사용, 현재 탭만 .chip.on(그라디언트) */
+/* 탭 줄 — 킷 `.k-tabs`. 자료실 탭은 **주소가 바뀌는 링크**라(설계/05 §11)
+   활성 표시가 `aria-selected`가 아니라 `aria-current="page"`다.
+   킷은 button 만 칠하므로 같은 표현을 a 에 한 벌 보정한다(매핑 §3-6). */
 .ref-tabs {
-  margin-bottom: 14px;
+  align-items: stretch;
+  margin-bottom: var(--sp-4);
 }
-.ref-tabs .chip:hover {
+.ref-tabs a {
+  border-bottom: 2px solid transparent;
+  padding: var(--sp-2) var(--sp-4);
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ref-tabs a:hover {
+  color: var(--text);
   text-decoration: none;
 }
-.ref-tabs .chip.on:hover {
-  color: #fff;
+.ref-tabs a[aria-current="page"] {
+  color: var(--point);
+  border-bottom-color: var(--point);
 }
 
-/* 툴바 — 불투명 패널 (유리 금지) */
+/* 툴바 — 불투명 면 (킷 `.k-card` 위에 배치만) */
 .ref-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-3);
 }
 .ref-toolbar .search-input-wrapper {
   flex: 1;
@@ -1674,17 +1499,18 @@ a.course-card:hover::before {
 }
 .search-clear {
   position: absolute;
-  right: 10px;
+  right: var(--sp-2);
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: var(--muted2);
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--t-sm);
   font-family: inherit;
-  padding: 4px 8px;
-  border-radius: 999px;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--r-pill);
+  z-index: 1;
 }
 .search-clear:hover {
   color: var(--point);
@@ -1694,29 +1520,26 @@ a.course-card:hover::before {
   flex-basis: 100%;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 22px;
+  gap: var(--sp-3) var(--sp-6);
 }
 .filter-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--sp-3);
   flex-wrap: wrap;
 }
 .filter-group-label {
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--muted2);
-  font-weight: 600;
+  font-weight: var(--w-bold);
+  letter-spacing: var(--label-tracking);
 }
 .filter-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--sp-2);
 }
-/* 필터 칩 선택 상태 — 그라디언트 금지(설계/05 §12). 레벨 4개를 다 골라도 초점이 늘지 않는다 */
-.chip.sel {
-  background: var(--point-soft);
-  color: var(--point-dark);
-}
+/* 필터 칩 선택 상태는 킷이 `aria-pressed="true"` 로 칠한다 — 클래스 규칙이 필요 없다 */
 .filter-toggle {
   display: none;
 }
@@ -1727,9 +1550,9 @@ a.course-card:hover::before {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--sp-2);
   margin: 0 4px 12px;
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .applied-chips {
@@ -1739,12 +1562,12 @@ a.course-card:hover::before {
   gap: 6px;
 }
 .applied-chip {
-  background: var(--soft);
+  background: var(--surface-alt);
   color: var(--muted);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   padding: 4px 12px;
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   font-family: inherit;
   cursor: pointer;
 }
@@ -1755,12 +1578,12 @@ a.course-card:hover::before {
 /* 레벨 배지 — 레벨별 색 구분 없음(단색) */
 .lv-badge {
   display: inline-block;
-  background: var(--soft);
+  background: var(--surface-alt);
   color: var(--muted2);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   padding: 2px 9px;
   font-size: 11.5px;
-  font-weight: 700;
+  font-weight: var(--w-bold);
   margin-left: 4px;
 }
 
@@ -1768,7 +1591,7 @@ a.course-card:hover::before {
 .kanji-tile-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
-  gap: 12px;
+  gap: var(--sp-3);
 }
 .kanji-tile {
   position: relative;
@@ -1779,15 +1602,15 @@ a.course-card:hover::before {
   min-height: 148px;
   padding: 16px 12px 14px;
   background: var(--surface);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--sh);
+  border-radius: var(--r);
+  border: var(--bw) solid var(--border);
   color: var(--text);
   text-align: center;
   transition: box-shadow 0.16s, transform 0.16s;
 }
 .kanji-tile:hover {
   text-decoration: none;
-  box-shadow: var(--sh-lg);
+  box-shadow: var(--sh-2);
   transform: translateY(-2px);
 }
 .kanji-tile .lv-badge {
@@ -1799,21 +1622,21 @@ a.course-card:hover::before {
 .tile-glyph {
   font-family: var(--font-jp);
   font-size: 40px;
-  font-weight: 500;
+  font-weight: var(--w-medium);
   line-height: 1.2;
 }
 .tile-meaning {
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
 }
 .tile-on {
   font-family: var(--font-jp);
-  font-size: 12px;
+  font-size: var(--t-xs);
   color: var(--muted);
 }
 .tile-kun {
   font-family: var(--font-jp);
-  font-size: 12px;
+  font-size: var(--t-xs);
   color: var(--muted2);
 }
 
@@ -1822,14 +1645,14 @@ a.course-card:hover::before {
   display: flex;
   align-items: center;
   gap: 18px;
-  margin-bottom: 16px;
+  margin-bottom: var(--sp-4);
 }
 .kanji-hero {
   width: 120px;
   height: 120px;
   flex: 0 0 120px;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  border-radius: var(--r);
+  background: var(--surface-alt);
   color: var(--text);
   font-family: var(--font-jp);
   font-size: 76px;
@@ -1841,29 +1664,29 @@ a.course-card:hover::before {
 .kanji-detail-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   flex-wrap: wrap;
 }
 .kanji-detail-title h1 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
+  font-size: var(--t-xl);
+  font-weight: var(--w-bold);
   letter-spacing: -0.02em;
 }
 .kanji-detail-reads {
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
+  border-top: var(--bw) solid var(--border);
+  border-bottom: var(--bw) solid var(--border);
+  margin-bottom: var(--sp-4);
 }
 .kanji-detail-reads .kv-label {
   flex: 0 0 92px;
 }
 .kanji-detail-reads .kv-value {
-  font-size: 15px;
+  font-size: var(--t-md);
 }
 .kanji-detail-words .kanji-words {
   border-top: none;
-  margin-top: 8px;
+  margin-top: var(--sp-2);
   padding-top: 0;
 }
 
@@ -1875,36 +1698,36 @@ a.course-card:hover::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--sp-3);
   flex-wrap: wrap;
   padding: 8px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--bw) solid var(--border);
 }
 .where-learn-row:last-child {
   border-bottom: none;
 }
 .where-learn-text {
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 
 /* 문법 목록 행 — 유닛 목록과 같은 언어 */
 .ref-list {
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-2);
 }
 .ref-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
   padding: 13px 18px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--bw) solid var(--border);
   color: var(--text);
 }
 .ref-row:last-child {
   border-bottom: none;
 }
 .ref-row:hover {
-  background: var(--soft);
+  background: var(--surface-alt);
   text-decoration: none;
 }
 .ref-row-main {
@@ -1914,29 +1737,29 @@ a.course-card:hover::before {
   flex-direction: column;
 }
 .ref-row-name {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: var(--t-lg);
+  font-weight: var(--w-bold);
 }
 .ref-row-sub {
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 
 /* 어휘 표 + 아코디언 */
 .vocab-ref-table .w {
   font-family: var(--font-jp);
-  font-size: 16px;
+  font-size: var(--t-lg);
 }
 .vocab-ref-table .r {
   font-family: var(--font-jp);
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .vocab-ref-table .m {
-  font-size: 13.5px;
+  font-size: var(--t-sm);
 }
 .vocab-ref-table td.pos {
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--muted2);
   white-space: nowrap;
 }
@@ -1952,8 +1775,8 @@ a.course-card:hover::before {
   cursor: pointer;
 }
 .vocab-row:hover,
-.vocab-row.open {
-  background: var(--soft);
+.vocab-row[aria-expanded="true"] {
+  background: var(--surface-alt);
 }
 .vocab-row td {
   vertical-align: top;
@@ -1961,31 +1784,31 @@ a.course-card:hover::before {
 /* 데스크톱에서는 품사·레벨이 별도 열에 있으므로 메타 줄을 숨긴다 */
 .vocab-meta {
   display: none;
-  font-size: 12px;
+  font-size: var(--t-xs);
   color: var(--muted2);
 }
 .vocab-expand > td {
-  background: var(--soft);
+  background: var(--surface-alt);
   padding: 4px 16px 14px 22px;
 }
 .sense-item {
   padding: 8px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--bw) solid var(--border);
 }
 .sense-item:last-child {
   border-bottom: none;
 }
 .sense-meaning {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
 }
 .sense-source {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--sp-3);
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 
@@ -1998,8 +1821,8 @@ a.course-card:hover::before {
   width: 56px;
   height: 56px;
   margin: 0 auto 12px;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  border-radius: var(--r);
+  background: var(--surface-alt);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2007,8 +1830,8 @@ a.course-card:hover::before {
 }
 .empty-block h2 {
   margin: 0 0 6px;
-  font-size: 17px;
-  font-weight: 600;
+  font-size: var(--t-lg);
+  font-weight: var(--w-bold);
 }
 .empty-block p {
   margin: 0 0 16px;
@@ -2023,12 +1846,12 @@ a.course-card:hover::before {
 }
 .sk-tile {
   height: 148px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--r);
 }
 .sk-hero {
   width: 120px;
   height: 120px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--r);
   margin-bottom: 14px;
 }
 
@@ -2051,11 +1874,11 @@ a.course-card:hover::before {
   gap: 6px;
 }
 .ref-link {
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--point);
 }
 .kanji-glyph-link {
-  border-radius: var(--radius-sm);
+  border-radius: var(--r);
   color: inherit;
 }
 .kanji-glyph-link:hover {
@@ -2063,7 +1886,7 @@ a.course-card:hover::before {
 }
 .kanji-glyph-link:hover .kanji-glyph {
   background: var(--point-soft);
-  color: var(--point-dark);
+  color: var(--point-text);
 }
 .vocab-word-link {
   color: var(--text);
@@ -2073,39 +1896,31 @@ a.course-card:hover::before {
 }
 .table-caption {
   margin: 0 4px 8px;
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--muted2);
 }
 
 /* 복습 블록 (설계/05 §7) */
 .review-block {
-  border-top: 1px solid var(--border);
+  border-top: var(--bw) solid var(--border);
   margin-top: 18px;
   padding-top: 14px;
 }
 .review-caption {
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--t-xs);
+  font-weight: var(--w-bold);
   color: var(--muted2);
-  margin-bottom: 4px;
+  margin-bottom: var(--sp-1);
 }
 .review-range {
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted);
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-2);
 }
 
-/* ── 자료실 반응형 (설계/05 §10) ── */
-@media (max-width: 1200px) {
-  .kanji-tile-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
-}
-@media (max-width: 1024px) {
-  .kanji-tile-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-}
+/* ── 자료실 반응형 (설계/05 §10) ──
+   본문 폭이 --content-max(1200)로 묶여 있어 한자 타일은 auto-fill 이 6 → 5 → 4 열로 알아서 줄인다.
+   뷰포트 기준으로 minmax 를 낮추던 옛 보정(1360px 폭 시절)은 좁은 화면에서 열을 오히려 늘려 걷어냈다. */
 @media (max-width: 768px) {
   /* 탭 줄은 가로 스크롤 허용 */
   .ref-tabs {
@@ -2140,7 +1955,7 @@ a.course-card:hover::before {
     font-size: 32px;
   }
   .tile-meaning {
-    font-size: 12.5px;
+    font-size: var(--t-xs);
   }
   .tile-on,
   .tile-kun {
@@ -2154,7 +1969,7 @@ a.course-card:hover::before {
     font-size: 60px;
   }
   .kanji-detail-title h1 {
-    font-size: 18px;
+    font-size: var(--t-lg);
   }
   .kanji-detail-reads .kv-label {
     flex-basis: 72px;
@@ -2184,8 +1999,8 @@ a.course-card:hover::before {
   .vocab-meta {
     display: block;
   }
-  .where-learn-row .btn,
-  .sense-source .btn {
+  .where-learn-row .k-btn,
+  .sense-source .k-btn {
     width: 100%;
     justify-content: center;
   }
@@ -2202,11 +2017,11 @@ a.course-card:hover::before {
     align-items: flex-start;
   }
   .vocab-ref-table .w {
-    font-size: 15px;
+    font-size: var(--t-md);
   }
   .vocab-ref-table th,
   .vocab-ref-table td {
-    font-size: 12.5px;
+    font-size: var(--t-xs);
     padding: 8px 10px;
   }
   .ref-topbar .unit-topbar-title {
@@ -2230,24 +2045,31 @@ a.course-card:hover::before {
   flex: 1;
   min-width: 60px;
   height: 4px;
-  background: var(--soft);
-  border-radius: 999px;
+  background: var(--surface-alt);
+  border-radius: var(--r-pill);
   overflow: hidden;
 }
 .progress-fill {
   height: 100%;
   background: var(--point);
-  border-radius: 999px;
-  transition: width 0.2s;
+  border-radius: var(--r-pill);
+  transition: width var(--dur) var(--ease);
 }
 .progress-label {
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--muted2);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .course-progress {
-  margin-top: 4px;
+  margin-top: var(--sp-1);
+}
+.statusbar {
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+.statusbar .k-badge b {
+  color: var(--text);
 }
 .statusbar-progress {
   margin-left: auto;
@@ -2256,7 +2078,7 @@ a.course-card:hover::before {
 
 /* 배지 — 완주는 무채색 면 + 완료색 글자(강조 카드를 묻지 않게) */
 .status-badge.done {
-  background: var(--soft);
+  background: var(--surface-alt);
   color: var(--ok-text);
 }
 
@@ -2265,21 +2087,26 @@ a.course-card:hover::before {
   background: var(--ok-soft);
   color: var(--ok-text);
 }
+.unit-seen-mark {
+  font-size: var(--t-xs);
+  color: var(--muted2);
+  white-space: nowrap;
+}
 .unit-done-mark {
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--ok-text);
   white-space: nowrap;
 }
 .unit-here-badge {
-  font-size: 12px;
+  font-size: var(--t-xs);
   background: var(--point-soft);
-  color: var(--point-dark);
-  border-radius: 999px;
+  color: var(--point-text);
+  border-radius: var(--r-pill);
   padding: 2px 10px;
   white-space: nowrap;
 }
 .cta-note {
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--ok-text);
   margin-right: auto;
 }
@@ -2288,43 +2115,29 @@ a.course-card:hover::before {
 .done-toggle {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
   flex-wrap: wrap;
   padding: 14px 0;
-  border-top: 1px solid var(--border);
+  border-top: var(--bw) solid var(--border);
   margin-top: 18px;
 }
-.done-toggle .btn {
+.done-toggle .k-btn {
   margin-left: auto;
 }
 .done-toggle-text {
-  font-size: 14px;
+  font-size: var(--t-md);
 }
 .done-toggle-text.on {
   color: var(--ok-text);
-  font-weight: 600;
+  font-weight: var(--w-bold);
 }
 .done-toggle-text.off {
   color: var(--muted2);
 }
 .done-toggle-error {
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--err);
   margin: 0 0 8px;
-}
-
-/* .notice의 가로 배치 변형 — 색·배경은 기존 그대로 */
-.notice.row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.notice.row .notice-actions {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 /* ★ 보관함 별 — 담을 수 있는 9곳이 전부 이것 하나를 쓴다 */
@@ -2337,14 +2150,14 @@ a.course-card:hover::before {
   justify-content: center;
   border: none;
   background: none;
-  border-radius: 999px;
-  font-size: 18px;
+  border-radius: var(--r-pill);
+  font-size: var(--t-lg);
   line-height: 1;
   cursor: pointer;
   color: var(--muted2);
-  transition: color 0.12s;
+  transition: color var(--dur-fast) var(--ease);
 }
-.bm-star.on {
+.bm-star[aria-pressed="true"] {
   color: var(--point);
 }
 .bm-star:hover {
@@ -2352,7 +2165,7 @@ a.course-card:hover::before {
 }
 .bm-star:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(109, 94, 252, 0.18);
+  box-shadow: var(--sh-point);
 }
 .kanji-tile .bm-star {
   position: absolute;
@@ -2378,16 +2191,16 @@ a.course-card:hover::before {
   align-items: center;
   gap: 6px;
   padding: 7px 15px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--surface);
   color: var(--point);
-  box-shadow: var(--sh);
-  font-size: 13px;
-  font-weight: 600;
+  border: var(--bw) solid var(--border);
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
 }
 .bm-entry:hover {
   text-decoration: none;
-  box-shadow: var(--sh-lg);
+  box-shadow: var(--sh-2);
 }
 
 /* 보관함 — 되돌리기 자리표시자(같은 크기 유지) · 비우기 · 각주 */
@@ -2398,11 +2211,11 @@ a.course-card:hover::before {
   justify-content: center;
   gap: 6px;
   text-align: center;
-  background: var(--soft);
-  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  border-radius: var(--r);
   box-shadow: none;
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   padding: 14px 12px;
   min-height: 148px;
 }
@@ -2410,7 +2223,7 @@ a.course-card:hover::before {
 .bm-undo.row {
   flex-direction: row;
   justify-content: flex-start;
-  gap: 12px;
+  gap: var(--sp-3);
   min-height: 0;
   padding: 13px 18px;
   border-radius: 0;
@@ -2421,7 +2234,7 @@ a.course-card:hover::before {
 }
 .bm-footnote {
   margin-top: 18px;
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--muted2);
   background: none;
   border: none;
@@ -2435,30 +2248,23 @@ a.course-card:hover::before {
 
 /* 인라인 알림 — 담기 실패·200개 상한. 오버레이가 아니라 레이아웃을 밀어내는 한 줄 */
 .inline-alert {
-  display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   flex-wrap: wrap;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  margin: 0 0 12px;
-  background: var(--surface);
-  box-shadow: var(--sh);
-  color: var(--muted);
+  margin: 0 0 var(--sp-3);
 }
 .inline-alert.warn {
-  background: color-mix(in srgb, var(--warn) 14%, transparent);
-  color: color-mix(in srgb, var(--warn) 82%, var(--text));
+  background: var(--warn-soft);
+  color: var(--warn-text);
   box-shadow: none;
 }
 .inline-alert .notice-actions {
   margin-left: auto;
   display: flex;
-  gap: 8px;
+  gap: var(--sp-2);
 }
 
-/* 병합 배너 — 콘텐츠 최상단, 중립 톤(.notice 기본형) */
+/* 병합 배너 — 콘텐츠 최상단, 중립 톤(킷 .k-alert 기본형) */
 .merge-banner {
   margin: 0 0 16px;
 }
@@ -2468,7 +2274,7 @@ a.course-card:hover::before {
 .merge-banner .merge-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   margin-top: 10px;
   flex-wrap: wrap;
 }
@@ -2478,9 +2284,9 @@ a.course-card:hover::before {
   border: none;
   color: var(--muted2);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--t-md);
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
 }
 
 /* 확인 대화상자 — blur 없는 유일한 모달(설계/05 §12-1) */
@@ -2492,28 +2298,28 @@ a.course-card:hover::before {
   width: calc(100% - 32px);
 }
 .confirm-dialog::backdrop {
-  background: var(--dim);
+  background: var(--overlay);
 }
 .confirm-panel {
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--sh-lg);
-  padding: 24px;
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-2);
+  padding: var(--sp-6);
 }
 .confirm-panel h2 {
   margin: 0 0 8px;
-  font-size: 17px;
-  font-weight: 700;
+  font-size: var(--t-lg);
+  font-weight: var(--w-bold);
 }
 .confirm-panel p {
   margin: 0 0 18px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--t-md);
 }
 .confirm-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--sp-2);
 }
 
 /* 홈 히어로 이어보기 줄 — .hero p와 같은 값 */
@@ -2533,7 +2339,7 @@ a.course-card:hover::before {
     height: 40px;
     flex-basis: 40px;
   }
-  .done-toggle .btn {
+  .done-toggle .k-btn {
     width: 100%;
     justify-content: center;
   }
@@ -2559,12 +2365,12 @@ a.course-card:hover::before {
 }
 .mypage-card {
   display: block;
-  padding: 20px;
+  padding: var(--sp-5);
 }
 .mypage-card h2 {
   margin: 0 0 12px;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
   letter-spacing: -0.01em;
 }
 .mypage-card .kv-row {
@@ -2573,21 +2379,24 @@ a.course-card:hover::before {
 .mypage-card .kv-label {
   flex-basis: 92px;
 }
+.card-body {
+  min-width: 0;
+}
 .card-note {
   margin: 0 0 4px;
-  font-size: 13.5px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .card-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--sp-2);
   margin-top: 14px;
 }
 .card-danger-zone {
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px solid var(--border);
+  border-top: var(--bw) solid var(--border);
 }
 .withdraw-link {
   color: var(--muted2);
@@ -2599,24 +2408,19 @@ a.course-card:hover::before {
 }
 .form-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--sp-2);
   align-items: center;
   margin-top: 22px;
 }
 .panel-title {
-  margin: 0 0 12px;
-  font-size: 15px;
-  font-weight: 700;
-}
-.field-error {
-  color: var(--err);
-  font-size: 12.5px;
-  margin: 6px 0 0;
+  margin: 0 0 var(--sp-3);
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
 }
 .field-hint {
   color: var(--muted2);
-  font-size: 12.5px;
-  margin: 6px 0 0;
+  font-size: var(--t-xs);
+  margin: var(--sp-1) 0 0;
 }
 .kv-value .field-hint {
   display: block;
@@ -2625,7 +2429,7 @@ a.course-card:hover::before {
 /* 탈퇴 — 되돌릴 수 없다는 사실만 한 줄 굵게. --err를 쓰지 않는다 */
 .withdraw-final {
   color: var(--text);
-  font-weight: 700;
+  font-weight: var(--w-bold);
   margin: 18px 0;
 }
 .check-row {
@@ -2636,7 +2440,7 @@ a.course-card:hover::before {
 }
 .check-row label {
   color: var(--text);
-  font-size: 14px;
+  font-size: var(--t-md);
 }
 @media (max-width: 768px) {
   .mypage-grid {
@@ -2646,44 +2450,22 @@ a.course-card:hover::before {
     flex-direction: column;
     gap: 2px;
   }
-  .form-actions .btn,
-  .form-actions .btn.primary,
-  .card-actions .btn {
+  .form-actions .k-btn,
+  .card-actions .k-btn {
     flex: 1;
     justify-content: center;
   }
 }
 
-/* ── 과정 스위처 (설계/05 §16) — 활성은 --point-soft. 그라디언트는 GNB 활성 하나로 충분하다 ── */
-.track-switch {
-  display: inline-flex;
-  gap: 2px;
-  padding: 3px;
-  border-radius: 999px;
-  background: var(--glass-chip);
-  margin-left: 14px;
-}
-.track-switch .track-pill {
-  padding: 6px 13px;
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-.track-switch .track-pill:hover {
-  color: var(--text);
-  text-decoration: none;
-}
-.track-switch .track-pill.active {
-  background: var(--point-soft);
-  color: var(--point-dark);
-}
+/* ── 과정 스위처 (설계/05 §16) — 표현은 킷 .k-segment 가 맡는다.
+   여기는 배치만: 데스크톱은 로고 옆 인라인, 모바일 패널에서는 가로로 꽉 채운다 ── */
 .track-switch.mobile {
   display: flex;
-  margin: 0 0 10px;
+  margin: 0 0 var(--sp-2);
 }
-.track-switch.mobile .track-pill {
+.track-switch.mobile a {
   flex: 1;
+  justify-content: center;
   text-align: center;
 }
 @media (max-width: 768px) {
@@ -2700,11 +2482,11 @@ a.course-card:hover::before {
 .en-choice {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--sp-1);
   text-align: left;
   padding: 16px 18px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r);
   background: var(--surface);
   cursor: pointer;
 }
@@ -2713,18 +2495,18 @@ a.course-card:hover::before {
   background: var(--point-soft);
 }
 .en-choice-course {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--point-dark);
+  font-size: var(--t-xs);
+  font-weight: var(--w-bold);
+  color: var(--point-text);
 }
 .en-choice-line {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
   color: var(--text);
 }
 .en-start-note {
   margin: 14px 0 0;
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 
@@ -2735,19 +2517,19 @@ a.course-card:hover::before {
    신규 토큰 0 · #hex 0 · 그라디언트 0. 보기·정오 행은 반복 요소다.
    ═══════════════════════════════════════════════════════════════════ */
 
-/* 카드 — 기성 .panel.padded 위에 폭만 제한한다(읽는 면은 불투명, 원칙 ①) */
+/* 카드 — 킷 .k-card 위에 폭만 제한한다 */
 .quiz-card {
   max-width: 640px;
   margin: 0 auto;
 }
 .quiz-card > .step-title {
-  margin-bottom: 4px;
+  margin-bottom: var(--sp-1);
 }
 
 /* 진행 줄 — 3/10 → 4/10에서 숫자 폭이 흔들리지 않게 tabular */
 .quiz-progress {
   margin: 0 0 14px;
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
@@ -2755,7 +2537,7 @@ a.course-card:hover::before {
 /* 지문 — 문장형은 .jp-sentence 원문과 같은 급(22px), 한자 1~2자는 .kanji-hero 급 */
 .quiz-prompt {
   margin: 0;
-  font-size: 22px;
+  font-size: var(--t-xl);
   line-height: 1.5;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -2768,7 +2550,7 @@ a.course-card:hover::before {
 }
 .quiz-prompt-sub {
   margin: 6px 0 0;
-  font-size: 14.5px;
+  font-size: var(--t-md);
   color: var(--muted);
 }
 .quiz-prompt.glyph + .quiz-prompt-sub {
@@ -2787,24 +2569,24 @@ a.course-card:hover::before {
   text-align: left;
   padding: 13px 18px;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--surface);
-  box-shadow: var(--sh);
+  border: var(--bw) solid var(--border);
   color: var(--text);
   font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
   cursor: pointer;
   transition: color 0.15s, box-shadow 0.15s;
 }
 /* 일본어 자형은 기성 유틸 `.jp`가 이미 건다(styles.css) — 여기서 다시 정의하지 않는다 */
 .quiz-choice:hover:not(:disabled) {
   color: var(--point);
-  box-shadow: var(--sh-lg);
+  box-shadow: var(--sh-2);
 }
 .quiz-choice:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(109, 94, 252, 0.18);
+  box-shadow: var(--sh-point);
 }
 /* 채점 후 — 고르지 않은 보기는 물러난다(클릭 불가, Q10) */
 .quiz-choice:disabled {
@@ -2819,8 +2601,8 @@ a.course-card:hover::before {
   opacity: 1;
 }
 .quiz-choice.wrong {
-  background: color-mix(in srgb, var(--err) 13%, transparent);
-  color: color-mix(in srgb, var(--err) 85%, var(--text));
+  background: var(--err-soft);
+  color: var(--err-text);
   box-shadow: none;
   opacity: 1;
 }
@@ -2828,25 +2610,25 @@ a.course-card:hover::before {
 /* 정오 한 줄 — 색만으로 정오를 전달하지 않기 위한 텍스트(11 접근성). role="status"라 낭독도 된다 */
 .quiz-verdict {
   margin: 14px 0 0;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
 }
 .quiz-verdict.ok {
   color: var(--ok-text);
 }
 .quiz-verdict.err {
-  color: color-mix(in srgb, var(--err) 85%, var(--text));
+  color: var(--err-text);
 }
 
 /* 근거 — --soft 박스. 내부는 전부 기성 컴포넌트라 여백만 맞춘다 */
 .quiz-evidence {
-  margin-top: 12px;
+  margin-top: var(--sp-3);
   padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  border-radius: var(--r);
+  background: var(--surface-alt);
 }
 .quiz-evidence .kanji-word .w {
-  font-size: 18px;
+  font-size: var(--t-lg);
 }
 .quiz-evidence .kv-row {
   padding: 6px 0;
@@ -2856,19 +2638,19 @@ a.course-card:hover::before {
   border-bottom: none;
 }
 
-/* 점수 — 기성 .count-big을 카드 **안**에서 쓴다.
+/* 점수 — 킷 .k-stat 을 카드 **안**에서 쓴다.
    surface 위 surface는 평평해 보이므로 --soft로 낮추고, 카드가 아니므로 윗변 선을 끈다
    (덕분에 이 화면의 그라디언트가 1개 줄어든다). */
-.quiz-card .count-big {
+.quiz-card .k-stat {
   margin: 4px 0 2px;
-  background: var(--soft);
+  background: var(--surface-alt);
   box-shadow: none;
 }
-.quiz-card .count-big::before {
+.quiz-card .k-stat::before {
   display: none;
 }
-.quiz-card .count-big .v {
-  font-size: 34px;
+.quiz-card .k-stat__value {
+  font-size: var(--t-2xl);
 }
 
 /* 정오 목록 — 행 구분선은 표 행 구분 예외로 허용(05 §2 보조규칙) */
@@ -2882,15 +2664,15 @@ a.course-card:hover::before {
   align-items: center;
   gap: 10px;
   padding: 11px 2px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--bw) solid var(--border);
 }
 .quiz-result-row:last-child {
   border-bottom: none;
 }
 .quiz-result-row .mark {
   flex: 0 0 16px;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
 }
 .quiz-result-row .mark.ok {
   color: var(--ok-text);
@@ -2901,7 +2683,7 @@ a.course-card:hover::before {
 .quiz-result-summary {
   flex: 1;
   min-width: 0;
-  font-size: 14.5px;
+  font-size: var(--t-md);
   color: var(--text);
 }
 .quiz-result-row .ref-link {
@@ -2913,14 +2695,14 @@ a.course-card:hover::before {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   margin-top: 18px;
 }
 
 /* 저장 안 됨 한 줄 (Q23·P13) — 캡션 톤. 로그인 유도를 붙이지 않는다 */
 .quiz-note {
   margin: 14px 0 0;
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--muted2);
 }
 
@@ -2931,7 +2713,7 @@ a.course-card:hover::before {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--sp-2);
 }
 .step-caption.row-caption > *:first-child {
   margin-left: auto;
@@ -2946,16 +2728,16 @@ a.course-card:hover::before {
 .diag-headline {
   margin: 6px 0 8px;
   font-size: 26px;
-  font-weight: 750;
+  font-weight: var(--w-heavy);
   letter-spacing: -0.02em;
   line-height: 1.3;
   color: var(--text);
 }
-/* 근거 표 — 기성 .data-table 그대로. 카드 안이라 좌우 여백만 흡수한다 */
-.diag-wrap .table-wrap {
+/* 근거 표 — 킷 .k-table 그대로. 카드 안이라 좌우 여백만 흡수한다 */
+.diag-wrap .k-tablewrap {
   margin: 14px 0 4px;
 }
-.diag-wrap .data-table td {
+.diag-wrap .k-table td {
   font-variant-numeric: tabular-nums;
 }
 
@@ -2964,11 +2746,11 @@ a.course-card:hover::before {
 .quiz-entry {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   margin-left: auto;
 }
 .quiz-entry-hint {
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--muted2);
 }
 
@@ -2982,41 +2764,40 @@ a.course-card:hover::before {
   flex: 0 0 28px;
   padding: 0;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: transparent;
   color: var(--muted);
   vertical-align: middle;
   cursor: pointer;
 }
 .tts-btn .material-icons {
-  font-size: 17px;
+  font-size: var(--t-lg);
 }
 .tts-btn:hover {
   color: var(--point);
 }
-.tts-btn.playing,
 .tts-btn[aria-pressed="true"] {
   background: var(--point-soft);
   color: var(--point);
 }
 .tts-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(109, 94, 252, 0.18);
+  box-shadow: var(--sh-point);
 }
 /* 지금 읽는 대사 줄 — 불투명 면 유지(원칙 ①), 그라디언트 없음 */
 .dialog-line.playing {
   background: var(--point-soft);
-  border-radius: var(--radius-sm);
+  border-radius: var(--r);
 }
 
-/* 편집 모드 띠 — GNB보다 위, 얇은 상시 한 줄. 기성 .notice.warn 위에 배치만 얹는다 */
+/* 편집 모드 띠 — GNB보다 위, 얇은 상시 한 줄. 킷 .k-alert--warn 위에 배치만 얹는다 */
 .editor-mode-bar {
   margin: 0;
   border-radius: 0;
   padding: 6px 16px;
   justify-content: center;
   text-align: center;
-  font-size: 12.5px;
+  font-size: var(--t-xs);
 }
 /* 편집 패널 — 모달이 아니라 원본 블록 바로 아래 인라인 펼침(05 §12) */
 .editor-panel {
@@ -3026,12 +2807,12 @@ a.course-card:hover::before {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: var(--sp-3);
 }
 .editor-panel-head h3 {
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
 }
 .editor-panel-head .merge-close {
   margin-left: auto;
@@ -3043,7 +2824,7 @@ a.course-card:hover::before {
   gap: 10px;
   align-items: flex-end;
 }
-.editor-row .field {
+.editor-row .k-field {
   flex: 1 1 150px;
   min-width: 0;
 }
@@ -3051,11 +2832,12 @@ a.course-card:hover::before {
 .editor-diff {
   margin: 10px 0;
   padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--code-bg);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12.5px;
-  line-height: 1.7;
+  border-radius: var(--r);
+  background: var(--surface-alt);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  line-height: var(--lh-relaxed);
+  border: var(--bw) solid var(--border);
   white-space: pre-wrap;
   overflow-x: auto;
 }
@@ -3072,8 +2854,7 @@ a.course-card:hover::before {
     font-size: 48px;
   }
   /* 주요 버튼 폭 100% 규칙 — 결과 버튼 3종이 세로로 쌓인다 */
-  .quiz-result-actions .btn,
-  .quiz-result-actions .btn.primary {
+  .quiz-result-actions .k-btn {
     flex: 1 1 100%;
     justify-content: center;
   }
@@ -3083,15 +2864,15 @@ a.course-card:hover::before {
     margin-left: 0;
     flex-wrap: wrap;
   }
-  .quiz-entry .btn {
+  .quiz-entry .k-btn {
     flex: 1;
     justify-content: center;
   }
   .diag-headline {
-    font-size: 22px;
+    font-size: var(--t-xl);
   }
   /* 편집 패널의 반복 행 3~4칸 → 세로 스택 */
-  .editor-row .field {
+  .editor-row .k-field {
     flex: 1 1 100%;
   }
 }
@@ -3100,7 +2881,7 @@ a.course-card:hover::before {
   /* 정오 행 — 요약과 (재생·링크)를 2줄로 분리, 아래 줄은 ○/✕ 폭만큼 들여쓴다 */
   .quiz-result-row {
     flex-wrap: wrap;
-    row-gap: 4px;
+    row-gap: var(--sp-1);
   }
   .quiz-result-summary {
     flex: 1 1 calc(100% - 26px);
@@ -3137,18 +2918,18 @@ a.course-card:hover::before {
 .expr-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 .expr-card {
   padding: 16px 18px;
-  border-radius: var(--radius);
+  border-radius: var(--r-lg);
   background: var(--surface);
-  box-shadow: var(--sh);
+  border: var(--bw) solid var(--border);
 }
 .expr-text {
   display: inline-block;
-  font-size: 20px;
-  font-weight: 700;
+  font-size: var(--t-xl);
+  font-weight: var(--w-bold);
   letter-spacing: -0.01em;
   color: var(--text);
 }
@@ -3157,41 +2938,41 @@ a.expr-text:hover {
 }
 .expr-pron {
   margin: 2px 0 0;
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   color: var(--muted);
 }
 .expr-mean {
   margin: 6px 0 0;
-  font-size: 14.5px;
+  font-size: var(--t-md);
   color: var(--text);
 }
 .expr-note {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted2);
 }
 .expr-example {
   margin-top: 10px;
   padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--soft);
+  border-radius: var(--r);
+  background: var(--surface-alt);
 }
 .expr-example + .expr-example {
   margin-top: 6px;
 }
 .expr-example .en {
-  font-size: 16px;
+  font-size: var(--t-lg);
   line-height: 1.5;
   color: var(--text);
 }
 .expr-example .m {
-  font-size: 13px;
+  font-size: var(--t-sm);
   color: var(--muted2);
 }
 
 /* 어휘 표의 발음 셀 — 열을 늘리지 않고 한 셀에 두 줄(설계/05 §16-4) */
 .vocab-pron {
-  font-size: 12.5px;
+  font-size: var(--t-xs);
   line-height: 1.5;
   color: var(--muted);
 }
@@ -3202,10 +2983,10 @@ a.expr-text:hover {
 
 @media (max-width: 768px) {
   .expr-text {
-    font-size: 18px;
+    font-size: var(--t-lg);
   }
   .expr-example .en {
-    font-size: 15px;
+    font-size: var(--t-md);
   }
 }
 

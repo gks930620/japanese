@@ -1,4 +1,6 @@
 import { JpSentence } from "./JpSentence.jsx";
+import { Alert } from "./ui/Alert.jsx";
+import { Table, TableWrap } from "./ui/Table.jsx";
 
 /**
  * 문법 본문 — 유닛 학습의 문법 스텝과 자료실 문법 상세가 **같은 컴포넌트를 쓴다** (설계/05 §7-1).
@@ -30,8 +32,8 @@ export function GrammarBody({ grammar, caption, titleRight, latin = false }) {
       {/* 활용 규칙표 — 계약상 항상 배열, 비었으면 블록 통째로 렌더하지 않는다 (인수 19).
           위치는 유닛·자료실 공통으로 예문과 설명 사이 (설계/04 §3-6) */}
       {grammar.rules?.length > 0 && (
-        <div className="table-wrap rules-table-wrap">
-          <table className="data-table rules-table">
+        <TableWrap className="rules-table-wrap">
+          <Table className="rules-table">
             <thead>
               <tr>
                 <th>구분</th>
@@ -54,12 +56,12 @@ export function GrammarBody({ grammar, caption, titleRight, latin = false }) {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+          </Table>
+        </TableWrap>
       )}
 
       {/* 포인트 설명 — 예문보다 작게 (따라하기식) */}
-      <div className="notice info">✎ {grammar.explanation}</div>
+      <Alert className="grammar-point">✎ {grammar.explanation}</Alert>
     </>
   );
 }

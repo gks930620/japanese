@@ -9,6 +9,8 @@ import { LevelBadge } from "./LibraryShell.jsx";
 import { useUserData } from "../../context/userDataStore.js";
 import { partOfSpeechLabel } from "../../constants/partOfSpeech.js";
 import { toggleValue } from "../../lib/libraryQuery.js";
+import { Table, TableWrap } from "../ui/Table.jsx";
+import { btnClass } from "../ui/kitClass.js";
 
 /**
  * 자료실 목록의 항목 렌더러 — **자료실과 보관함이 공유한다**(설계/05 §7-1).
@@ -68,7 +70,7 @@ export function GrammarRow({ grammar, to, onStar, latin = false }) {
         <span className="ref-row-sub">{grammar.nameKo}</span>
       </span>
       {!latin && <ItemStar id={grammar.id} name={grammar.name} onToggle={onStar} type="grammar" />}
-      {grammar.hasRules && <span className="tag">활용표</span>}
+      {grammar.hasRules && <span className="k-badge">활용표</span>}
       <LevelBadge level={grammar.level} />
       <span aria-hidden="true" className="unit-chevron">
         ›
@@ -94,7 +96,7 @@ function VocabRow({ item, expanded, onToggle, onStar, renderRow, onEdited, latin
       <tr
         aria-expanded={expanded}
         aria-label={`${item.word} 자세히 보기`}
-        className={`vocab-row${expanded ? " open" : ""}`}
+        className="vocab-row"
         role="button"
         tabIndex={0}
         onClick={onToggle}
@@ -169,7 +171,7 @@ function VocabRow({ item, expanded, onToggle, onStar, renderRow, onEdited, latin
                         {!latin && `(${learned.level})`} 코스 · 유닛 {learned.unitNo} {learned.unitTitle}
                       </span>
                       <Link
-                        className="btn"
+                        className={btnClass({ variant: "secondary", size: "sm" })}
                         to={`${latin ? "/en" : ""}/courses/${learned.courseId}/units/${learned.unitNo}`}
                       >
                         배우기 ›
@@ -208,7 +210,8 @@ export function VocabTable({ items, listKey, onStar, renderRow, onEdited, latin 
   const openIds = opened.listKey === listKey ? opened.ids : [];
 
   return (
-    <table className={`data-table vocab-ref-table${latin ? " latin" : ""}`}>
+    <TableWrap>
+      <Table className={`vocab-ref-table${latin ? " latin" : ""}`}>
       <thead>
         <tr>
           <th>단어</th>
@@ -236,6 +239,7 @@ export function VocabTable({ items, listKey, onStar, renderRow, onEdited, latin 
           />
         ))}
       </tbody>
-    </table>
+      </Table>
+    </TableWrap>
   );
 }

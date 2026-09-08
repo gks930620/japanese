@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LEVELS, countAppliedFilters, levelText, toggleValue } from "../../lib/libraryQuery.js";
 import { useUserData } from "../../context/userDataStore.js";
+import { Button } from "../ui/Button.jsx";
+import { Card } from "../ui/Card.jsx";
+import { Chip } from "../ui/Chip.jsx";
+import { Empty } from "../ui/Empty.jsx";
+import { Input } from "../ui/Field.jsx";
+import { btnClass } from "../ui/kitClass.js";
 
-/** 자료실 3탭 — 현재 탭만 그라디언트, 전환 시 조건은 넘기지 않는다 (설계/05 §3-2·§9) */
+/** 자료실 3탭 — 현재 탭만 강조, 전환 시 조건은 넘기지 않는다 (설계/05 §3-2·§9) */
 const TABS = [
   { to: "/library/kanji", label: "한자" },
   { to: "/library/grammar", label: "문법" },
@@ -20,13 +26,13 @@ const EN_TABS = [
 export function LibraryHeader({ lang = "ja" }) {
   const en = lang === "en";
   return (
-    <div className="page-header">
-      <div aria-hidden="true" className="page-avatar">
+    <div className="k-flex page-header">
+      <div aria-hidden="true" className="k-avatar page-avatar">
         {en ? "abc" : "辞"}
       </div>
       <div className="page-head-text">
-        <h1>{en ? "영어 자료실" : "자료실"}</h1>
-        <p>
+        <h1 className="k-page-title">{en ? "영어 자료실" : "자료실"}</h1>
+        <p className="k-page-desc">
           {en
             ? "코스에서 배운 표현·문법·어휘를 사전처럼 다시 찾아봅니다"
             : "코스에서 배운 한자·문법·어휘를 사전처럼 다시 찾아봅니다"}
@@ -40,12 +46,11 @@ export function LibraryTabs({ current, lang = "ja" }) {
   const { bookmarkCounts } = useUserData();
   const en = lang === "en";
   return (
-    <nav aria-label="자료실 종류" className="ref-tabs chip-row">
+    <nav aria-label="자료실 종류" className="k-tabs ref-tabs">
       {(en ? EN_TABS : TABS).map((tab) => (
         <Link
           key={tab.to}
           aria-current={tab.to === current ? "page" : undefined}
-          className={`chip${tab.to === current ? " on" : ""}`}
           to={tab.to}
         >
           {tab.label}
@@ -64,7 +69,7 @@ export function LibraryTabs({ current, lang = "ja" }) {
 
 /** 레벨 배지 — 레벨별 색 구분 없음(단색). 3종 공통 (설계/05 §12) */
 export function LevelBadge({ level }) {
-  return <span className="lv-badge">{levelText(level)}</span>;
+  return <span className="k-badge lv-badge">{levelText(level)}</span>;
 }
 
 /** 검색창 — 버튼 없이 300ms 디바운스로 주소를 replace 갱신 (설계/05 §9) */
@@ -91,7 +96,7 @@ export function LibrarySearchInput({ value, placeholder, onChange }) {
       <span aria-hidden="true" className="material-icons">
         search
       </span>
-      <input aria-label="자료실 검색" placeholder={placeholder} type="text" value={text} onChange={(e) => setText(e.target.value)} />
+      <Input aria-label="자료실 검색" placeholder={placeholder} type="text" value={text} onChange={(e) => setText(e.target.value)} />
       {text && (
         <button aria-label="검색어 지우기" className="search-clear" type="button" onClick={() => setText("")}>
           ✕
@@ -103,9 +108,9 @@ export function LibrarySearchInput({ value, placeholder, onChange }) {
 
 function FilterChip({ selected, label, onClick }) {
   return (
-    <button aria-pressed={selected} className={`chip${selected ? " sel" : ""}`} type="button" onClick={onClick}>
+    <Chip on={selected} onClick={onClick}>
       {selected ? `✓ ${label}` : label}
-    </button>
+    </Chip>
   );
 }
 
@@ -119,7 +124,7 @@ export function FilterGroup({ label, children }) {
 }
 
 /**
- * 레벨 필터 — 복수 선택(그룹 안 OR), 선택 상태는 --point-soft (그라디언트 금지 §0-5).
+ * 레벨 필터 — 복수 선택(그룹 안 OR), 선택 상태는 클래스가 아니라 aria-pressed 다.
  * 선택지·그룹 라벨은 자료실마다 다르다(설계/05 §16-2: 영어는 "코스 1~5", 그룹 라벨도 "코스").
  */
 export function LevelFilter({ selected, onChange, options = LEVELS, label = "레벨" }) {
@@ -148,18 +153,18 @@ export function LibraryToolbar({ params, placeholder, onSearch, children }) {
   const appliedCount = countAppliedFilters(params);
 
   return (
-    <div className="ref-toolbar panel">
+    <Card className="ref-toolbar">
       <LibrarySearchInput placeholder={placeholder} value={params.q} onChange={onSearch} />
-      <button
+      <Button
         aria-expanded={openOnMobile}
-        className="btn filter-toggle"
-        type="button"
+        className="filter-toggle"
+        variant="secondary"
         onClick={() => setOpenOnMobile((prev) => !prev)}
       >
         ⚙ 필터{appliedCount > 0 ? ` (${appliedCount})` : ""}
-      </button>
+      </Button>
       <div className={`filter-rows${openOnMobile ? " open" : ""}`}>{children}</div>
-    </div>
+    </Card>
   );
 }
 
@@ -186,7 +191,7 @@ export function ResultBar({ page, unit, sortLabel, chips, onReset, totalPrefix =
             <button
               key={chip.key}
               aria-label={`${chip.label} 조건 해제`}
-              className="applied-chip"
+              className="k-chip applied-chip"
               type="button"
               onClick={chip.onRemove}
             >
@@ -194,9 +199,9 @@ export function ResultBar({ page, unit, sortLabel, chips, onReset, totalPrefix =
               <span aria-hidden="true"> ✕</span>
             </button>
           ))}
-          <button className="btn ghost" type="button" onClick={onReset}>
+          <Button size="sm" variant="ghost" onClick={onReset}>
             초기화
-          </button>
+          </Button>
         </span>
       )}
     </div>
@@ -211,29 +216,29 @@ export function EmptyBlock({ query, hint, conditionText, onReset, notReady = nul
   const searched = Boolean(query);
   if (notReady) {
     return (
-      <div className="panel empty-block">
+      <Empty className="empty-block">
         <div aria-hidden="true" className="empty-glyph">
           🔍
         </div>
         <h2>아직 준비 중이에요</h2>
         <p>{notReady.description}</p>
-        <Link className="btn primary" to={notReady.to}>
+        <Link className={btnClass({ variant: "primary" })} to={notReady.to}>
           {notReady.label}
         </Link>
-      </div>
+      </Empty>
     );
   }
   return (
-    <div className="panel empty-block">
+    <Empty className="empty-block">
       <div aria-hidden="true" className="empty-glyph">
         🔍
       </div>
       <h2>{searched ? `'${query}' 검색 결과가 없어요` : "조건에 맞는 항목이 없어요"}</h2>
       <p>{searched ? hint : conditionText}</p>
-      <button className="btn primary" type="button" onClick={onReset}>
+      <Button variant="primary" onClick={onReset}>
         {searched ? "검색·필터 초기화" : "필터 초기화"}
-      </button>
-    </div>
+      </Button>
+    </Empty>
   );
 }
 
@@ -241,7 +246,7 @@ export function EmptyBlock({ query, hint, conditionText, onReset, notReady = nul
 export function RefTopbar({ backTo, caption }) {
   return (
     <div className="unit-topbar ref-topbar">
-      <Link className="btn ghost" to={backTo}>
+      <Link className={btnClass({ variant: "ghost", size: "sm" })} to={backTo}>
         ‹ 목록으로
       </Link>
       <span className="unit-topbar-title">{caption}</span>
@@ -257,7 +262,7 @@ export function WhereLearn({ entries, lang = "ja" }) {
   if (list.length === 0) return null;
 
   return (
-    <div className="panel padded where-learn">
+    <Card className="where-learn">
       <div className="step-caption">어디서 배우나</div>
       {list.map((entry, i) => (
         <div key={`${entry.courseId}-${entry.unitNo}-${i}`} className="where-learn-row">
@@ -266,7 +271,7 @@ export function WhereLearn({ entries, lang = "ja" }) {
             {!en && `(${entry.level})`} 코스 · 유닛 {entry.unitNo} {entry.unitTitle}
           </span>
           {i === 0 ? (
-            <Link className="btn primary" to={`${unitBase}/${entry.courseId}/units/${entry.unitNo}`}>
+            <Link className={btnClass({ variant: "primary" })} to={`${unitBase}/${entry.courseId}/units/${entry.unitNo}`}>
               이 유닛에서 배우기 ›
             </Link>
           ) : (
@@ -274,6 +279,6 @@ export function WhereLearn({ entries, lang = "ja" }) {
           )}
         </div>
       ))}
-    </div>
+    </Card>
   );
 }

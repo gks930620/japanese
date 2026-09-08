@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { callPublicApi } from "../lib/http.js";
 import { EditorModeContext, useEditorMode } from "./editorModeStore.js";
+import { Alert } from "./ui/Alert.jsx";
+import { Button } from "./ui/Button.jsx";
 
 /**
  * 편집 모드 게이트 (설계/04 §9 · 기획 A1·A2·C4).
@@ -37,11 +39,11 @@ export function EditorModeBar() {
   if (!enabled) return null;
 
   return (
-    <div className="notice warn row editor-mode-bar">
+    <Alert className="editor-mode-bar" tone="warn">
       <span>
         ✎ 편집 모드 — 여기서 고친 내용은 서버를 다시 시작하면 사라져요. 시드 반영은 따로 해야 해요.
       </span>
-    </div>
+    </Alert>
   );
 }
 
@@ -54,8 +56,8 @@ export function EditButton({ label, onClick }) {
   if (!enabled) return null;
 
   return (
-    <button aria-label={`${label} 고치기`} className="btn ghost edit-btn" type="button" onClick={onClick}>
+    <Button aria-label={`${label} 고치기`} className="edit-btn" size="sm" variant="ghost" onClick={onClick}>
       ✎ 고치기
-    </button>
+    </Button>
   );
 }

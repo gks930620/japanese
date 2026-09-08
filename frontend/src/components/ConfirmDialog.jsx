@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "./ui/Button.jsx";
+import { Modal, ModalBody, ModalFoot, ModalHead } from "./ui/Modal.jsx";
 
 /**
  * 확인 대화상자 (설계/05 §12-1) — 되돌릴 수 없는 삭제에만 쓴다.
- * `<dialog>` 기반이라 ESC 닫기·포커스 트랩이 공짜다. 딤은 `--dim` 토큰이고
- * **backdrop-filter(유리)는 쓰지 않는다**(원칙 ③: blur는 헤더에만).
+ * `<dialog>` 기반이라 ESC 닫기·포커스 트랩이 공짜다. 딤은 킷 `--overlay`를 `dialog::backdrop`에 칠하고
+ * **backdrop-filter(유리)는 쓰지 않는다**. `.k-backdrop` div를 따로 만들지 않는다(매핑 §3-4).
  * ESC·backdrop 닫기는 onClose 하나로 받는다(onCancel과 함께 달면 두 번 호출된다).
- * 위험 동작은 `.btn-danger`, 취소가 오른쪽(실수로 누르기 쉬운 자리에 파괴적 동작을 두지 않는다).
+ * 위험 동작은 danger 버튼, 취소가 오른쪽(실수로 누르기 쉬운 자리에 파괴적 동작을 두지 않는다).
  */
 // showModal()이 있는 환경(브라우저)에서는 그것으로 연다 — 포커스 트랩·ESC·::backdrop이 공짜다.
 // jsdom에는 showModal이 없어 그대로 두면 <dialog>가 닫힌 채(display:none) 남아 내용이 접근성 트리에서 사라진다.
@@ -35,24 +37,28 @@ export function ConfirmDialog({ open, title, description, confirmLabel, errorTex
 
   return (
     <dialog className="confirm-dialog" open={!SUPPORTS_MODAL} ref={ref} onClose={onCancel}>
-      <div className="confirm-panel">
-        <h2>{title}</h2>
-        <p>{description}</p>
-        {error && (
-          <p className="done-toggle-error" role="status">
-            {errorText}
-          </p>
-        )}
-        <div className="confirm-actions">
-          <button className="btn btn-danger" type="button" onClick={handleConfirm}>
+      <Modal className="confirm-panel">
+        <ModalHead>
+          <h2>{title}</h2>
+        </ModalHead>
+        <ModalBody>
+          <p>{description}</p>
+          {error && (
+            <p className="done-toggle-error" role="status">
+              {errorText}
+            </p>
+          )}
+        </ModalBody>
+        <ModalFoot>
+          <Button variant="danger" onClick={handleConfirm}>
             {confirmLabel}
-          </button>
+          </Button>
           {/* 기본 포커스는 취소 */}
-          <button autoFocus className="btn ghost" type="button" onClick={onCancel}>
+          <Button autoFocus variant="secondary" onClick={onCancel}>
             취소
-          </button>
-        </div>
-      </div>
+          </Button>
+        </ModalFoot>
+      </Modal>
     </dialog>
   );
 }

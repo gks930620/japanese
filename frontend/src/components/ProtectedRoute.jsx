@@ -1,12 +1,13 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authStore.js";
+import { cardClass } from "./ui/kitClass.js";
 
 export function ProtectedRoute({ children }) {
   const { status, isAuthenticated } = useAuth();
   const location = useLocation();
 
   if (status === "loading") {
-    return <section className="panel padded">인증 상태 확인 중...</section>;
+    return <section className={cardClass()}>인증 상태 확인 중...</section>;
   }
 
   if (!isAuthenticated) {

@@ -1,3 +1,5 @@
+import { cardClass } from "../ui/kitClass.js";
+
 /**
  * 표현 카드 (설계/05 §16-4) — 유닛 표현 스텝과 표현 상세가 **같은 컴포넌트**를 쓴다.
  * 같은 내용은 같은 컴포넌트로 그린다(05 §7-1) — 두 벌로 두면 계약이 바뀔 때 한쪽만 갱신된다.
@@ -11,7 +13,7 @@
 export function ExpressionCard({ expression, titleRight = null, bare = false }) {
   const pron = [expression.ipa, expression.koApprox].filter(Boolean).join(" · ");
   return (
-    <div className={bare ? "expr-body" : "expr-card"}>
+    <div className={bare ? "expr-body" : cardClass({ className: "expr-card" })}>
       <div className="expr-head">
         <span className="expr-text">{expression.text}</span>
         {titleRight}

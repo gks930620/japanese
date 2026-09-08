@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { ProgressBar } from "./ProgressBar.jsx";
 import { badgeView, isEntryBadge } from "../lib/badgeView.js";
+import { Skeleton } from "./ui/Skeleton.jsx";
+import { cardClass } from "./ui/kitClass.js";
 
 /**
  * 코스 카드 (설계/05 §7 + §8) — 홈 미리보기는 compact(도달점·안내 생략).
@@ -50,17 +52,18 @@ export function CourseCard({
         <ProgressBar className="course-progress" completed={completedCount} total={course.unitCount} />
       )}
       <div className="course-foot">
-        <span className={view.className}>{view.label}</span>
+        {/* 킷 배지 위에 도메인 톤 클래스를 병기한다 — 코드→클래스 매핑은 lib/badgeView가 쥐고 있다 */}
+        <span className={`k-badge ${view.className}`}>{view.label}</span>
       </div>
     </>
   );
 
   if (!available) {
-    return <div className="course-card disabled">{inner}</div>;
+    return <div className={cardClass({ className: "course-card disabled" })}>{inner}</div>;
   }
 
   return (
-    <Link className={`course-card${entry ? " entry" : ""}`} to={`${pathBase}/${course.id}`}>
+    <Link className={cardClass({ hover: true, className: `course-card${entry ? " entry" : ""}` })} to={`${pathBase}/${course.id}`}>
       {inner}
     </Link>
   );
@@ -71,7 +74,7 @@ export function CourseCardSkeletonGrid({ count = 6 }) {
   return (
     <div className="course-grid" aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="skeleton sk-card" />
+        <Skeleton key={i} className="sk-card" />
       ))}
     </div>
   );

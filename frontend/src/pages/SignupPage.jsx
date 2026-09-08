@@ -70,7 +70,7 @@ export function SignupPage() {
               id="signupUsername"
               required
               type="text"
-              className="input-field"
+              className="k-input input-field"
               placeholder="아이디를 입력하세요"
               value={form.username}
               onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
@@ -87,7 +87,7 @@ export function SignupPage() {
               required
               minLength={4}
               type="password"
-              className="input-field"
+              className="k-input input-field"
               placeholder="비밀번호 (4자 이상)"
               value={form.password}
               onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
@@ -104,7 +104,7 @@ export function SignupPage() {
               required
               minLength={4}
               type="password"
-              className="input-field"
+              className="k-input input-field"
               placeholder="비밀번호를 다시 입력하세요"
               value={form.passwordConfirm}
               onChange={(e) => setForm((prev) => ({ ...prev, passwordConfirm: e.target.value }))}
@@ -120,7 +120,7 @@ export function SignupPage() {
               id="signupEmail"
               required
               type="email"
-              className="input-field"
+              className="k-input input-field"
               placeholder="이메일을 입력하세요"
               value={form.email}
               onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
@@ -136,7 +136,7 @@ export function SignupPage() {
               id="signupNickname"
               required
               type="text"
-              className="input-field"
+              className="k-input input-field"
               placeholder="닉네임을 입력하세요"
               value={form.nickname}
               onChange={(e) => setForm((prev) => ({ ...prev, nickname: e.target.value }))}
@@ -156,7 +156,7 @@ export function SignupPage() {
           )}
         </div>
 
-        <button className="submit-btn" disabled={loading} type="submit">
+        <button className="k-btn k-btn--primary k-btn--block submit-btn" disabled={loading} type="submit">
           {loading ? "처리 중..." : "회원가입"}
         </button>
       </form>

@@ -5,6 +5,8 @@ import { MergeBanner } from "../components/MergeBanner.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
 import { useUserData } from "../context/userDataStore.js";
 import { completedCount, isUnitCompleted, nextUnitNo } from "../lib/progressView.js";
+import { Alert } from "../components/ui/Alert.jsx";
+import { btnClass, cardClass } from "../components/ui/kitClass.js";
 
 function pad2(no) {
   return String(no).padStart(2, "0");
@@ -13,15 +15,15 @@ function pad2(no) {
 function LoadingSkeleton() {
   return (
     <section aria-hidden="true">
-      <div className="page-header">
-        <div className="skeleton sk-avatar" />
+      <div className="k-flex page-header">
+        <div className="k-skeleton sk-avatar" />
         <div className="page-head-text">
-          <div className="skeleton sk-line w40" />
-          <div className="skeleton sk-line w70" />
+          <div className="k-skeleton sk-line w40" />
+          <div className="k-skeleton sk-line w70" />
         </div>
       </div>
       {Array.from({ length: 8 }, (_, i) => (
-        <div key={i} className="skeleton sk-row" />
+        <div key={i} className="k-skeleton sk-row" />
       ))}
     </section>
   );
@@ -113,35 +115,35 @@ export function CourseDetailPage({ lang = "ja" }) {
     <section>
       <MergeBanner />
 
-      <div className="page-header">
-        <div aria-hidden="true" className="page-avatar">
+      <div className="k-flex page-header">
+        <div aria-hidden="true" className="k-avatar page-avatar">
           {avatarGlyph}
         </div>
         <div className="page-head-text">
-          <h1>{en ? data.title : `${data.title} (${data.levelLabel})`}</h1>
-          <p>{data.description}</p>
+          <h1 className="k-page-title">{en ? data.title : `${data.title} (${data.levelLabel})`}</h1>
+          <p className="k-page-desc">{data.description}</p>
         </div>
       </div>
 
       {/* 맛보기 안내 — 새 필드를 만들지 않고 기존 course.notice를 쓴다(§2, 영어에만) */}
-      {en && data.notice && <div className="notice info">✎ {data.notice}</div>}
+      {en && data.notice && <Alert>✎ {data.notice}</Alert>}
 
       {/* 요약 — API 집계값 (하드코딩 금지, 설계/05 §8) + 진도 막대(§8) */}
-      <div className="statusbar">
-        <span>
+      <div className="k-flex statusbar">
+        <span className="k-badge">
           유닛 <b>{summary.unitCount}</b>
         </span>
-        <span>
+        <span className="k-badge">
           문법 <b>{summary.grammarCount}</b>
         </span>
         {/* 0이 **정상인** 칸은 통째로 그리지 않는다 — 입문은 한자 0자가 설계다(08 C-12 ①, J-1 선례).
             문법·어휘·유닛 수는 0이 정상이 아니므로(콘텐츠 결함) 0이어도 계속 그려 드러나게 둔다 */}
         {middleCount > 0 && (
-          <span>
+          <span className="k-badge">
             {en ? "표현" : "한자"} <b>{en ? summary.expressionCount : `${summary.kanjiCount}자`}</b>
           </span>
         )}
-        <span>
+        <span className="k-badge">
           어휘 <b>{en ? `${summary.vocabCount}개` : `약 ${summary.vocabCount}개`}</b>
         </span>
         <ProgressBar
@@ -152,15 +154,15 @@ export function CourseDetailPage({ lang = "ja" }) {
         />
       </div>
 
-      <div className="course-cta-row">
+      <div className="k-flex course-cta-row">
         {cta.note && <span className="cta-note">{cta.note}</span>}
         {/* 이 화면의 유일한 primary */}
-        <Link className="btn primary lg" to={`${pathBase}/${data.id}/units/${cta.unitNo}`}>
+        <Link className={btnClass({ variant: "primary", size: "lg" })} to={`${pathBase}/${data.id}/units/${cta.unitNo}`}>
           {cta.label}
         </Link>
       </div>
 
-      <div className="panel unit-list">
+      <div className={cardClass({ flush: true, className: "unit-list" })}>
         {data.units.map((unit) => {
           const unitDone = isUnitCompleted(progress.completedUnits, data.id, unit.unitNo);
           // "여기부터"는 진도가 있을 때만 — 진도 0이면 주 버튼이 이미 같은 말을 한다(§2-3)

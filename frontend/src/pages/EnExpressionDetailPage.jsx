@@ -3,13 +3,14 @@ import { ApiErrorCard, NotFoundCard } from "../components/StateCards.jsx";
 import { LevelBadge, RefTopbar, WhereLearn } from "../components/library/LibraryShell.jsx";
 import { ExpressionCard } from "../components/library/ExpressionCard.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
+import { cardClass } from "../components/ui/kitClass.js";
 
 function LoadingSkeleton() {
   return (
-    <div aria-hidden="true" className="panel padded">
-      <div className="skeleton sk-line w40" />
-      <div className="skeleton sk-line w70" />
-      <div className="skeleton sk-row" />
+    <div aria-hidden="true" className={cardClass()}>
+      <div className="k-skeleton sk-line w40" />
+      <div className="k-skeleton sk-line w70" />
+      <div className="k-skeleton sk-row" />
     </div>
   );
 }
@@ -42,7 +43,7 @@ export function EnExpressionDetailPage() {
 
       {data && (
         <>
-          <div className="panel padded">
+          <div className={cardClass()}>
             <ExpressionCard bare expression={data} titleRight={<LevelBadge level={data.level} />} />
           </div>
           <WhereLearn entries={[data.learnedIn]} lang="en" />

@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "./ui/Button.jsx";
+import { Chip } from "./ui/Chip.jsx";
 import {
   claimPlayback,
   releasePlayback,
@@ -56,7 +58,7 @@ export function TtsButton({ text, label }) {
     <button
       aria-label={playing ? "정지" : `${label} 듣기`}
       aria-pressed={playing}
-      className={`tts-btn${playing ? " playing" : ""}`}
+      className="tts-btn"
       type="button"
       onClick={toggle}
     >
@@ -81,9 +83,9 @@ export function TtsRateChip() {
   };
 
   return (
-    <button aria-pressed={slow} className={`chip${slow ? " sel" : ""}`} type="button" onClick={toggle}>
+    <Chip on={slow} onClick={toggle}>
       느리게
-    </button>
+    </Chip>
   );
 }
 
@@ -142,8 +144,8 @@ export function TtsPlayAllButton({ texts, onLineChange }) {
   };
 
   return (
-    <button aria-pressed={playing} className="btn ghost" type="button" onClick={toggle}>
+    <Button aria-pressed={playing} size="sm" variant="secondary" onClick={toggle}>
       {playing ? "■ 정지" : "▶ 전체 재생"}
-    </button>
+    </Button>
   );
 }

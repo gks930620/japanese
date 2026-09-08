@@ -1,3 +1,7 @@
+/**
+ * 페이지네이션 — 킷 `.k-pager`.
+ * 현재 쪽은 클래스가 아니라 `aria-current="page"`로 표시한다(킷 §6).
+ */
 export function Pagination({ page, totalPages, onChange }) {
   if (!totalPages || totalPages <= 1) {
     return null;
@@ -12,21 +16,21 @@ export function Pagination({ page, totalPages, onChange }) {
   }
 
   return (
-    <div className="pagination">
-      <button className="pagination-btn" disabled={page <= 0} type="button" onClick={() => onChange(page - 1)}>
+    <div className="k-pager">
+      <button disabled={page <= 0} type="button" onClick={() => onChange(page - 1)}>
         <span className="material-icons">chevron_left</span>
       </button>
       {pages.map((num) => (
         <button
           key={num}
-          className={`pagination-btn ${num === page ? "active" : ""}`}
+          aria-current={num === page ? "page" : undefined}
           type="button"
           onClick={() => onChange(num)}
         >
           {num + 1}
         </button>
       ))}
-      <button className="pagination-btn" disabled={page >= totalPages - 1} type="button" onClick={() => onChange(page + 1)}>
+      <button disabled={page >= totalPages - 1} type="button" onClick={() => onChange(page + 1)}>
         <span className="material-icons">chevron_right</span>
       </button>
     </div>

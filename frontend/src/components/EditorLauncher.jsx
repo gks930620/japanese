@@ -4,6 +4,10 @@ import { useEditorMode } from "./editorModeStore.js";
 import { EditButton } from "./EditorMode.jsx";
 import { ConfirmDialog } from "./ConfirmDialog.jsx";
 import { PART_OF_SPEECH } from "../constants/partOfSpeech.js";
+import { Alert } from "./ui/Alert.jsx";
+import { Button } from "./ui/Button.jsx";
+import { Card } from "./ui/Card.jsx";
+import { Field as UiField, Help, Input, Label, Select, Textarea } from "./ui/Field.jsx";
 
 /**
  * [고치기] + 인라인 편집 패널 (설계/05 §15-4) — 모달이 아니라 그 블록 바로 아래로 펼쳐진다.
@@ -127,12 +131,12 @@ function buildDiff(kind, before, after) {
 }
 
 function Field({ id, label, value, onChange, area = false }) {
-  const Tag = area ? "textarea" : "input";
+  const Control = area ? Textarea : Input;
   return (
-    <div className="field">
-      <label htmlFor={id}>{label}</label>
-      <Tag className={area ? "area" : "input"} id={id} type={area ? undefined : "text"} value={value} onChange={(e) => onChange(e.target.value)} />
-    </div>
+    <UiField>
+      <Label htmlFor={id}>{label}</Label>
+      <Control id={id} type={area ? undefined : "text"} value={value} onChange={(e) => onChange(e.target.value)} />
+    </UiField>
   );
 }
 
@@ -229,7 +233,7 @@ export function EditorLauncher({ kind, target, title, onSaved }) {
       <EditButton label={title} onClick={open ? requestClose : openPanel} />
 
       {open && form && (
-        <div className="panel padded editor-panel">
+        <Card className="editor-panel">
           <div className="editor-panel-head">
             <h3>{title}</h3>
             <button aria-label="닫기" className="merge-close" type="button" onClick={requestClose}>
@@ -238,9 +242,9 @@ export function EditorLauncher({ kind, target, title, onSaved }) {
           </div>
 
           {saveError && (
-            <div className="notice error" role="alert">
+            <Alert role="alert" tone="err">
               {saveError}
-            </div>
+            </Alert>
           )}
 
           {kind === "kanji" && (
@@ -277,25 +281,21 @@ export function EditorLauncher({ kind, target, title, onSaved }) {
                   <Field id={`ed-rp-${i}`} label={`형태 #${i + 1}`} value={rule.pattern} onChange={(v) => patchRow("rules", i, "pattern", v)} />
                   <Field id={`ed-rb-${i}`} label={`변환 전 #${i + 1}`} value={rule.exampleBefore} onChange={(v) => patchRow("rules", i, "exampleBefore", v)} />
                   <Field id={`ed-ra-${i}`} label={`변환 후 #${i + 1}`} value={rule.exampleAfter} onChange={(v) => patchRow("rules", i, "exampleAfter", v)} />
-                  <button
-                    className="btn ghost"
-                    type="button"
-                    onClick={() => patch({ rules: form.rules.filter((_, j) => j !== i) })}
-                  >
+                  <Button size="sm" variant="ghost" onClick={() => patch({ rules: form.rules.filter((_, j) => j !== i) })}>
                     행 삭제
-                  </button>
+                  </Button>
                 </div>
               ))}
-              <button
-                className="btn ghost"
+              <Button
                 disabled={form.rules.length >= 20}
-                type="button"
+                size="sm"
+                variant="ghost"
                 onClick={() =>
                   patch({ rules: [...form.rules, { groupLabel: "", pattern: "", exampleBefore: "", exampleAfter: "" }] })
                 }
               >
                 + 행 추가
-              </button>
+              </Button>
             </>
           )}
 
@@ -303,21 +303,16 @@ export function EditorLauncher({ kind, target, title, onSaved }) {
             <>
               <Field id="ed-vm" label="뜻" value={form.meaningKo} onChange={(v) => patch({ meaningKo: v })} />
               <Field id="ed-vk" label="읽기" value={form.kana} onChange={(v) => patch({ kana: v })} />
-              <div className="field">
-                <label htmlFor="ed-vp">품사</label>
-                <select
-                  className="filter-select"
-                  id="ed-vp"
-                  value={form.partOfSpeech}
-                  onChange={(e) => patch({ partOfSpeech: e.target.value })}
-                >
+              <UiField>
+                <Label htmlFor="ed-vp">품사</Label>
+                <Select id="ed-vp" value={form.partOfSpeech} onChange={(e) => patch({ partOfSpeech: e.target.value })}>
                   {PART_OF_SPEECH.map((pos) => (
                     <option key={pos.code} value={pos.code}>
                       {pos.label}
                     </option>
                   ))}
-                </select>
-              </div>
+                </Select>
+              </UiField>
             </>
           )}
 
@@ -336,38 +331,36 @@ export function EditorLauncher({ kind, target, title, onSaved }) {
             </>
           )}
 
-          {validationMessage && dirty && <p className="field-error">{validationMessage}</p>}
+          {validationMessage && dirty && <Help error>{validationMessage}</Help>}
 
-          <div className="form-actions">
-            <button
-              className="btn primary"
-              disabled={saving || Boolean(validationMessage && dirty)}
-              type="button"
-              onClick={save}
-            >
+          <div className="k-flex form-actions">
+            <Button disabled={saving || Boolean(validationMessage && dirty)} variant="primary" onClick={save}>
               {saving ? "저장 중…" : "저장"}
-            </button>
-            <button className="btn ghost" type="button" onClick={requestClose}>
+            </Button>
+            <Button variant="ghost" onClick={requestClose}>
               취소
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       )}
 
       {savedDiff && (
-        <div className="notice ok editor-saved" role="status">
+        <Alert className="editor-saved" role="status" tone="ok">
+          {/* .k-alert 는 가로 flex 라 여러 블록은 한 겹으로 묶는다 */}
+          <div>
           <p>저장했어요. 지금 실행 중인 서버에만 반영되며, 서버를 다시 시작하면 원래 내용으로 돌아갑니다.</p>
           {savedDiff.length > 0 && <pre className="editor-diff">{savedDiff.join("\n")}</pre>}
           <p>영구히 반영하려면 이 내용을 콘텐츠 원본에도 반영해야 해요.</p>
-          <span className="notice-actions">
-            <button className="btn" type="button" onClick={copySummary}>
+          <span className="k-flex notice-actions">
+            <Button size="sm" variant="secondary" onClick={copySummary}>
               {copied ? "복사했어요 ✓" : "요약 복사"}
-            </button>
-            <button className="btn ghost" type="button" onClick={() => setSavedDiff(null)}>
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSavedDiff(null)}>
               닫기
-            </button>
+            </Button>
           </span>
-        </div>
+          </div>
+        </Alert>
       )}
 
       <ConfirmDialog

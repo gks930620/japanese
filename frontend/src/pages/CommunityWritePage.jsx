@@ -3,6 +3,7 @@ import { errorText } from "../lib/errorText.js";
 import { useNavigate } from "react-router-dom";
 import { callApi, uploadFiles } from "../lib/http.js";
 import { formatFileSize, getErrorMessage } from "../lib/format.js";
+import { btnClass, fieldClass, inputClass, labelClass, textareaClass } from "../components/ui/kitClass.js";
 
 export function CommunityWritePage() {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ export function CommunityWritePage() {
 
   return (
     <section>
-      <div className="page-header">
+      <div className="k-flex page-header">
         <h1>
           <span className="material-icons">edit</span>
           게시글 작성
@@ -86,13 +87,13 @@ export function CommunityWritePage() {
       </div>
 
       <form className="write-form" onSubmit={onSubmit}>
-        <div className="form-group">
-          <label className="form-label required" htmlFor="write-title">
+        <div className={fieldClass()}>
+          <label className={labelClass("required")} htmlFor="write-title">
             제목
           </label>
           <input
             id="write-title"
-            className="form-input"
+            className={inputClass()}
             maxLength={200}
             required
             type="text"
@@ -102,13 +103,13 @@ export function CommunityWritePage() {
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label required" htmlFor="write-content">
+        <div className={fieldClass()}>
+          <label className={labelClass("required")} htmlFor="write-content">
             내용
           </label>
           <textarea
             id="write-content"
-            className="form-textarea"
+            className={textareaClass()}
             required
             rows={14}
             placeholder="내용을 입력하세요..."
@@ -118,19 +119,19 @@ export function CommunityWritePage() {
           <div className="form-help">본문에 이미지를 삽입하려면 아래 버튼을 사용하세요.</div>
         </div>
 
-        <div className="form-group">
-          <button className="btn btn-secondary" type="button" onClick={() => document.getElementById("body-image-upload")?.click()}>
+        <div className={fieldClass()}>
+          <button className={btnClass({ variant: "secondary" })} type="button" onClick={() => document.getElementById("body-image-upload")?.click()}>
             <span className="material-icons">image</span>
             본문 이미지 업로드
           </button>
         </div>
 
-        <div className="form-group">
-          <label className="form-label">첨부파일 (선택)</label>
+        <div className={fieldClass()}>
+          <label className={labelClass()}>첨부파일 (선택)</label>
           <div className="file-upload-area" onClick={() => document.getElementById("attach-file-upload")?.click()}>
             <span className="material-icons">attach_file</span>
             <p>클릭하여 파일을 첨부하세요</p>
-            <p style={{ fontSize: 12, marginTop: 8 }}>모든 파일 형식 가능 (이미지, PDF, 문서 등)</p>
+            <p className="file-upload-hint">모든 파일 형식 가능 (이미지, PDF, 문서 등)</p>
           </div>
           <input
             id="attach-file-upload"
@@ -157,14 +158,14 @@ export function CommunityWritePage() {
         )}
 
         {/* 숨은 입력 — 버튼이 id로 눌러 연다. 첨부 입력보다 뒤에 둔다(첨부가 이 폼의 주 입력이다) */}
-          <input id="body-image-upload" style={{ display: "none" }} type="file" accept="image/*" onChange={addBodyImage} />
+          <input className="file-input" id="body-image-upload" type="file" accept="image/*" onChange={addBodyImage} />
 
         <div className="form-actions">
-          <button className="btn btn-secondary" type="button" onClick={() => navigate("/community")}>
+          <button className={btnClass({ variant: "secondary" })} type="button" onClick={() => navigate("/community")}>
             <span className="material-icons">close</span>
             취소
           </button>
-          <button className="btn btn-primary" disabled={loading} type="submit">
+          <button className={btnClass({ variant: "primary" })} disabled={loading} type="submit">
             <span className="material-icons">check</span>
             {loading ? "저장 중..." : "등록"}
           </button>

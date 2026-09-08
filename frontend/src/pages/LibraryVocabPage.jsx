@@ -18,6 +18,7 @@ import { useLibraryList } from "../hooks/useLibraryList.js";
 import { PAGE_SIZE, toggleValue, levelOptions } from "../lib/libraryQuery.js";
 import { appliedChips } from "../lib/libraryChips.js";
 import { partOfSpeechOptions } from "../constants/partOfSpeech.js";
+import { cardClass, selectClass } from "../components/ui/kitClass.js";
 
 const PLACEHOLDER = "단어·읽는 법·뜻으로 검색 (예: 建物, たてもの, 건물)";
 const EN_PLACEHOLDER = "단어·뜻으로 검색 (예: apple, 사과)";
@@ -63,7 +64,7 @@ export function LibraryVocabPage({ lang = "ja" }) {
             {/* 정렬은 택일이라 셀렉트 — 복수 선택 언어(칩)와 섞지 않는다 (설계/05 §12) */}
             <select
               aria-label="정렬"
-              className="filter-select"
+              className={selectClass()}
               value={params.sort}
               onChange={(e) => setParams({ sort: e.target.value })}
             >
@@ -86,9 +87,9 @@ export function LibraryVocabPage({ lang = "ja" }) {
       <InlineAlert />
 
       {loading && !page && (
-        <div aria-hidden="true" className="panel ref-list">
+        <div aria-hidden="true" className={cardClass({ flush: true, className: "ref-list" })}>
           {Array.from({ length: 10 }, (_, i) => (
-            <div key={i} className="skeleton sk-row" />
+            <div key={i} className="k-skeleton sk-row" />
           ))}
         </div>
       )}
@@ -117,7 +118,7 @@ export function LibraryVocabPage({ lang = "ja" }) {
 
       {!error && items.length > 0 && (
         <>
-          <div className={`table-wrap${loading ? " list-loading" : ""}`}>
+          <div className={loading ? "list-loading" : undefined}>
             <VocabTable items={items} latin={en} listKey={listKey} />
           </div>
           <Pagination

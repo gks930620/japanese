@@ -8,6 +8,9 @@ import { toQuizVocabularies } from "../lib/quizMaterial.js";
 import { QuizRunner } from "../components/QuizRunner.jsx";
 import { ApiErrorCard, NotFoundCard } from "../components/StateCards.jsx";
 import { RefTopbar } from "../components/library/LibraryShell.jsx";
+import { Button } from "../components/ui/Button.jsx";
+import { Chip } from "../components/ui/Chip.jsx";
+import { btnClass, cardClass } from "../components/ui/kitClass.js";
 
 const TYPE_LABEL = { kanji: "한자", grammar: "문법", vocabulary: "어휘" };
 /** 자료실 유형 — 목록 라우트가 열거하는 3종 그대로. 그 밖은 주소만 봐도 없는 것이다 */
@@ -131,20 +134,20 @@ export function LibraryQuizPage() {
       {loadError && <ApiErrorCard onRetry={() => setAttempt((n) => n + 1)} />}
 
       {!loadError && !page && (
-        <div aria-hidden="true" className="panel padded">
-          <div className="skeleton sk-line w40" />
-          <div className="skeleton sk-line w70" />
-          <div className="skeleton sk-line w40" />
+        <div aria-hidden="true" className={cardClass()}>
+          <div className="k-skeleton sk-line w40" />
+          <div className="k-skeleton sk-line w70" />
+          <div className="k-skeleton sk-line w40" />
         </div>
       )}
 
       {/* "낼 수 없어요"는 **범위 자체가 4개 미만**일 때만 — 창의 길이로 판정하지 않는다(A-H3) */}
       {page && (page.totalElements ?? 0) < 4 && (
-        <div className="panel padded quiz-card">
+        <div className={cardClass({ className: "quiz-card" })}>
           <div className="step-caption">{caption}</div>
           <p>이 조건으로는 문제를 낼 수 없어요(4개 이상 필요)</p>
-          <div className="quiz-result-actions">
-            <Link className="btn primary" to={backTo}>
+          <div className="k-flex quiz-result-actions">
+            <Link className={btnClass({ variant: "primary" })} to={backTo}>
               자료실로 돌아가기
             </Link>
           </div>
@@ -152,32 +155,22 @@ export function LibraryQuizPage() {
       )}
 
       {page && (page.content?.length ?? 0) >= 4 && !started && (
-        <div className="panel padded quiz-card">
+        <div className={cardClass({ className: "quiz-card" })}>
           <div className="step-caption">{caption}</div>
           <h2 className="step-title">{rangeSentence()}</h2>
-          {/* 문항 수 선택 — 자료실 진입만 (Q20). 선택 상태는 --point-soft, 그라디언트 금지 */}
-          <div className="chip-row">
-            <button
-              aria-pressed={count === 10}
-              className={`chip${count === 10 ? " sel" : ""}`}
-              type="button"
-              onClick={() => setCount(10)}
-            >
+          {/* 문항 수 선택 — 자료실 진입만 (Q20). 선택 상태는 aria-pressed 로만 표시한다 */}
+          <div className="k-flex chip-row">
+            <Chip on={count === 10} onClick={() => setCount(10)}>
               10문제
-            </button>
-            <button
-              aria-pressed={count === 20}
-              className={`chip${count === 20 ? " sel" : ""}`}
-              type="button"
-              onClick={() => setCount(20)}
-            >
+            </Chip>
+            <Chip on={count === 20} onClick={() => setCount(20)}>
               20문제
-            </button>
+            </Chip>
           </div>
-          <div className="quiz-result-actions">
-            <button className="btn primary" type="button" onClick={() => setStarted(true)}>
+          <div className="k-flex quiz-result-actions">
+            <Button variant="primary" onClick={() => setStarted(true)}>
               문제 풀기
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -186,7 +179,7 @@ export function LibraryQuizPage() {
         <QuizRunner
           key={nonce}
           footerActions={
-            <Link className="btn primary" to={backTo}>
+            <Link className={btnClass({ variant: "primary" })} to={backTo}>
               자료실로 돌아가기
             </Link>
           }

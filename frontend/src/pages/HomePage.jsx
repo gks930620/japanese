@@ -9,6 +9,8 @@ import { entryCourseNo } from "../lib/courses.js";
 import { completedCount, courseBadges } from "../lib/progressView.js";
 import { isEntryBadge } from "../lib/badgeView.js";
 import { resumeTarget } from "../lib/resume.js";
+import { Alert } from "../components/ui/Alert.jsx";
+import { btnClass } from "../components/ui/kitClass.js";
 
 /**
  * 히어로 분기 (설계/05 §8) — 부제를 **교체**하고 줄을 추가하지 않는다.
@@ -51,39 +53,41 @@ export function HomePage() {
   return (
     <>
       {notice && (
-        <div className="notice ok" role="status">
+        <Alert role="status" tone="ok">
           {notice}
-        </div>
+        </Alert>
       )}
       <MergeBanner />
 
-      <section className="hero">
+      <section className="k-hero">
         <h1>일본어, 어떤 순서로 배울지 고민하지 마세요</h1>
         {hero?.resume ? (
           <p className="hero-resume">{hero.resume}</p>
         ) : (
           <p>입문부터 JLPT N1까지 — 정해진 한 길을 따라 &lsquo;다음 유닛&rsquo;만 누르면 됩니다</p>
         )}
-        {/* 그라디언트 히어로 위라 흰 알약이 가장 강한 대비 — primary 금지 (설계/05 §3-2).
+        {/* 연보라 히어로 면 위에 인디고 주 버튼 — 대비가 충분해 흰 CTA 예외가 사라졌다(매핑 §3-2).
             진도 도착 전에는 버튼 자리를 비워 둔다 — 잘못된 목적지를 잠깐이라도 보여주지 않는다 */}
         {hero && (
-          <Link className="hero-cta" to={hero.ctaTo}>
+          <Link className={btnClass({ variant: "primary", size: "lg", className: "hero-cta" })} to={hero.ctaTo}>
             {hero.ctaLabel}
           </Link>
         )}
       </section>
 
-      {/* 진단 배너 (화면정의서 판정 B) — 히어로의 기본값 다음에 오는 보조 행동. 그라디언트 0 */}
-      <div className="notice info row">
+      {/* 진단 배너 (화면정의서 판정 B) — 히어로의 기본값 다음에 오는 보조 행동 */}
+      <Alert className="row-alert">
         <span>어디서 시작할지 모르겠나요? 3분이면 알 수 있어요</span>
-        <span className="notice-actions">
-          <Link className="btn" to="/diagnosis">
+        <span className="k-flex notice-actions">
+          <Link className={btnClass({ variant: "secondary", size: "sm" })} to="/diagnosis">
             내 시작점 찾기
           </Link>
         </span>
-      </div>
+      </Alert>
 
-      <h2 className="section-heading">학습 경로</h2>
+      {/* 킷은 .k-section > h2 를 작은 라벨체로 표시한다(매핑 §3-1) */}
+      <section className="k-section">
+      <h2>학습 경로</h2>
 
       {loading && <CourseCardSkeletonGrid />}
       {!loading && error && <ApiErrorCard title="코스 목록을 불러오지 못했어요" onRetry={reload} />}
@@ -101,6 +105,7 @@ export function HomePage() {
           ))}
         </div>
       )}
+      </section>
     </>
   );
 }

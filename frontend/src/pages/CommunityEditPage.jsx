@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { authFetch, callApi, callPublicApi, toApiError, uploadFiles } from "../lib/http.js";
 import { formatFileSize, getErrorMessage } from "../lib/format.js";
 import { useAuth } from "../context/authStore.js";
+import { btnClass, emptyClass, fieldClass, inputClass, labelClass, textareaClass } from "../components/ui/kitClass.js";
 
 export function CommunityEditPage() {
   const navigate = useNavigate();
@@ -126,15 +127,15 @@ export function CommunityEditPage() {
 
   if (loading) {
     return (
-      <div className="empty-state" style={{ paddingTop: 40, paddingBottom: 40 }}>
-        <div style={{ fontSize: 14 }}>로딩 중...</div>
+      <div className={emptyClass()}>
+        <div>로딩 중...</div>
       </div>
     );
   }
 
   return (
     <section>
-      <div className="page-header">
+      <div className="k-flex page-header">
         <h1>
           <span className="material-icons">edit</span>
           게시글 수정
@@ -142,13 +143,13 @@ export function CommunityEditPage() {
       </div>
 
       <form className="write-form" onSubmit={onSubmit}>
-        <div className="form-group">
-          <label className="form-label required" htmlFor="edit-title">
+        <div className={fieldClass()}>
+          <label className={labelClass("required")} htmlFor="edit-title">
             제목
           </label>
           <input
             id="edit-title"
-            className="form-input"
+            className={inputClass()}
             maxLength={200}
             required
             type="text"
@@ -157,13 +158,13 @@ export function CommunityEditPage() {
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label required" htmlFor="edit-content">
+        <div className={fieldClass()}>
+          <label className={labelClass("required")} htmlFor="edit-content">
             내용
           </label>
           <textarea
             id="edit-content"
-            className="form-textarea"
+            className={textareaClass()}
             required
             rows={14}
             value={content}
@@ -171,16 +172,16 @@ export function CommunityEditPage() {
           />
         </div>
 
-        <div className="form-group">
-          <button className="btn btn-secondary" type="button" onClick={() => document.getElementById("edit-body-image-upload")?.click()}>
+        <div className={fieldClass()}>
+          <button className={btnClass({ variant: "secondary" })} type="button" onClick={() => document.getElementById("edit-body-image-upload")?.click()}>
             <span className="material-icons">image</span>
             본문 이미지 업로드
           </button>
-          <input id="edit-body-image-upload" style={{ display: "none" }} type="file" accept="image/*" onChange={addBodyImage} />
+          <input className="file-input" id="edit-body-image-upload" type="file" accept="image/*" onChange={addBodyImage} />
         </div>
 
-        <div className="form-group">
-          <label className="form-label">첨부파일 관리</label>
+        <div className={fieldClass()}>
+          <label className={labelClass()}>첨부파일 관리</label>
 
           {existingFiles.length === 0 && <p className="muted-text">기존 첨부파일이 없습니다.</p>}
           {existingFiles.map((file) => {
@@ -201,11 +202,11 @@ export function CommunityEditPage() {
           })}
         </div>
 
-        <div className="form-group">
+        <div className={fieldClass()}>
           <div className="file-upload-area" onClick={() => document.getElementById("edit-attach-upload")?.click()}>
             <span className="material-icons">attach_file</span>
             <p>클릭하여 파일을 추가하세요</p>
-            <p style={{ fontSize: 12, marginTop: 8 }}>모든 파일 형식 가능 (이미지, PDF, 문서 등)</p>
+            <p className="file-upload-hint">모든 파일 형식 가능 (이미지, PDF, 문서 등)</p>
           </div>
           <input
             id="edit-attach-upload"
@@ -232,11 +233,11 @@ export function CommunityEditPage() {
         )}
 
         <div className="form-actions">
-          <button className="btn btn-secondary" type="button" onClick={() => navigate(`/community/detail?id=${communityId}`)}>
+          <button className={btnClass({ variant: "secondary" })} type="button" onClick={() => navigate(`/community/detail?id=${communityId}`)}>
             <span className="material-icons">close</span>
             취소
           </button>
-          <button className="btn btn-primary" disabled={saving} type="submit">
+          <button className={btnClass({ variant: "primary" })} disabled={saving} type="submit">
             <span className="material-icons">check</span>
             {saving ? "저장 중..." : "수정 완료"}
           </button>

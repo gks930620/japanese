@@ -8,6 +8,7 @@ import { ConfirmDialog } from "../components/ConfirmDialog.jsx";
 import { ApiErrorCard } from "../components/StateCards.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
 import { resumeTarget } from "../lib/resume.js";
+import { alertClass, btnClass, cardClass } from "../components/ui/kitClass.js";
 
 /**
  * 마이페이지 허브 (설계/05 §7) — 읽기 전용 4항목 → 카드 4장.
@@ -29,15 +30,15 @@ export function MyPage() {
   if (loading) {
     return (
       <section aria-hidden="true">
-        <div className="page-header">
-          <div className="skeleton sk-avatar" />
+        <div className="k-flex page-header">
+          <div className="k-skeleton sk-avatar" />
           <div className="page-head-text">
-            <div className="skeleton sk-line w40" />
+            <div className="k-skeleton sk-line w40" />
           </div>
         </div>
         <div className="mypage-grid">
           {Array.from({ length: 4 }, (_, i) => (
-            <div key={i} className="skeleton sk-card" />
+            <div key={i} className="k-skeleton sk-card" />
           ))}
         </div>
       </section>
@@ -61,23 +62,23 @@ export function MyPage() {
     <section>
       {/* 프로필 수정·비밀번호 변경이 성공하면 이 자리에 한 줄로 알린다(토스트를 만들지 않는다) */}
       {notice && (
-        <div className="notice ok" role="status">
+        <div className={alertClass({ tone: "ok" })} role="status">
           {notice}
         </div>
       )}
 
-      <div className="page-header">
-        <div aria-hidden="true" className="page-avatar">
+      <div className="k-flex page-header">
+        <div aria-hidden="true" className="k-avatar page-avatar">
           ◎
         </div>
         <div className="page-head-text">
-          <h1>마이페이지</h1>
-          <p>{account.nickname} 님</p>
+          <h1 className="k-page-title">마이페이지</h1>
+          <p className="k-page-desc">{account.nickname} 님</p>
         </div>
       </div>
 
       <div className="mypage-grid">
-        <div className="card mypage-card">
+        <div className={cardClass({ className: "mypage-card" })}>
           <div className="card-body">
             <h2>프로필</h2>
             <div className="kv-row">
@@ -97,14 +98,14 @@ export function MyPage() {
               <span className="kv-value">{loginMethodLabel(account.provider)}</span>
             </div>
             <div className="card-actions">
-              <Link className="btn" to="/mypage/edit">
+              <Link className={btnClass({ variant: "secondary" })} to="/mypage/edit">
                 정보 수정
               </Link>
             </div>
           </div>
         </div>
 
-        <div className="card mypage-card">
+        <div className={cardClass({ className: "mypage-card" })}>
           <div className="card-body">
             <h2>내 학습</h2>
             {completed > 0 ? (
@@ -118,14 +119,14 @@ export function MyPage() {
             {resume && <p className="card-note">{resume.text}</p>}
             <div className="card-actions">
               {resume && (
-                <Link className="btn primary" to={resume.to}>
+                <Link className={btnClass({ variant: "primary" })} to={resume.to}>
                   {/* 완주했으면 "이어서"가 아니다 — 문구도 resume 판정에서 온다(2026-09 결정 D-2) */}
                   {resume.ctaLabel}
                 </Link>
               )}
               {/* 지울 것이 없으면 지우는 버튼도 없다(08 C-12 ① — B-L1) */}
               {completed > 0 && (
-                <button className="btn ghost" type="button" onClick={() => setConfirmOpen(true)}>
+                <button className={btnClass({ variant: "ghost" })} type="button" onClick={() => setConfirmOpen(true)}>
                   학습 기록 초기화
                 </button>
               )}
@@ -133,7 +134,7 @@ export function MyPage() {
           </div>
         </div>
 
-        <div className="card mypage-card">
+        <div className={cardClass({ className: "mypage-card" })}>
           <div className="card-body">
             <h2>내 보관함</h2>
             {counts.length > 0 ? (
@@ -142,36 +143,36 @@ export function MyPage() {
               <p className="muted-text">아직 담은 것이 없어요</p>
             )}
             <div className="card-actions">
-              <Link className="btn" to="/bookmarks">
+              <Link className={btnClass({ variant: "secondary" })} to="/bookmarks">
                 보관함 열기
               </Link>
             </div>
           </div>
         </div>
 
-        <div className="card mypage-card">
+        <div className={cardClass({ className: "mypage-card" })}>
           <div className="card-body">
             <h2>계정 관리</h2>
             <div className="card-actions">
               {/* 분기 근거는 플래그 하나. provider는 문구를 고를 때만 쓴다 */}
               {account.passwordChangeable && (
-                <Link className="btn" to="/mypage/password">
+                <Link className={btnClass({ variant: "secondary" })} to="/mypage/password">
                   비밀번호 변경
                 </Link>
               )}
-              <button className="btn ghost" type="button" onClick={logout}>
+              <button className={btnClass({ variant: "ghost" })} type="button" onClick={logout}>
                 로그아웃
               </button>
             </div>
             {!account.passwordChangeable && (
-              <div className="notice info">
+              <div className={alertClass()}>
                 {providerLabel(account.provider)} 계정으로 로그인하고 있어요. 비밀번호는{" "}
                 {providerLabel(account.provider)}에서 관리해요.
               </div>
             )}
             {/* 구분선 아래로 떼어 놓아 오조작을 막는다 — 빨갛게 하지 않는다 */}
             <div className="card-danger-zone">
-              <Link className="btn ghost withdraw-link" to="/mypage/withdraw">
+              <Link className={btnClass({ variant: "ghost", className: "withdraw-link" })} to="/mypage/withdraw">
                 회원 탈퇴
               </Link>
             </div>

@@ -66,7 +66,7 @@ export function LoginPage() {
             <input
               id="loginUsername"
               required
-              className="input-field"
+              className="k-input input-field"
               type="text"
               placeholder="아이디를 입력하세요"
               value={form.username}
@@ -82,7 +82,7 @@ export function LoginPage() {
             <input
               id="loginPassword"
               required
-              className="input-field"
+              className="k-input input-field"
               type="password"
               placeholder="비밀번호를 입력하세요"
               value={form.password}
@@ -93,7 +93,7 @@ export function LoginPage() {
 
         <div className={`error-message ${error ? "show" : ""}`}>{error}</div>
 
-        <button type="submit" className="submit-btn" disabled={loading}>
+        <button type="submit" className="k-btn k-btn--primary k-btn--block submit-btn" disabled={loading}>
           {loading ? "로그인 중..." : "로그인"}
         </button>
       </form>
@@ -103,14 +103,14 @@ export function LoginPage() {
       </div>
 
       <div className="social-login">
-        <a href="/custom-oauth2/login/web/kakao" className="social-btn kakao">
+        <a href="/custom-oauth2/login/web/kakao" className="k-btn k-btn--secondary k-btn--block social-btn kakao">
           <svg className="icon" viewBox="0 0 24 24">
             <path fill="#000000" d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z" />
           </svg>
           <span>카카오로 시작하기</span>
         </a>
 
-        <a href="/custom-oauth2/login/web/google" className="social-btn google">
+        <a href="/custom-oauth2/login/web/google" className="k-btn k-btn--secondary k-btn--block social-btn google">
           <svg className="icon" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />

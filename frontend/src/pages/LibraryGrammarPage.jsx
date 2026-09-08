@@ -17,6 +17,7 @@ import { GrammarRow } from "../components/library/ListItems.jsx";
 import { useLibraryList } from "../hooks/useLibraryList.js";
 import { PAGE_SIZE, levelOptions } from "../lib/libraryQuery.js";
 import { appliedChips } from "../lib/libraryChips.js";
+import { cardClass } from "../components/ui/kitClass.js";
 
 const PLACEHOLDER = "문법 명칭·한국어 뜻으로 검색 (예: てから, 가능형)";
 // 영어 탭의 예시는 영어여야 한다 — 가나 예시는 그 탭에서 검색되지 않는다(A-M4, 어휘 탭 선례)
@@ -68,9 +69,9 @@ export function LibraryGrammarPage({ lang = "ja" }) {
       <InlineAlert />
 
       {loading && !page && (
-        <div aria-hidden="true" className="panel ref-list">
+        <div aria-hidden="true" className={cardClass({ flush: true, className: "ref-list" })}>
           {Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className="skeleton sk-row" />
+            <div key={i} className="k-skeleton sk-row" />
           ))}
         </div>
       )}
@@ -99,7 +100,7 @@ export function LibraryGrammarPage({ lang = "ja" }) {
 
       {!error && items.length > 0 && (
         <>
-          <div className={`panel ref-list${loading ? " list-loading" : ""}`}>
+          <div className={cardClass({ flush: true, className: `ref-list${loading ? " list-loading" : ""}` })}>
             {items.map((grammar) => (
               <GrammarRow
                 key={grammar.id}

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { buildLibrarySearch } from "../../lib/libraryQuery.js";
+import { Button } from "../ui/Button.jsx";
+import { btnClass } from "../ui/kitClass.js";
 
 /**
  * [이 조건으로 문제 풀기] (설계/05 §15-1) — result-bar 오른쪽 끝.
@@ -16,9 +18,9 @@ export function QuizEntry({ type, params, totalElements }) {
   if (totalElements < 4) {
     return (
       <span className="quiz-entry">
-        <button className="btn" disabled type="button">
+        <Button disabled variant="secondary">
           이 조건으로 문제 풀기
-        </button>
+        </Button>
         <span className="quiz-entry-hint">문제를 내려면 4개 이상 필요해요. 조건을 넓혀 보세요</span>
       </span>
     );
@@ -26,7 +28,7 @@ export function QuizEntry({ type, params, totalElements }) {
 
   return (
     <span className="quiz-entry">
-      <Link className="btn" to={`/library/${type}/quiz${search}`}>
+      <Link className={btnClass({ variant: "secondary" })} to={`/library/${type}/quiz${search}`}>
         이 조건으로 문제 풀기
       </Link>
     </span>
