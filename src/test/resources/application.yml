@@ -1,0 +1,94 @@
+# 응답 인코딩 UTF-8 강제 (main과 파리티) — MockMvc getContentAsString()이
+# charset 미명시 응답을 ISO-8859-1로 읽어 일본어가 깨지는 문제 방지
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  # 미매핑 경로 404 (main과 파리티) — 테스트 프로파일 yml이 main을 shadow하므로 여기에도 명시. 설계 §4-B-6
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  # 페이징 상한(운영과 동일 파리티) — 테스트 프로파일 yml이 main을 shadow하므로 여기에도 명시.
+  data:
+    web:
+      pageable:
+        default-page-size: 20
+        max-page-size: 100
+
+  # 통합 테스트는 외부 MariaDB 없이 인메모리 H2(MySQL 호환 모드)로 실행
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 테스트 시작 시 생성, 종료 시 삭제
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+      data-locations:
+        - classpath:data-users.sql
+        - classpath:data-user-roles.sql
+        - classpath:data-files.sql
+        - classpath:data-community.sql
+        - classpath:data-comment.sql
+        - classpath:data-courses.sql
+        - classpath:data-course-content.sql
+        - classpath:data-course-units.sql
+        # 코스 확장(설계 §7-8) — 코스별 시드 세트. 등록은 senior-dev 관리(병렬 충돌 방지), 내용은 각 담당 backend-dev.
+        - classpath:data-course-n4-content.sql
+        - classpath:data-course-n4-units.sql
+        - classpath:data-course-n3-content.sql
+        - classpath:data-course-n3-units.sql
+        - classpath:data-course-n2-content.sql
+        - classpath:data-course-n2-units.sql
+        # 입문 코스(코스 0) — 4단계, 한자 0자
+        - classpath:data-course-intro-content.sql
+        - classpath:data-course-intro-units.sql
+        # 고급 N1 코스(코스 5) — 한자 350자(누적 1,350자)
+        - classpath:data-course-n1-content.sql
+        - classpath:data-course-n1-units.sql
+        # 영어 과정 뼈대(코스 101~105) — 설계/06 §11. 맛보기는 코스 1의 유닛 2개
+        - classpath:data-course-en-content.sql
+        - classpath:data-course-en-units.sql
+        # H2: 명시 ID INSERT는 IDENTITY 시퀀스를 안 올리므로, 신규 INSERT PK 충돌 방지용 리셋 (test 전용)
+        - classpath:data-h2-reset-identity.sql
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: test-kakao-id
+            client-secret: test-kakao-secret
+            client-authentication-method: client_secret_post
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            authorization-grant-type: authorization_code
+            scope:
+              - profile_nickname
+              - account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+jwt:
+  secret: testSecretKeyShouldBeLongEnoughToSatisfyRequirements1234567890
+  expiration_access: 1800000
+  expiration_refresh: 14400000

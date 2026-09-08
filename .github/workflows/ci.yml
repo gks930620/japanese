@@ -1,0 +1,127 @@
+# 일본어 학습 사이트 — CI
+#
+# 무엇을 하나: 백엔드(Spring Boot)와 프론트(React)의 테스트를 푸시/PR마다 자동으로 돌린다.
+#   - 테스트 646건(백엔드 230 · 프론트 416)을 손으로 돌리지 않기 위한 것이다.
+#   - 이 워크플로가 초록이 아니면 배포하지 않는다 (설계/07 §0 "테스트 통과 없이는 배포 불가").
+#
+# 잡 2개는 서로 의존이 없어 **병렬**로 돈다. 백엔드 테스트는 프론트 번들 빌드를 타지 않으므로
+# (build.gradle 주석 · 설계/02 참고 — 의도된 분리다) 두 잡을 완전히 분리해도 안전하다.
+#
+# 로컬에서 같은 것을 돌리려면:
+#   백엔드  ./gradlew test
+#   프론트  cd frontend && npm ci && npm test && npm run lint && npm run build
+
+name: CI
+
+on:
+  push:
+    # 기본 브랜치는 master. 기능 브랜치 푸시에서도 미리 깨진 것을 보려고 브랜치 필터를 두지 않는다.
+    branches: ["**"]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+# 같은 브랜치에 연달아 푸시하면 이전 실행은 취소한다(러너 시간 절약).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ── 백엔드: Spring Boot + JUnit (H2 인메모리) ────────────────────────────
+  # 시크릿 불필요: src/test/resources/application.yml 이 DB·OAuth·JWT 값을 모두 테스트용으로
+  # 덮어쓰고(classpath 우선), 운영 yml 의 ${KAKAO_CLIENT_ID} 류는 테스트에서 아예 해석되지 않는다.
+  # .env 없이 도는 것을 클린 체크아웃으로 확인했다.
+  backend:
+    name: backend (gradlew test)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          # Gradle 의존성·wrapper 배포판 캐시 (~/.gradle). 2회차부터 크게 빨라진다.
+          cache: gradle
+
+      # gradlew 가 git 인덱스에 100644(비실행)로 들어 있어 리눅스 러너에서 실행 권한이 없다.
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Test
+        run: ./gradlew test --no-daemon
+
+      # 실패했을 때 "어느 테스트가 깨졌는지"를 로그 스크롤 없이 보기 위한 산출물.
+      #  - build/test-results/test : JUnit XML (기계 판독)
+      #  - build/reports/tests/test: HTML 리포트 (받아서 index.html 열면 실패 목록·스택트레이스)
+      - name: Upload backend test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: |
+            build/test-results/test/
+            build/reports/tests/test/
+          retention-days: 14
+          if-no-files-found: warn
+
+  # ── 프론트: React + Vitest ──────────────────────────────────────────────
+  frontend:
+    name: frontend (vitest / lint / build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Dockerfile 빌더 스테이지(setup_20.x)와 같은 메이저로 맞춘다 — 배포에서 빌드되는 것과
+          # 같은 런타임으로 검증하기 위해서다. (로컬 개발기는 24.x. 노드 21+ 전용 API는 쓰지 않는 것을 확인했다.)
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        id: unit
+        run: npm test
+
+      # ── lint 는 정식 게이트다 ─────────────────────────────────────────
+      # 승격 이력: 도입 시점엔 AuthContext.jsx 의 react-refresh error 1건이 기왕증으로 남아
+      #   continue-on-error 로 두었으나, useAuth 훅을 authStore.js 로 분리해 해소했다(error 0).
+      #   경고 3건(exhaustive-deps)은 원래 warning 이라 실패 요인이 아니다.
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      # vitest 는 기본적으로 리포트 파일을 남기지 않는다. 테스트가 깨졌을 때만
+      # JUnit XML 로 한 번 더 돌려 아티팩트로 올린다(초록일 때는 시간 낭비하지 않는다).
+      - name: Re-run failed tests with JUnit reporter
+        if: failure() && steps.unit.outcome == 'failure'
+        run: npm test -- --reporter=junit --outputFile=../build/test-results/frontend/junit.xml
+        continue-on-error: true
+
+      - name: Upload frontend test report
+        if: failure() && steps.unit.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-results
+          path: build/test-results/frontend/
+          retention-days: 14
+          if-no-files-found: warn

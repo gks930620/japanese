@@ -1,0 +1,122 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.4'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	 // 1. Querydsl 라이브러리 추가
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'  // Validation 추가
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// Railway Storage Buckets (S3 완전 호환) — 파일 저장 표준 (§5-3). BOM으로 버전 일괄 관리.
+	implementation platform('software.amazon.awssdk:bom:2.28.16')
+	implementation 'software.amazon.awssdk:s3'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+	// .env 파일 읽기용
+	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+	// Swagger (API 문서화)
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+	// Actuator (서버 상태 모니터링)
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	runtimeOnly 'com.mysql:mysql-connector-j'  // 배포(prod)용 MySQL 드라이버 (Railway MySQL)
+	runtimeOnly 'com.h2database:h2'  // 개발/테스트용 인메모리 DB (외부 DB 불필요). 배포는 prod 프로파일에서 Railway MySQL 사용
+
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// 2. QClass 생성 위치 설정 (선택 사항이지만 관리하기 편함)
+def querydslDir = "src/main/generated"
+
+def frontendDir = file("${projectDir}/frontend")
+def frontendBuildDir = file("${frontendDir}/dist")
+def staticDir = file("${projectDir}/src/main/resources/static")
+def npmExecutable = org.gradle.internal.os.OperatingSystem.current().isWindows() ? "npm.cmd" : "npm"
+
+// ── 프론트엔드(React) 번들 → Spring static 반영 ────────────────────────────
+// 설계 §7-15: 백엔드 테스트는 프론트 번들 빌드에 묶지 않는다.
+//  - `gradlew test`  : 프론트 태스크를 타지 않는다(npm 없이도 돌고, vite dev 서버가 떠 있어도 파일 잠금 충돌이 없다)
+//  - `gradlew bootJar`: 배포 산출물에는 항상 최신 번들이 포함된다
+//  - 로컬에서 bootRun으로 SPA를 보려면 필요할 때 `gradlew copyFrontendBuild`를 먼저 실행한다
+tasks.register("frontendInstall", Exec) {
+	workingDir frontendDir
+	commandLine npmExecutable, "ci"
+	onlyIf { frontendDir.exists() }
+	// 의존성이 그대로면 다시 설치하지 않는다(재빌드 시간 단축)
+	inputs.files(file("${frontendDir}/package.json"), file("${frontendDir}/package-lock.json"))
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+	outputs.dir(file("${frontendDir}/node_modules"))
+}
+
+tasks.register("frontendBuild", Exec) {
+	dependsOn "frontendInstall"
+	workingDir frontendDir
+	commandLine npmExecutable, "run", "build"
+	onlyIf { frontendDir.exists() }
+	inputs.dir(file("${frontendDir}/src")).withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(file("${frontendDir}/index.html"), file("${frontendDir}/vite.config.js"),
+			file("${frontendDir}/package.json"))
+	outputs.dir(frontendBuildDir)
+}
+
+// Sync = "빌드 결과와 똑같이 맞추기". 별도 Delete 태스크로 먼저 비우지 않으므로,
+// 프론트 빌드가 실패하면 static/ 이 빈 채로 남는 사고가 구조적으로 일어나지 않는다.
+tasks.register("copyFrontendBuild", Sync) {
+	dependsOn "frontendBuild"
+	from frontendBuildDir
+	into staticDir
+	preserve { include ".gitkeep" }
+	onlyIf { frontendDir.exists() }
+}
+
+// 번들은 배포 산출물(bootJar)에만 필수다. jar 안에 들어가려면 processResources보다 먼저 끝나야 한다.
+tasks.named("bootJar") {
+	dependsOn "copyFrontendBuild"
+}
+tasks.named("processResources") {
+	mustRunAfter "copyFrontendBuild"
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
