@@ -1,4 +1,4 @@
-// 퀴즈 생성 규칙 (설계/05 §15-1 — 스택 공용) — 전부 순수 함수, RNG 주입(rng: () => number, 0≤x<1).
+// 퀴즈 생성 규칙 (설계/09 §1 — 스택 공용) — 전부 순수 함수, RNG 주입(rng: () => number, 0≤x<1).
 // 앱(Flutter)은 이 규칙·같은 테스트 벡터로 구현한다. 캐시하지 않는다 — 매 세트 새로 생성(Q16).
 
 /** rng 주입 셔플 (Fisher–Yates) — 원본을 바꾸지 않는다 */
@@ -20,7 +20,7 @@ function slugOf(type) {
  * 값이 같은 후보는 버리고 다음 후보로. **3개를 못 채우면 null**(문제 단위로 조용히 버린다 — Q7).
  *
  * `candidateGroups`는 **우선순위 그룹**이다(예: 같은 품사 → 그 밖). 앞 그룹부터 채우고
- * **셔플은 그룹 안에서만** 한다 — 전체를 한 번에 섞으면 우선순위가 사라진다(설계/05 §15-1).
+ * **셔플은 그룹 안에서만** 한다 — 전체를 한 번에 섞으면 우선순위가 사라진다(설계/09 §1-2).
  */
 function assembleChoices(answer, candidateGroups, rng) {
   const groups = Array.isArray(candidateGroups[0]) ? candidateGroups : [candidateGroups];
@@ -50,7 +50,7 @@ function makeQuestion({ type, targetId, prompt, answer, candidates, evidence, rn
   return { id: `${slugOf(type)}-${targetId}`, type, prompt, ...assembled, evidence };
 }
 
-/** 문법 표현 = name에서 선행 〜 제거 (설계/05 §15-1) */
+/** 문법 표현 = name에서 선행 〜 제거 (설계/09 §1-2) */
 function grammarExpression(grammarItem) {
   return grammarItem.name.replace(/^〜/, "");
 }
@@ -109,7 +109,7 @@ function kanjiQuestion(target, others, rng) {
 
 function vocabQuestion(target, others, rng) {
   const types = ["VOCAB_MEANING", "VOCAB_WORD"];
-  if (target.kana) types.push("VOCAB_READING"); // kana 계약 = 출제 가능 여부(설계/05 §15-1)
+  if (target.kana) types.push("VOCAB_READING"); // kana 계약 = 출제 가능 여부(설계/09 §1-2)
 
   for (const type of shuffle(types, rng)) {
     let question = null;
@@ -240,7 +240,7 @@ function expressionQuestion(target, others, rng) {
   return null;
 }
 
-/** 오답 후보 = 출제 범위 + 오답 풀(호출자가 준다) − 정답 대상 자신 (설계/05 §15-1) */
+/** 오답 후보 = 출제 범위 + 오답 풀(호출자가 준다) − 정답 대상 자신 (설계/09 §1-3) */
 function otherItems(target, rangeItems, poolItems) {
   const merged = [...rangeItems, ...(poolItems ?? [])];
   const seen = new Set();
@@ -252,7 +252,7 @@ function otherItems(target, rangeItems, poolItems) {
 }
 
 /**
- * 유닛 확인 문제 세트 (설계/05 §15-1) — 최대 10문항: 문법 2~3 · 한자 3~4 · 어휘 4 목표.
+ * 유닛 확인 문제 세트 (설계/09 §2-1) — 최대 10문항: 문법 2~3 · 한자 3~4 · 어휘 4 목표.
  * 재료가 모자라면 만들 수 있는 것부터 — **실제 문항 수가 세트의 사실**이다(Q3).
  *
  * 영어 유닛은 **한자 자리에 표현**이 온다: 재료에 kanjis가 없고 expressions가 있을 뿐이라
@@ -281,7 +281,7 @@ export function buildUnitQuizSet(material, { rng, distractorPool } = {}) {
 }
 
 /**
- * 자료실 퀴즈 세트 (설계/05 §15-1) — 들어온 탭의 유형만.
+ * 자료실 퀴즈 세트 (설계/09 §2-2) — 들어온 탭의 유형만.
  * **범위 크기 < 4면 세트를 만들지 않는다**(Q21 — 진입 버튼 비활성의 근거).
  */
 export function buildLibraryQuizSet({ type, items, count, rng }) {
@@ -298,7 +298,7 @@ export function buildLibraryQuizSet({ type, items, count, rng }) {
 }
 
 /**
- * [틀린 문제만 다시 풀기] — 생성이 아니라 **기존 세트의 부분집합**이다(Q15).
+ * [틀린 문제만 다시 풀기] — 생성이 아니라 **기존 세트의 부분집합**이다(설계/09 §2-4 · Q15).
  * 같은 문제·같은 보기 그대로, 순서도 원래 세트의 순서를 따른다.
  */
 export function buildRetrySet(set, wrongIds) {

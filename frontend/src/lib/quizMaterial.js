@@ -1,4 +1,4 @@
-// API 응답 shape → 퀴즈 출제 재료 어댑터 (QA 치명 2).
+// API 응답 shape → 퀴즈 출제 재료 어댑터 (설계/09 §1-5 — QA 치명 2).
 //
 // 자료실 어휘 목록(GET /api/library/vocabulary)의 표제어 DTO는 뜻이 **senses[].meaningKo**에 있고
 // 최상위 meaningKo가 없다. 유닛 학습 응답의 어휘는 최상위에 있다.

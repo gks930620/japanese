@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { stagePlan, isStagePassed, buildStageQuestions } from "./diagnosis.js";
 import { coursesFixture } from "../test/apiFixtures.js";
 /**
- * 실력 진단 규칙 (설계/05 §15-2 — TDD Red, senior-dev 작성)
+ * 실력 진단 규칙 (설계/09 §3-1 — TDD Red, senior-dev 작성)
  *
  * 계단식: 낮은 레벨부터 단계당 3문항(어휘1·한자1·문법1), 3중 2 통과 → 다음 단계, 미달 → 즉시 종료.
  * 이 파일은 **측정 규칙**만 고정한다 — 추천 판정은 `diagnosis.recommend.test.js`가 단일 기준이다(파일 끝 주석).

@@ -65,9 +65,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-// 2. QClass 생성 위치 설정 (선택 사항이지만 관리하기 편함)
-def querydslDir = "src/main/generated"
-
 def frontendDir = file("${projectDir}/frontend")
 def frontendBuildDir = file("${frontendDir}/dist")
 def staticDir = file("${projectDir}/src/main/resources/static")

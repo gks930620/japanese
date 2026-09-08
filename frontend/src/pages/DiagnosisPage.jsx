@@ -13,7 +13,7 @@ import { ApiErrorCard } from "../components/StateCards.jsx";
 
 const STAGE_SIZE = 3;
 
-/** 단계 재료 — GET /api/library/{type}?level={레벨}. totalPages>1이면 무작위 페이지에서 뽑는다(설계/05 §15-2) */
+/** 단계 재료 — GET /api/library/{type}?level={레벨}. totalPages>1이면 무작위 페이지에서 뽑는다(설계/09 §3-1) */
 async function fetchStageMaterials(levelCode, rng) {
   // 자료실은 level_code 값만 받는다 — 서버가 준 levelCode를 가공 없이 넘긴다(설계/04 §3-1)
   const levelQuery = levelCode ? `level=${levelCode}&` : "";
@@ -40,7 +40,7 @@ async function fetchStageMaterials(levelCode, rng) {
 }
 
 /**
- * 실력 진단 (설계/05 §15-2) — 시작 → 문제 → 결과가 한 주소의 상태 전환.
+ * 실력 진단 (설계/09 §3) — 시작 → 문제 → 결과가 한 주소의 상태 전환.
  * 계단·추천 계산은 lib/diagnosis가 하고, 화면은 **정오를 보여주지 않는 것**(P6)이 계약이다:
  * 채점 표시 요소(정답/오답·근거·맞은 개수)가 DOM에 없다.
  */
@@ -137,7 +137,7 @@ export function DiagnosisPage() {
         <div className="panel padded quiz-card">
           <div className="step-caption">실력 진단</div>
           <h2 className="step-title">어디서 시작할지, 3분이면 알 수 있어요</h2>
-          {/* 최대 문항 수는 상수가 아니라 계단에서 파생된다 — N1이 열리면 15문제가 된다(설계/05 §15-2) */}
+          {/* 최대 문항 수는 상수가 아니라 계단에서 파생된다 — N1이 열리면 15문제가 된다(설계/09 §3-1) */}
           <p>
             낮은 레벨부터 세 문제씩 — 최대 {plan.length * STAGE_SIZE}문제.
           </p>
@@ -152,7 +152,7 @@ export function DiagnosisPage() {
     );
   }
 
-  /* ── 재료 실패 — 학습으로 가는 길을 막지 않는다(설계/05 §15-2) ── */
+  /* ── 재료 실패 — 학습으로 가는 길을 막지 않는다(설계/09 §3-2) ── */
   if (phase === "error") {
     return (
       <section className="diag-wrap">

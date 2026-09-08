@@ -1,4 +1,4 @@
-// 실력 진단 규칙 (설계/05 §15-2 — 스택 공용).
+// 실력 진단 규칙 (설계/09 §3-1 — 스택 공용).
 // 계단식: 낮은 레벨부터 단계당 3문항(어휘1·한자1·문법1), 3중 2 통과 → 다음 단계, 미달 → 즉시 종료.
 // 코스명·레벨을 하드코딩하지 않는다 — 계단은 GET /api/courses의 AVAILABLE 코스에서 계산한다(08 C-6).
 import { buildLibraryQuizSet } from "./quiz.js";
@@ -25,7 +25,7 @@ export function libraryLevelOfCourse(course) {
 /**
  * 진단 계단 — 입장 가능한(AVAILABLE) 코스를 학습 순서(레벨 코드 순)로.
  * 자료실 레벨 코드가 없는 코스는 문항을 만들 수 없으므로 계단에 넣지 않는다.
- * 공개 코스가 하나도 없으면 빈 배열(진단 배너 미노출의 근거 — 설계/05 §15-2).
+ * 공개 코스가 하나도 없으면 빈 배열(진단 배너 미노출의 근거 — 설계/09 §3-1).
  */
 export function stagePlan(courses) {
   return (courses ?? [])
@@ -45,7 +45,7 @@ export function stagePlan(courses) {
 
 /**
  * 단계 문항 3개 = 어휘 1 · 한자 1 · 문법 1 (P3).
- * 문항 생성 규칙은 퀴즈(설계/05 §15-1)와 완전히 같다 — 같은 함수를 재사용해 규칙이 갈리지 않게 한다.
+ * 문항 생성 규칙은 퀴즈(설계/09 §1)와 완전히 같다 — 같은 함수를 재사용해 규칙이 갈리지 않게 한다.
  */
 export function buildStageQuestions({ vocabItems, kanjiItems, grammarItems, rng }) {
   const one = (type, items) => buildLibraryQuizSet({ type, items, count: 1, rng }).questions;
@@ -62,7 +62,7 @@ export function isStagePassed(correct) {
 }
 
 /**
- * 추천 후보 — **입장 가능한 코스 전체**를 학습 순서(courseNo)로. 계단과 다른 목록이다(감사 높음 1).
+ * 추천 후보 — **입장 가능한 코스 전체**를 학습 순서(courseNo)로. 계단과 다른 목록이다(설계/09 §3-2 — 감사 높음 1).
  *
  * 계단은 "측정할 수 있는 레벨"만 쓴다(한자 1문항이 필요해 입문은 빠진다). 하지만 1단계에서 떨어진 사람에게
  * 다시 1단계 코스를 권하면 히라가나를 모르는 사람이 입문을 건너뛴다 — **측정과 안내는 다른 목록**이다.
@@ -75,7 +75,7 @@ export function recommendCandidates(courses) {
 }
 
 /**
- * 추천 판정 (설계/05 §15-2).
+ * 추천 판정 (설계/09 §3-2).
  *
  *   통과한 단계 없음               → 입장 가능한 **첫 코스**(계단 아래여도 된다 — 입문)
  *   레벨 L까지 통과, 다음 단계 있음 → 다음 단계 레벨의 코스

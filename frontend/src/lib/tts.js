@@ -1,4 +1,4 @@
-// 음성(TTS) 동작 규칙 (설계/05 §15-3) — speechSynthesis 래핑. synth·storage를 주입받아 결정적으로 테스트한다.
+// 음성(TTS) 동작 규칙 (설계/09 §4) — speechSynthesis 래핑. synth·storage를 주입받아 결정적으로 테스트한다.
 // 서버 계약은 없다 — 이 파일의 동작 규칙이 계약이다(판정 ③).
 
 /** 속도 2단계 — 보통 1.0 / 느리게 0.7 (V9) */
@@ -69,7 +69,7 @@ export function createSpeaker({ synth, storage } = {}) {
 
     /**
      * 재생 — 항상 cancel을 먼저 부른다(두 소리 금지 — V6).
-     * utterance는 ja-JP + 첫 번째 ja 보이스 명시 지정(화자 선택 없음 — 설계/05 §15-3).
+     * utterance는 ja-JP + 첫 번째 ja 보이스 명시 지정(화자 선택 없음 — 설계/09 §4).
      */
     speak(text, { onEnd, onError } = {}) {
       if (!synthesis) return;

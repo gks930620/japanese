@@ -13,12 +13,11 @@ const TYPE_LABEL = { kanji: "한자", grammar: "문법", vocabulary: "어휘" };
 /** 자료실 유형 — 목록 라우트가 열거하는 3종 그대로. 그 밖은 주소만 봐도 없는 것이다 */
 const TYPES = Object.keys(TYPE_LABEL);
 const TYPE_UNIT = { kanji: "자", grammar: "개", vocabulary: "개" };
-// 출제 재료 한 번에 가져오는 양 — 자료실 API의 size 상한이 100이다(설계/04 §3-1). 그보다 크게 요청해도 잘린다.
 // 출제 재료를 한 번에 가져오는 양 — 자료실 API의 size 상한이 100이다(설계/04 §3-1).
 const RANGE_SIZE = 100;
 
 /**
- * 뽑아도 되는 창의 개수 — 마지막 창이 4건 미만이면 그 창은 후보에서 뺀다(A-H3).
+ * 뽑아도 되는 창의 개수 — 마지막 창이 4건 미만이면 그 창은 후보에서 뺀다(설계/09 §2-3 — A-H3).
  * 창 크기는 RANGE_SIZE 고정이라 마지막 창의 크기는 집계에서 바로 계산된다.
  */
 function pickablePages(page) {
@@ -34,7 +33,7 @@ function libraryHrefOf(type, question) {
 }
 
 /**
- * 자료실 퀴즈 (설계/05 §15-1) — 시작 → 문제 → 결과가 한 주소의 상태 전환.
+ * 자료실 퀴즈 (설계/09 §2-2·§2-3) — 시작 → 문제 → 결과가 한 주소의 상태 전환.
  * 출제 범위 = 들어온 쿼리스트링(q·level·pos)이고 유형은 탭(type)이 정한다.
  */
 export function LibraryQuizPage() {

@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { speechTextOf, hasJapaneseVoice, createSpeaker, RATES } from "./tts.js";
 
 /**
- * 음성(TTS) 동작 규칙 (설계/05 §15-3 — TDD Red, senior-dev 작성)
+ * 음성(TTS) 동작 규칙 (설계/09 §4 — TDD Red, senior-dev 작성)
  *
- * 실제 발화·목소리 품질은 jsdom에서 검증할 수 없다(설계/05 §15-3 한계 — qa 실기기 시나리오).
+ * 실제 발화·목소리 품질은 jsdom에서 검증할 수 없다(설계/09 §4 한계 — qa 실기기 시나리오).
  * 여기서 고정하는 것은 ①읽을 텍스트 선택 ②노출 게이트 ③단일 재생 ④속도 저장·적용 시점이다.
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.

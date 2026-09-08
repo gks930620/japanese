@@ -1,4 +1,4 @@
-// frontend-dev 작성 — 코드리뷰 Medium 3: VOCAB_MEANING 오답은 **같은 품사 우선**이다(설계/05 §15-1).
+// frontend-dev 작성 — 코드리뷰 Medium 3: VOCAB_MEANING 오답은 **같은 품사 우선**이다(설계/09 §1-3).
 // 전체 셔플로 우선순위가 사라지면 동사 문제 보기에 명사·형용사가 섞여 정답이 티 난다.
 import { describe, expect, it } from "vitest";
 import { buildLibraryQuizSet } from "./quiz.js";
@@ -24,7 +24,7 @@ const ITEMS = [
 
 const MEANING_TO_POS = new Map(ITEMS.map((item) => [item.meaningKo, item.partOfSpeech]));
 
-describe("VOCAB_MEANING 오답 풀 (설계/05 §15-1)", () => {
+describe("VOCAB_MEANING 오답 풀 (설계/09 §1-3-1)", () => {
   it("같은 품사로 3개를 채울 수 있으면 보기가 전부 같은 품사다", () => {
     for (let seed = 1; seed <= 8; seed += 1) {
       const set = buildLibraryQuizSet({ type: "vocabulary", items: ITEMS, count: 20, rng: seededRng(seed) });

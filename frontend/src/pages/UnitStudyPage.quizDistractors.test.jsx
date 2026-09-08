@@ -9,7 +9,7 @@ import { UserDataProvider } from "../context/UserDataContext.jsx";
 import { UnitStudyPage } from "./UnitStudyPage.jsx";
 
 /**
- * 확인 문제의 **오답 풀 레벨 조건** (2026-08-25 판정, 감사 높음 2 — 설계/05 §15-1).
+ * 확인 문제의 **오답 풀 레벨 조건** (2026-08-25 판정, 감사 높음 2 — 설계/09 §1-3).
  *
  * 오답 풀을 레벨 필터 없이 자료실 첫 페이지에서 가져오면, 학습 순서 정렬이라 **낮은 레벨만** 담긴다.
  * N1 유닛의 보기가 `INTRO | N4 | N1(정답) | N4` 로 나오면 **문제를 읽지 않고 레벨만 봐도 풀린다** —

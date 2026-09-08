@@ -57,7 +57,10 @@ class LibraryApiIntegrationTest extends ApiIntegrationTestSupport {
             // 목록 항목: 글자·훈음·음독·훈독·레벨 (음독/훈독은 없는 쪽이 null 가능 — 인수 9)
             assertThat(kanji.path("letter").asText()).hasSize(1);
             assertThat(kanji.path("meaningKo").asText()).isNotBlank();
-            assertThat(kanji.path("level").asText()).isIn("N5", "N4", "N3", "N2");
+            // 레벨 목록을 손으로 적지 않는다 — N1이 열렸는데 이 줄만 N2에 머물러 있었다.
+            // 문법 목록 테스트가 이미 쓰는 방식(CourseCatalog 파생)과 같게 맞춘다(2026-09 전체 점검).
+            assertThat(kanji.path("level").asText())
+                    .isIn(CourseCatalog.available().stream().map(course -> course.levelCode).toList());
             assertThat(kanji.has("onyomi")).isTrue();
             assertThat(kanji.has("kunyomi")).isTrue();
         }
@@ -194,7 +197,8 @@ class LibraryApiIntegrationTest extends ApiIntegrationTestSupport {
 
     @Test
     void grammar_list_has_rules_filter_returns_only_grammars_with_rule_table() throws Exception {
-        // 활용표 있는 것만 = 규칙표 25건(N5 7 + N4 7 + N3 6 + N2 5 — 시드 기준) (인수 16)
+        // 활용표 있는 것만 (인수 16). 개수는 CourseCatalog가 단일 출처다 — 2026-09 실측 87개(359행).
+        // 예전 주석은 "25건(N5 7 + N4 7 + N3 6 + N2 5)"이었다: 입문·N1이 열리기 전 숫자였다.
         MvcResult result = mockMvc.perform(get(GRAMMAR).param("hasRules", "true").param("size", "100"))
                 .andExpect(status().isOk())
                 .andReturn();

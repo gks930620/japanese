@@ -17,10 +17,13 @@ import { resumeTarget } from "../lib/resume.js";
  * "이어서"의 정의는 `lib/resume.js` 하나다 — 홈과 마이페이지가 각자 계산하면
  * 같은 말로 다른 곳에 보낸다(2026-09 결정 D-2 · 설계/01 §7-8).
  */
-function heroState(resume, progress, hasHighlight) {
+function heroState(resume, progress, hasHighlight, coursesLoaded) {
   if (resume) {
     return { resume: resume.text, ctaLabel: resume.ctaLabel, ctaTo: resume.to };
   }
+  // 마지막 위치는 있는데 코스를 아직 못 찾았다 = 목록이 안 왔다는 뜻이다.
+  // 이때 "학습 시작하기"를 그리면 이어보기가 있는 사람을 코스 목록으로 보낸다 — 버튼을 잠시 비운다.
+  if (progress.lastPosition && !coursesLoaded) return null;
   // 준비된 코스를 전부 마쳐 강조 카드가 한 장도 없는 상태
   if (!hasHighlight && progress.completedUnits.length > 0) {
     return { resume: "준비된 코스를 모두 마쳤어요", ctaLabel: "코스 목록 보기", ctaTo: "/courses" };
@@ -40,9 +43,9 @@ export function HomePage() {
   const entryNo = entryCourseNo(list);
   const hasHighlight = Object.values(badges).some(isEntryBadge);
   // 진도가 도착하기 전에는 히어로 CTA를 확정하지 않는다 — 먼저 "학습 시작하기"를 그렸다가
-  // "이어서 학습하기"로 바뀌면 사용자가 잘못된 버튼을 누른다(UnitStudyPage·BookmarksPage와 같은 규칙)
+  // "이어서 학습하기"로 바뀌면 그 사이에 누른 사람이 엉뚱한 곳으로 간다(UnitStudyPage·BookmarksPage와 같은 규칙)
   const hero = ready
-    ? heroState(resumeTarget(progress, { ja: list, en: enCourses ?? [] }), progress, hasHighlight)
+    ? heroState(resumeTarget(progress, { ja: list, en: enCourses ?? [] }), progress, hasHighlight, courses != null)
     : null;
 
   return (

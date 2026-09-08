@@ -569,7 +569,7 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
     return saved ? { ...item, ...saved } : item;
   };
 
-  // 오답 풀 — 유닛 문법 2~3개로는 보기 4개를 못 채운다(설계/05 §15-1). 스텝을 열 때 1회 조회한다
+  // 오답 풀 — 유닛 문법 2~3개로는 보기 4개를 못 채운다(설계/09 §1-3). 스텝을 열 때 1회 조회한다
   const [grammarPool, setGrammarPool] = useState(null);
 
   // 확인 문제 재료 — 문항의 자료실 링크는 유형에서 파생한다(결과 화면 Q17)
@@ -621,8 +621,8 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
   const current = steps.length > 0 ? Math.min(userStep ?? restoredIndex, steps.length - 1) : 0;
   const currentKey = steps[current]?.key;
 
-  // 오답 풀 — 유닛 문법은 2~3개뿐이라 유닛 안에서는 보기 4개를 못 채운다(설계/05 §15-1).
-  // **정답과 같은 레벨에서 먼저 채운다**(설계/05 §15-1 — 감사 높음 2): 레벨 필터 없이 첫 페이지를
+  // 오답 풀 — 유닛 문법은 2~3개뿐이라 유닛 안에서는 보기 4개를 못 채운다(설계/09 §1-3).
+  // **정답과 같은 레벨에서 먼저 채운다**(설계/09 §1-3 — 감사 높음 2): 레벨 필터 없이 첫 페이지를
   // 가져오면 학습 순서 정렬이라 낮은 레벨만 담기고, N1 유닛의 보기가 레벨만 봐도 풀린다.
   // 같은 레벨로 보기 4개를 못 채울 때에 한해 필터를 풀어 넓힌다(조용히 낮은 레벨로 채우지 않는다).
   // 레벨은 유닛 응답의 levelCode다 — 코스 목록을 따로 부르지 않는다(호출 한 번 계약).

@@ -49,7 +49,7 @@ function getSynth() {
   return typeof speechSynthesis !== "undefined" ? speechSynthesis : null;
 }
 
-/** ja 음성 존재 여부 — 크롬은 목록이 비동기라 voiceschanged까지 기다린 뒤 판정한다(설계/05 §15-3) */
+/** ja 음성 존재 여부 — 크롬은 목록이 비동기라 voiceschanged까지 기다린 뒤 판정한다(설계/09 §4) */
 export function useJapaneseVoice() {
   const [available, setAvailable] = useState(() => hasJapaneseVoice(getSynth()?.getVoices?.() ?? []));
 
