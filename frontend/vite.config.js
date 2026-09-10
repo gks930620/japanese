@@ -18,11 +18,11 @@ export default defineConfig({
     testTimeout: 20000,
   },
   server: {
-    port: 5173,
+    port: 5103,
     proxy: {
-      "/api": "http://localhost:8083",
-      "/custom-oauth2": "http://localhost:8083",
-      "/login/oauth2": "http://localhost:8083",
+      "/api": "http://localhost:8103",
+      "/custom-oauth2": "http://localhost:8103",
+      "/login/oauth2": "http://localhost:8103",
     },
   },
 });

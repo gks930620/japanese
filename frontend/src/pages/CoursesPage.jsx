@@ -29,7 +29,7 @@ export function CoursesPage() {
     : null;
 
   return (
-    <section>
+    <section className="courses-page">
       <MergeBanner />
 
       <div className="k-flex page-header">

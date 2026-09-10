@@ -164,7 +164,7 @@ railway variables            # 이름 목록만 눈으로 확인. 값 출력을 
 
 | 환경 | redirect URI |
 |---|---|
-| 로컬 | `http://localhost:8083/login/oauth2/code/kakao` (및 `/google`) |
+| 로컬 | `http://localhost:8103/login/oauth2/code/kakao` (및 `/google`) |
 | 운영 | `https://<도메인>/login/oauth2/code/kakao` (및 `/google`) |
 
 - **안 하면**: 로그인 버튼을 누르면 provider가 `redirect_uri_mismatch`로 튕긴다. 앱 로그에는 아무것도 안 남는다.

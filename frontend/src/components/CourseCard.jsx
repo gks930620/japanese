@@ -44,9 +44,22 @@ export function CourseCard({
           <h3 className="course-name">{course.title}</h3>
         </div>
       </div>
-      <p className="course-line">대상: {course.targetAudience}</p>
-      {!compact && <p className="course-line">도달점: {course.goal}</p>}
-      {!compact && course.notice && <p className="course-notice">✎ {course.notice}</p>}
+      {/* 글 길이가 카드마다 다르다(대상만 33~77자) — 이 블록이 그 편차를 혼자 흡수해
+          아래의 진도 막대·배지는 카드마다 같은 높이에 놓인다(2026-09-09).
+          라벨과 내용도 나눠 둔다 — 읽혀야 하는 쪽은 내용이고 라벨은 곁다리다. */}
+      <div className="course-body">
+        <p className="course-line">
+          <span className="course-line-label">대상</span>
+          <span className="course-line-value">{course.targetAudience}</span>
+        </p>
+        {!compact && (
+          <p className="course-line">
+            <span className="course-line-label">도달점</span>
+            <span className="course-line-value">{course.goal}</span>
+          </p>
+        )}
+        {!compact && course.notice && <p className="course-notice">✎ {course.notice}</p>}
+      </div>
       {/* 진도 막대 — AVAILABLE + 완료 1개 이상일 때만. PREPARING에는 절대 없다(AC-P-21) */}
       {available && (
         <ProgressBar className="course-progress" completed={completedCount} total={course.unitCount} />

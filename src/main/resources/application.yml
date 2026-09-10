@@ -5,7 +5,7 @@ dotenv:
 # + 응답 인코딩을 UTF-8로 강제 — charset 미명시 응답을 클라이언트가 잘못 해석해
 #   일본어·한국어가 깨지는 것을 방지 (코스 학습 콘텐츠는 일본어 원문 포함)
 server:
-  port: 8083
+  port: 8103
   servlet:
     encoding:
       charset: UTF-8
@@ -39,7 +39,7 @@ spring:
 
   h2:
     console:
-      enabled: true   # http://localhost:8083/h2-console (JDBC URL: jdbc:h2:mem:devdb)
+      enabled: true   # http://localhost:8103/h2-console (JDBC URL: jdbc:h2:mem:devdb)
 
   jpa:
     hibernate:
@@ -100,7 +100,7 @@ spring:
             client-id: ${KAKAO_CLIENT_ID}  # 카카오 REST API 키
             client-secret: ${KAKAO_CLIENT_SECRET:}  # 카카오 Client Secret (콘솔에서 사용 설정 시 .env에 채울 것, 미사용 앱은 빈 값 허용)
             client-authentication-method: client_secret_post  # 카카오는 POST 방식으로 Secret 전달
-            redirect-uri: http://localhost:8083/login/oauth2/code/kakao # 카카오 로그인 후 리디렉트될 주소 (포트 변경 시 OAuth 콘솔의 등록 URI도 함께 변경 필요)
+            redirect-uri: http://localhost:8103/login/oauth2/code/kakao # 카카오 로그인 후 리디렉트될 주소 (포트 변경 시 OAuth 콘솔의 등록 URI도 함께 변경 필요)
             authorization-grant-type: authorization_code  # OAuth2 인증 방식 (코드 방식)
             scope:
               - profile_nickname
@@ -110,7 +110,7 @@ spring:
           google: # ✅ 구글 OAuth2 추가
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}   #구글은 인가코드- access_token 과정에서 내부적으로 secret을 필요로 함.
-            redirect-uri: http://localhost:8083/login/oauth2/code/google
+            redirect-uri: http://localhost:8103/login/oauth2/code/google
             scope:
               - profile       #카카오는 profile안의 여러정보 다 따로 지정해줘야하지만 구글은 profile만 지정하면 됨.
               - email

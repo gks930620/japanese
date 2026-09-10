@@ -25,8 +25,8 @@ public class CorsConfig {
         // 허용할 Origin 목록
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",   // React 개발 서버
-                "http://localhost:5173",   // Vite 개발 서버
-                "http://localhost:8083"   // 로컬 개발 (스프링 서버 자체)
+                "http://localhost:5103",   // Vite 개발 서버
+                "http://localhost:8103"   // 로컬 개발 (스프링 서버 자체)
                 // 운영 도메인 추가 예시:
                 // "https://your-domain.com",
                 // "https://www.your-domain.com"
