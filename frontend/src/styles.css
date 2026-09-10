@@ -163,7 +163,7 @@
   white-space: pre-line;
 }
 .muted-text {
-  color: var(--muted2);
+  color: var(--muted);
 }
 
 /* 알림의 가로 배치 — 킷 .k-alert 는 flex 라 오른쪽 액션만 밀어내면 된다.
@@ -220,7 +220,7 @@
 }
 .kv-label {
   flex: 0 0 150px;
-  color: var(--muted2);
+  color: var(--muted);
   font-size: var(--t-sm);
   font-weight: var(--w-bold);
 }
@@ -228,14 +228,6 @@
   flex: 1;
   min-width: 0;
   word-break: break-word;
-}
-
-.section-heading {
-  font-size: var(--t-sm);
-  font-weight: var(--w-bold);
-  color: var(--muted2);
-  letter-spacing: var(--label-tracking);
-  margin: var(--sp-6) 0 var(--sp-3);
 }
 
 .k-btn .material-icons {
@@ -300,7 +292,7 @@
   width: var(--sp-10);
   height: var(--sp-10);
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -345,10 +337,9 @@
   margin: 0 0 var(--sp-2);
   font-size: var(--t-lg);
 }
+/* 크기·색·행간은 §19 공용 ③(2단) — 여기는 여백만 */
 .home-strength-body {
   margin: 0;
-  color: var(--muted);
-  line-height: 1.7;
 }
 
 /* 유닛 흐름 — 번호가 붙은 가로 줄. 좁아지면 자연스럽게 접힌다 */
@@ -367,7 +358,7 @@
   padding: var(--sp-2) var(--sp-3);
   border: var(--bw) solid var(--border);
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
 }
 .home-flow-no {
   display: inline-flex;
@@ -384,11 +375,12 @@
 .home-flow-label {
   font-weight: var(--w-medium);
 }
+/* 홈의 설명 문단 — 카드 안 소개글과 같은 급이다(§19-2 2단) */
 .home-flow-note,
 .home-lead {
   margin: 0 0 var(--sp-4);
-  color: var(--muted);
-  line-height: 1.7;
+  color: var(--text);
+  line-height: var(--lh-relaxed);
 }
 .home-actions {
   gap: var(--sp-2);
@@ -426,8 +418,7 @@ a.course-card:hover {
   text-decoration: none;
 }
 .course-card.disabled {
-  background: var(--surface-alt);
-  cursor: default;
+  cursor: default; /* 면은 §19 화면별에서 --bg-sunken 으로 눌러 둔다 */
 }
 
 .course-card-top {
@@ -446,7 +437,7 @@ a.course-card:hover {
   font-size: var(--t-lg);
   font-weight: var(--w-heavy);
   font-variant-numeric: tabular-nums;
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--muted);
 }
 /* 시작점 카드의 주황 번호판 — **2026-09-09 잠시 껐다.**
@@ -463,11 +454,11 @@ a.course-card:hover {
    ⚠️ 이 규칙을 지우면서 저장소에서 `--point-2`(주황)를 쓰는 곳이 **0곳**이 됐다. */
 .course-card.disabled .course-num {
   background: var(--bg-sunken);
-  color: var(--muted2);
+  color: var(--muted);
 }
 /* 중립 배지 — 시작점이 아닌 AVAILABLE 코스 */
 .status-badge.neutral {
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--muted);
 }
 .status-badge.ok {
@@ -476,21 +467,18 @@ a.course-card:hover {
 }
 .course-level {
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
 }
+/* 크기·굵기는 §19 공용 ③(세 단 위계)이 쥔다 — 여기는 배치만 */
 .course-name {
   margin: 0;
-  font-size: var(--t-md);
-  font-weight: var(--w-bold);
 }
 .course-line {
   margin: 0;
-  font-size: var(--t-sm);
-  color: var(--muted);
 }
 .course-card.disabled .course-name,
 .course-card.disabled .course-line {
-  color: var(--muted2);
+  color: var(--muted);
 }
 .course-notice {
   margin: var(--sp-1) 0 0;
@@ -508,8 +496,8 @@ a.course-card:hover {
   justify-content: flex-end;
 }
 .preparing-badge {
-  background: var(--surface-alt);
-  color: var(--muted2);
+  background: var(--surface-inset);
+  color: var(--muted);
 }
 
 /* ─────────────────────────────────────────────
@@ -543,7 +531,7 @@ a.course-card:hover {
   height: var(--sp-8);
   flex: 0 0 var(--sp-8);
   border-radius: var(--r-sm);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--muted);
   font-size: var(--t-sm);
   font-weight: var(--w-bold);
@@ -555,19 +543,23 @@ a.course-card:hover {
 .unit-row:hover .unit-num {
   background: var(--surface);
 }
+/* 유닛 제목 — 행에서 **읽어야 하는 글**이다. 다만 카드 제목(--t-xl)까지 키우지 않는다:
+   한 화면에 8~12행이 이어지는 목록이라 행 높이가 두 배가 되면 지도로서 못 읽힌다.
+   한 단만 올려(--t-lg) 옆 집계줄(--t-sm·--muted)과의 간격을 벌린다(§19-2 응용). */
 .unit-title {
   flex: 1;
   min-width: 0;
-  font-size: var(--t-md);
+  font-size: var(--t-lg);
   font-weight: var(--w-bold);
+  line-height: var(--lh-tight);
 }
 .unit-meta {
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
   white-space: nowrap;
 }
 .unit-chevron {
-  color: var(--muted2);
+  color: var(--muted);
   font-size: var(--t-lg);
 }
 
@@ -600,15 +592,15 @@ a.course-card:hover {
 }
 
 .step-caption {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   font-weight: var(--w-bold);
-  color: var(--muted2);
+  color: var(--muted);
   letter-spacing: var(--label-tracking);
   margin-bottom: var(--sp-1);
 }
+/* 크기·굵기는 §19 공용 ③ */
 .step-title {
   margin: 0;
-  font-size: var(--t-xl);
 }
 .step-subtitle {
   margin: var(--sp-1) 0 0;
@@ -647,7 +639,7 @@ a.course-card:hover {
 }
 .jp-sentence .mean-line {
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
 }
 
 /* 회화 스크립트 (설계/05 §3-2 — 반복 요소) — 화자 배지는 의미색 soft */
@@ -704,7 +696,6 @@ a.course-card:hover {
 }
 .kanji-card {
   position: relative;
-  background: var(--surface);
   border: var(--bw) solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--sp-4);
@@ -720,7 +711,7 @@ a.course-card:hover {
   height: 72px;
   flex: 0 0 72px;
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--text);
   font-family: var(--font-jp);
   font-size: 44px;
@@ -729,9 +720,11 @@ a.course-card:hover {
   align-items: center;
   justify-content: center;
 }
+/* 한자 카드에서 눈이 글리프 다음으로 닿는 자리 — 본문보다 한 단 위로 (§19-2) */
 .kanji-meaning {
-  font-size: var(--t-md);
+  font-size: var(--t-lg);
   font-weight: var(--w-bold);
+  line-height: var(--lh-tight);
 }
 .kanji-read {
   display: flex;
@@ -741,9 +734,9 @@ a.course-card:hover {
 }
 .kanji-read .label {
   flex: 0 0 34px;
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   font-weight: var(--w-bold);
-  color: var(--muted2);
+  color: var(--muted);
 }
 .kanji-read .val {
   font-family: var(--font-jp);
@@ -767,7 +760,7 @@ a.course-card:hover {
 }
 .kanji-word .m {
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
 }
 
 /* 활용 규칙표 (API 명세 §7-7) — 킷 `.k-table` 재사용.
@@ -788,7 +781,7 @@ a.course-card:hover {
   font-size: var(--t-md);
 }
 .rules-table .arrow {
-  color: var(--muted2);
+  color: var(--muted);
 }
 
 /* 문법 포인트 설명 — 킷 `.k-alert` 기본형 위에 여백만 */
@@ -824,9 +817,9 @@ a.course-card:hover {
 }
 .summary-label {
   flex: 0 0 44px;
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   font-weight: var(--w-bold);
-  color: var(--muted2);
+  color: var(--muted);
 }
 .summary-kanji {
   font-family: var(--font-jp);
@@ -855,14 +848,13 @@ a.course-card:hover {
 }
 .unit-nav-pos {
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
 }
 /* ─────────────────────────────────────────────
    로그인 / 회원가입 — 면 경계는 1px 선(Lets 는 평상시 그림자를 쓰지 않는다)
    ───────────────────────────────────────────── */
 .login-container,
 .signup-container {
-  background: var(--surface);
   border: var(--bw) solid var(--border);
   border-radius: var(--r-lg);
   max-width: 450px;
@@ -877,7 +869,7 @@ a.course-card:hover {
 }
 /* 로고 글리프 — 킷 `.k-avatar` 와 같은 표현(연회색 면 + 강조색 글자) */
 .logo-icon {
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--point);
   width: 64px;
   height: 64px;
@@ -919,7 +911,7 @@ a.course-card:hover {
   left: var(--sp-3);
   top: 50%;
   transform: translateY(-50%);
-  color: var(--muted2);
+  color: var(--muted);
   font-size: var(--t-lg);
   pointer-events: none;
   z-index: 1;
@@ -937,7 +929,7 @@ a.course-card:hover {
   display: flex;
   align-items: center;
   margin: var(--sp-6) 0;
-  color: var(--muted2);
+  color: var(--muted);
   font-size: var(--t-sm);
 }
 .divider::before,
@@ -995,31 +987,9 @@ a.course-card:hover {
 }
 
 /* ─────────────────────────────────────────────
-   마이페이지
-   ───────────────────────────────────────────── */
-.mypage-container {
-  max-width: 800px;
-  margin: var(--sp-10) auto;
-  padding: var(--sp-6);
-  background: var(--surface);
-  border: var(--bw) solid var(--border);
-  border-radius: var(--r-lg);
-}
-.mypage-header {
-  border-bottom: var(--bw) solid var(--border);
-  padding-bottom: var(--sp-4);
-  margin-bottom: var(--sp-6);
-}
-.mypage-header h1 {
-  margin: 0;
-  font-size: var(--t-2xl);
-}
-
-/* ─────────────────────────────────────────────
    커뮤니티
    ───────────────────────────────────────────── */
 .search-filter-section {
-  background: var(--surface);
   border: var(--bw) solid var(--border);
   padding: var(--sp-4);
   border-radius: var(--r-lg);
@@ -1046,14 +1016,13 @@ a.course-card:hover {
   left: var(--sp-3);
   top: 50%;
   transform: translateY(-50%);
-  color: var(--muted2);
+  color: var(--muted);
   font-size: var(--t-lg);
   pointer-events: none;
   z-index: 1;
 }
 
 .post-list {
-  background: var(--surface);
   border: var(--bw) solid var(--border);
   border-radius: var(--r-lg);
   overflow: hidden;
@@ -1077,7 +1046,7 @@ a.course-card:hover {
   margin-bottom: var(--sp-3);
 }
 .post-title {
-  font-size: var(--t-md);
+  font-size: var(--t-lg);
   font-weight: var(--w-bold);
   color: var(--text);
   margin-bottom: var(--sp-1);
@@ -1086,7 +1055,7 @@ a.course-card:hover {
   display: flex;
   gap: var(--sp-4);
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
 }
 .post-meta-item {
   display: flex;
@@ -1100,7 +1069,7 @@ a.course-card:hover {
   display: flex;
   gap: var(--sp-4);
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
 }
 .post-stat {
   display: flex;
@@ -1115,7 +1084,6 @@ a.course-card:hover {
 
 /* 커뮤니티 상세 */
 .post-detail {
-  background: var(--surface);
   border: var(--bw) solid var(--border);
   border-radius: var(--r-lg);
   overflow: hidden;
@@ -1127,7 +1095,7 @@ a.course-card:hover {
 .post-detail-title {
   font-size: var(--t-xl);
   font-weight: var(--w-heavy);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
   color: var(--text);
   margin: 0 0 14px;
 }
@@ -1135,14 +1103,14 @@ a.course-card:hover {
   display: flex;
   gap: 22px;
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
   flex-wrap: wrap;
 }
 .post-detail-stats {
   display: flex;
   gap: var(--sp-4);
   padding: 14px 24px;
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   border-bottom: var(--bw) solid var(--border);
 }
 .post-detail-content {
@@ -1173,7 +1141,7 @@ a.course-card:hover {
   border: none;
   border-radius: var(--r);
   padding: var(--sp-4);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
 }
 .post-attachments-inner h4 {
   margin: 0 0 12px;
@@ -1189,19 +1157,18 @@ a.course-card:hover {
 }
 .attachment-item .material-icons {
   font-size: var(--t-xl);
-  color: var(--muted2);
+  color: var(--muted);
 }
 .attachment-item a {
   color: var(--point);
 }
 .attachment-size {
-  color: var(--muted2);
-  font-size: var(--t-xs);
+  color: var(--muted);
+  font-size: var(--t-sm);
 }
 
 /* 댓글 */
 .comments-section {
-  background: var(--surface);
   border-radius: var(--r-lg);
   border: var(--bw) solid var(--border);
   margin-top: 22px;
@@ -1227,7 +1194,7 @@ a.course-card:hover {
   padding: 13px 17px;
   border: none;
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--text);
   font-size: var(--t-md);
   font-family: inherit;
@@ -1272,15 +1239,16 @@ a.course-card:hover {
 }
 .comment-author .material-icons {
   font-size: var(--t-xl);
-  color: var(--muted2);
+  color: var(--muted);
 }
 .comment-date {
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
 }
+/* 댓글 본문 — 이 화면에서 읽어야 하는 글이다. 흐린 회색이면 본문이 부가정보로 읽힌다(§19-2) */
 .comment-content {
   font-size: var(--t-md);
-  color: var(--muted);
+  color: var(--text);
   line-height: 1.7;
   margin-bottom: var(--sp-2);
   white-space: pre-wrap;
@@ -1293,9 +1261,9 @@ a.course-card:hover {
   background: none;
   border: none;
   padding: 4px 8px;
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   font-family: inherit;
-  color: var(--muted2);
+  color: var(--muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1311,7 +1279,6 @@ a.course-card:hover {
 
 /* 커뮤니티 글쓰기/수정 */
 .write-form {
-  background: var(--surface);
   border-radius: var(--r-lg);
   padding: 30px;
   border: var(--bw) solid var(--border);
@@ -1321,9 +1288,9 @@ a.course-card:hover {
 }
 .form-label {
   display: block;
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   font-weight: var(--w-bold);
-  color: var(--muted2);
+  color: var(--muted);
   margin-bottom: 7px;
 }
 .form-label.required::after {
@@ -1336,7 +1303,7 @@ a.course-card:hover {
   padding: 13px 17px;
   border: none;
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--text);
   font-size: var(--t-md);
   font-family: inherit;
@@ -1353,13 +1320,13 @@ a.course-card:hover {
   resize: vertical;
 }
 .form-help {
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
   margin-top: 6px;
 }
 
 .file-upload-area {
-  border: 2px dashed var(--border);
+  border: 2px dashed var(--border-strong);
   border-radius: var(--r);
   padding: var(--sp-6);
   text-align: center;
@@ -1368,11 +1335,11 @@ a.course-card:hover {
 }
 .file-upload-area:hover {
   border-color: var(--point);
-  background: var(--surface-alt);
+  background: var(--surface-hover);
 }
 .file-upload-area .material-icons {
   font-size: 36px;
-  color: var(--muted2);
+  color: var(--muted);
   margin-bottom: var(--sp-2);
 }
 .file-upload-area p {
@@ -1382,11 +1349,11 @@ a.course-card:hover {
 }
 .comment-empty {
   text-align: center;
-  color: var(--muted2);
+  color: var(--muted);
   padding: var(--sp-10) 0;
 }
 .file-upload-hint {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   margin-top: var(--sp-2);
 }
 .file-input {
@@ -1400,7 +1367,7 @@ a.course-card:hover {
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   border-radius: var(--r);
   margin-bottom: var(--sp-2);
 }
@@ -1412,7 +1379,7 @@ a.course-card:hover {
   font-size: var(--t-sm);
 }
 .uploaded-file-info .material-icons {
-  color: var(--muted2);
+  color: var(--muted);
 }
 .remove-file-btn {
   background: none;
@@ -1592,7 +1559,7 @@ a.course-card:hover {
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--muted2);
+  color: var(--muted);
   cursor: pointer;
   font-size: var(--t-sm);
   font-family: inherit;
@@ -1617,8 +1584,8 @@ a.course-card:hover {
   flex-wrap: wrap;
 }
 .filter-group-label {
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
   font-weight: var(--w-bold);
   letter-spacing: var(--label-tracking);
 }
@@ -1650,12 +1617,12 @@ a.course-card:hover {
   gap: 6px;
 }
 .applied-chip {
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--muted);
   border: none;
   border-radius: var(--r-pill);
   padding: 4px 12px;
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   font-family: inherit;
   cursor: pointer;
 }
@@ -1666,11 +1633,11 @@ a.course-card:hover {
 /* 레벨 배지 — 레벨별 색 구분 없음(단색) */
 .lv-badge {
   display: inline-block;
-  background: var(--surface-alt);
-  color: var(--muted2);
+  background: var(--surface-inset);
+  color: var(--muted);
   border-radius: var(--r-pill);
   padding: 2px 9px;
-  font-size: 11.5px;
+  font-size: var(--t-sm);
   font-weight: var(--w-bold);
   margin-left: 4px;
 }
@@ -1689,7 +1656,6 @@ a.course-card:hover {
   gap: 2px;
   min-height: 148px;
   padding: 16px 12px 14px;
-  background: var(--surface);
   border-radius: var(--r);
   border: var(--bw) solid var(--border);
   color: var(--text);
@@ -1713,19 +1679,20 @@ a.course-card:hover {
   font-weight: var(--w-medium);
   line-height: 1.2;
 }
+/* 타일에서 눈이 글리프 다음으로 닿는 줄 — 본문 급으로 올린다(§19-2) */
 .tile-meaning {
-  font-size: var(--t-sm);
+  font-size: var(--t-md);
   font-weight: var(--w-bold);
 }
 .tile-on {
   font-family: var(--font-jp);
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .tile-kun {
   font-family: var(--font-jp);
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
 }
 
 /* 한자 상세 */
@@ -1740,7 +1707,7 @@ a.course-card:hover {
   height: 120px;
   flex: 0 0 120px;
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--text);
   font-family: var(--font-jp);
   font-size: 76px;
@@ -1758,8 +1725,8 @@ a.course-card:hover {
 .kanji-detail-title h1 {
   margin: 0;
   font-size: var(--t-xl);
-  font-weight: var(--w-bold);
-  letter-spacing: -0.02em;
+  font-weight: var(--w-heavy);
+  letter-spacing: var(--tracking-tight);
 }
 .kanji-detail-reads {
   border-top: var(--bw) solid var(--border);
@@ -1815,7 +1782,7 @@ a.course-card:hover {
   border-bottom: none;
 }
 .ref-row:hover {
-  background: var(--surface-alt);
+  background: var(--surface-hover);
   text-decoration: none;
 }
 .ref-row-main {
@@ -1843,19 +1810,20 @@ a.course-card:hover {
   font-size: var(--t-sm);
   color: var(--muted);
 }
+/* 뜻은 이 표에서 읽으라고 있는 칸이다 — 발음(--t-sm·--muted)과 급을 벌린다(§19-2) */
 .vocab-ref-table .m {
-  font-size: var(--t-sm);
+  font-size: var(--t-md);
 }
 .vocab-ref-table td.pos {
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
   white-space: nowrap;
 }
 .vocab-ref-table td.lv {
   white-space: nowrap;
 }
 .vocab-ref-table td.chev {
-  color: var(--muted2);
+  color: var(--muted);
   text-align: center;
   width: 40px;
 }
@@ -1864,7 +1832,7 @@ a.course-card:hover {
 }
 .vocab-row:hover,
 .vocab-row[aria-expanded="true"] {
-  background: var(--surface-alt);
+  background: var(--surface-hover);
 }
 .vocab-row td {
   vertical-align: top;
@@ -1872,11 +1840,11 @@ a.course-card:hover {
 /* 데스크톱에서는 품사·레벨이 별도 열에 있으므로 메타 줄을 숨긴다 */
 .vocab-meta {
   display: none;
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
 }
 .vocab-expand > td {
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   padding: 4px 16px 14px 22px;
 }
 .sense-item {
@@ -1910,7 +1878,7 @@ a.course-card:hover {
   height: 56px;
   margin: 0 auto 12px;
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1946,7 +1914,7 @@ a.course-card:hover {
 /* 코스 → 자료실 나가는 링크 (설계/05 §11 — 새 탭 예고 글리프) */
 .ext-mark {
   font-size: 0.72em;
-  color: var(--muted2);
+  color: var(--muted);
   margin-left: 2px;
 }
 .grammar-title-row {
@@ -1984,8 +1952,8 @@ a.course-card:hover {
 }
 .table-caption {
   margin: 0 4px 8px;
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
 }
 
 /* 복습 블록 (설계/05 §7) */
@@ -1995,9 +1963,9 @@ a.course-card:hover {
   padding-top: 14px;
 }
 .review-caption {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   font-weight: var(--w-bold);
-  color: var(--muted2);
+  color: var(--muted);
   margin-bottom: var(--sp-1);
 }
 .review-range {
@@ -2043,7 +2011,7 @@ a.course-card:hover {
     font-size: 32px;
   }
   .tile-meaning {
-    font-size: var(--t-xs);
+    font-size: var(--t-sm);
   }
   .tile-on,
   .tile-kun {
@@ -2133,7 +2101,7 @@ a.course-card:hover {
   flex: 1;
   min-width: 60px;
   height: 4px;
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   border-radius: var(--r-pill);
   overflow: hidden;
 }
@@ -2144,8 +2112,8 @@ a.course-card:hover {
   transition: width var(--dur) var(--ease);
 }
 .progress-label {
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -2166,7 +2134,7 @@ a.course-card:hover {
 
 /* 배지 — 완주는 무채색 면 + 완료색 글자(강조 카드를 묻지 않게) */
 .status-badge.done {
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   color: var(--ok-text);
 }
 
@@ -2176,17 +2144,17 @@ a.course-card:hover {
   color: var(--ok-text);
 }
 .unit-seen-mark {
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
   white-space: nowrap;
 }
 .unit-done-mark {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   color: var(--ok-text);
   white-space: nowrap;
 }
 .unit-here-badge {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   background: var(--point-soft);
   color: var(--point-text);
   border-radius: var(--r-pill);
@@ -2194,7 +2162,7 @@ a.course-card:hover {
   white-space: nowrap;
 }
 .cta-note {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   color: var(--ok-text);
   margin-right: auto;
 }
@@ -2220,10 +2188,10 @@ a.course-card:hover {
   font-weight: var(--w-bold);
 }
 .done-toggle-text.off {
-  color: var(--muted2);
+  color: var(--muted);
 }
 .done-toggle-error {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   color: var(--err);
   margin: 0 0 8px;
 }
@@ -2242,7 +2210,7 @@ a.course-card:hover {
   font-size: var(--t-lg);
   line-height: 1;
   cursor: pointer;
-  color: var(--muted2);
+  color: var(--muted);
   transition: color var(--dur-fast) var(--ease);
 }
 .bm-star[aria-pressed="true"] {
@@ -2274,15 +2242,15 @@ a.course-card:hover {
 
 /* 자료실 탭 줄의 보관함 진입 — 4번째 탭으로 오해되지 않게 톤을 달리한다 */
 .bm-entry {
+  background: var(--surface-inset);
   margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 7px 15px;
   border-radius: var(--r-pill);
-  background: var(--surface);
   color: var(--point);
-  border: var(--bw) solid var(--border);
+  border: var(--bw) solid var(--border-strong);
   font-size: var(--t-sm);
   font-weight: var(--w-bold);
 }
@@ -2299,11 +2267,11 @@ a.course-card:hover {
   justify-content: center;
   gap: 6px;
   text-align: center;
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   border-radius: var(--r);
   box-shadow: none;
   color: var(--muted);
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   padding: 14px 12px;
   min-height: 148px;
 }
@@ -2322,8 +2290,8 @@ a.course-card:hover {
 }
 .bm-footnote {
   margin-top: 18px;
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
   background: none;
   border: none;
   padding: 0;
@@ -2370,7 +2338,7 @@ a.course-card:hover {
   margin-left: auto;
   background: none;
   border: none;
-  color: var(--muted2);
+  color: var(--muted);
   cursor: pointer;
   font-size: var(--t-md);
   padding: 4px 8px;
@@ -2401,7 +2369,7 @@ a.course-card:hover {
 }
 .confirm-panel p {
   margin: 0 0 18px;
-  color: var(--muted);
+  color: var(--text);
   font-size: var(--t-md);
 }
 .confirm-actions {
@@ -2451,15 +2419,25 @@ a.course-card:hover {
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 }
+/* 카드마다 안의 줄 수가 다르다(프로필 4행 vs 보관함 1줄). 격자가 높이를 맞춰 늘려 놓아도
+   버튼 줄이 글 바로 아래에 놓이면 카드마다 다른 높이에 선다 — 본문 블록이 편차를 흡수하고
+   마지막 줄을 바닥에 고정한다(§19-5 ①). */
 .mypage-card {
-  display: block;
+  display: flex;
   padding: var(--sp-5);
 }
+.mypage-card .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.mypage-card .card-actions:last-child,
+.mypage-card .card-danger-zone {
+  margin-top: auto;
+}
+/* 크기·굵기는 §19 공용 ③ — 여기는 여백만 */
 .mypage-card h2 {
   margin: 0 0 12px;
-  font-size: var(--t-md);
-  font-weight: var(--w-bold);
-  letter-spacing: -0.01em;
 }
 .mypage-card .kv-row {
   padding: 8px 0;
@@ -2487,7 +2465,7 @@ a.course-card:hover {
   border-top: var(--bw) solid var(--border);
 }
 .withdraw-link {
-  color: var(--muted2);
+  color: var(--muted);
 }
 
 /* 폼 3화면 공통 */
@@ -2500,14 +2478,17 @@ a.course-card:hover {
   align-items: center;
   margin-top: 22px;
 }
+/* 패널 제목은 문장형("탈퇴하면 아래 기록이 지워져요")이라 --t-xl 까지 키우지 않는다.
+   페이지 제목 바로 아래라 한 단만 올려 두 제목이 경합하지 않게 한다(§19-2 응용). */
 .panel-title {
   margin: 0 0 var(--sp-3);
-  font-size: var(--t-md);
+  font-size: var(--t-lg);
   font-weight: var(--w-bold);
+  line-height: var(--lh-tight);
 }
 .field-hint {
-  color: var(--muted2);
-  font-size: var(--t-xs);
+  color: var(--muted);
+  font-size: var(--t-sm);
   margin: var(--sp-1) 0 0;
 }
 .kv-value .field-hint {
@@ -2575,7 +2556,7 @@ a.course-card:hover {
   padding: 16px 18px;
   border: var(--bw) solid var(--border);
   border-radius: var(--r);
-  background: var(--surface);
+  background: var(--surface-inset);
   cursor: pointer;
 }
 .en-choice:hover {
@@ -2583,7 +2564,7 @@ a.course-card:hover {
   background: var(--point-soft);
 }
 .en-choice-course {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   font-weight: var(--w-bold);
   color: var(--point-text);
 }
@@ -2627,7 +2608,7 @@ a.course-card:hover {
   margin: 0;
   font-size: var(--t-xl);
   line-height: 1.5;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
   color: var(--text);
   word-break: keep-all;
 }
@@ -2658,7 +2639,7 @@ a.course-card:hover {
   padding: 13px 18px;
   border: none;
   border-radius: var(--r-pill);
-  background: var(--surface);
+  background: var(--surface-inset);
   border: var(--bw) solid var(--border);
   color: var(--text);
   font-family: inherit;
@@ -2713,7 +2694,7 @@ a.course-card:hover {
   margin-top: var(--sp-3);
   padding: 14px 16px;
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
 }
 .quiz-evidence .kanji-word .w {
   font-size: var(--t-lg);
@@ -2731,7 +2712,7 @@ a.course-card:hover {
    (덕분에 이 화면의 그라디언트가 1개 줄어든다). */
 .quiz-card .k-stat {
   margin: 4px 0 2px;
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   box-shadow: none;
 }
 .quiz-card .k-stat::before {
@@ -2790,8 +2771,8 @@ a.course-card:hover {
 /* 저장 안 됨 한 줄 (Q23·P13) — 캡션 톤. 로그인 유도를 붙이지 않는다 */
 .quiz-note {
   margin: 14px 0 0;
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
 }
 
 /* 캡션 줄에 컨트롤을 얹는 형태 (설계/05 §15-3) — 회화 스텝·결과 카드 공용.
@@ -2817,7 +2798,7 @@ a.course-card:hover {
   margin: 6px 0 8px;
   font-size: 26px;
   font-weight: var(--w-heavy);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
   line-height: 1.3;
   color: var(--text);
 }
@@ -2838,8 +2819,8 @@ a.course-card:hover {
   margin-left: auto;
 }
 .quiz-entry-hint {
-  font-size: var(--t-xs);
-  color: var(--muted2);
+  font-size: var(--t-sm);
+  color: var(--muted);
 }
 
 /* 재생 버튼 — 붙는 자리 7곳이 전부 이것 하나. 줄 끝 append라 미렌더 시 레이아웃이 현행과 같다 */
@@ -2921,7 +2902,7 @@ a.course-card:hover {
   margin: 10px 0;
   padding: 12px 14px;
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
   font-family: var(--font-mono);
   font-size: var(--t-xs);
   line-height: var(--lh-relaxed);
@@ -3011,14 +2992,14 @@ a.course-card:hover {
 .expr-card {
   padding: 16px 18px;
   border-radius: var(--r-lg);
-  background: var(--surface);
   border: var(--bw) solid var(--border);
 }
 .expr-text {
   display: inline-block;
   font-size: var(--t-xl);
-  font-weight: var(--w-bold);
-  letter-spacing: -0.01em;
+  font-weight: var(--w-heavy);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-tight);
   color: var(--text);
 }
 a.expr-text:hover {
@@ -3026,7 +3007,7 @@ a.expr-text:hover {
 }
 .expr-pron {
   margin: 2px 0 0;
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   color: var(--muted);
 }
 .expr-mean {
@@ -3037,13 +3018,13 @@ a.expr-text:hover {
 .expr-note {
   margin: 4px 0 0;
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
 }
 .expr-example {
   margin-top: 10px;
   padding: 10px 14px;
   border-radius: var(--r);
-  background: var(--surface-alt);
+  background: var(--surface-inset);
 }
 .expr-example + .expr-example {
   margin-top: 6px;
@@ -3055,18 +3036,18 @@ a.expr-text:hover {
 }
 .expr-example .m {
   font-size: var(--t-sm);
-  color: var(--muted2);
+  color: var(--muted);
 }
 
 /* 어휘 표의 발음 셀 — 열을 늘리지 않고 한 셀에 두 줄(설계/05 §16-4) */
 .vocab-pron {
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
   line-height: 1.5;
   color: var(--muted);
 }
 .vocab-pron .ko {
   display: block;
-  color: var(--muted2);
+  color: var(--muted);
 }
 
 @media (max-width: 768px) {
@@ -3098,79 +3079,247 @@ a.expr-text:hover {
   text-align: left;
 }
 
-/* ─────────────────────────────────────────────
-   코스 목록 — 읽히게 만들기 (사용자 요청 2026-09-09)
+/* ═══════════════════════════════════════════════════════════════════
+   §19 공용 — 화면 전체가 함께 따르는 기준 (설계/05 §19)
 
-   처음엔 화면 전체를 굵게 했더니 **위계가 사라져 더 헷갈렸다.**
-   진짜 원인은 굵기가 아니라 **크기와 대비가 거꾸로**였던 것이다:
-     · 코스명이 본문과 같은 15px  → 카드에서 제목이 튀지 않는다
-     · 정작 읽어야 할 대상·도달점이 13.5px + 흐린 회색(--muted) → 안 읽힌다
-     · 부가 정보(코스 N · JLPT N5)는 더 흐린 --muted2
+   §19는 코스 목록 한 화면을 사용자와 맞춰 가며 드러난 취향이지만,
+   기준 자체는 **그 화면의 것이 아니라 제품 전체의 것**이다.
+   화면마다 같은 블록을 복사하면 곧 갈린다(설계/08 C-11) —
+   공용은 여기 한 곳에서만 정하고, 아래 화면별 절에는 **그 화면 고유 부품만** 남긴다.
 
-   그래서 **읽을 것은 키우고 진하게, 곁다리는 작고 흐리게** 벌린다.
-   굵기는 제목에만 쓴다 — 전부 굵으면 아무것도 강조되지 않는다.
-   ───────────────────────────────────────────── */
+   여기 있는 것:
+     ① 면 계층 (§19-3)              — 페이지 → 카드 → 인셋
+     ② 보조 텍스트 최소선 (§19-2)   — --muted2 를 쓰지 않는다
+     ③ 세 단 위계 (§19-2)           — 제목 > 내용 > 라벨
+     ④ 헤더 블록 (§19-5)            — 글리프와 글의 높이, 죽은 여백
+     ⑤ 라벨·내용 두 줄 배치 (§19-5)
 
-/* 제목: 본문보다 확실히 크게(15 → 22px) — 카드에서 눈이 먼저 닿는 자리 */
-.courses-page .course-name {
+   이 절은 **파일 맨 뒤에서 두 번째**에 둔다 — 앞선 화면별 규칙과 같은 특이도라도
+   나중에 온 쪽이 이겨 "공용이 기준"이 순서로도 성립한다.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── ① 면 계층 (§19-3) ─────────────────────────────────────────────
+   페이지(--bg 흰색) → 카드(--surface-alt 회색) → 카드 속 인셋(--surface 흰색).
+
+   킷 카드(.k-card/.k-row/.k-stat)의 면은 project-tokens.css 의 --card-bg 가 이미 세웠다.
+   여기서는 킷 카드를 못 쓰는 자리(form·article·Link 등 속성이 이미 많은 태그)를 같은 면에 맞춘다.
+   ⚠️ 새 카드를 만들면 배경을 그 자리에 적지 말고 **이 목록에 이름만 더한다.** */
+.kanji-card,
+.kanji-tile,
+.login-container,
+.signup-container,
+.search-filter-section,
+.post-list,
+.post-detail,
+.comments-section,
+.write-form {
+  background: var(--surface-alt);
+}
+
+/* 경계는 한 단 진하게 — 회색 면이어도 경계가 흐리면 카드가 페이지 바닥에 묻힌다 */
+.k-card,
+.k-row,
+.k-stat,
+.kanji-card,
+.kanji-tile,
+.login-container,
+.signup-container,
+.search-filter-section,
+.post-list,
+.post-detail,
+.comments-section,
+.write-form {
+  border-color: var(--border-strong);
+  /* 카드 안쪽은 흰 면이다 — 인셋이 "지금 서 있는 면"을 알 수 있는 유일한 통로다
+     (계산 방식은 project-tokens.css 의 --surface-inset 주석). */
+  --surface-inset: var(--surface);
+}
+
+/* ⚠️ §19-7 — 킷이 --surface-alt 로 칠하던 것은 **전부 인셋이다.**
+   카드가 회색이 되는 순간 같은 색을 쓰던 것들이 조용히 사라진다:
+   진도 막대 트랙 · 중립 배지 · 알림 띠 · 스켈레톤 · 글리프 타일.
+   사라지는 것은 에러를 내지 않으므로 여기서 한 번에 막는다.
+   의미색 변형(--point/--ok/--warn/--err)은 건드리지 않는다 — :not() 으로 뺀다.
+   ⚠️ 그 :not() 을 :where() 로 감싼다. :not() 은 인자의 특이도를 그대로 얹어 (0,2,0)이 되는데,
+   그러면 화면별 규칙(.courses-start-notice = 0,1,0)을 이겨 **연보라 안내 띠가 회색으로 되돌아간다.**
+   :where() 는 거르는 일만 하고 특이도가 0이라 공용은 기본값 자리에, 화면별은 그 위에 선다. */
+.k-bar,
+.k-skeleton,
+.k-avatar,
+.k-item__icon,
+.k-row__rank,
+.k-badge:where(:not([class*="k-badge--"])),
+.k-alert:where(:not([class*="k-alert--"])),
+pre {
+  background: var(--surface-inset);
+}
+
+/* ── ② 보조 텍스트 최소선 --muted (§19-2) ──────────────────────────
+   --muted2(#9aa0ae)는 회색 카드 위에서 대비가 약 2:1까지 떨어져 **면과 같은 색으로 보인다.**
+   킷이 --muted2 를 쓰는 자리 중 이 제품이 실제로 그리는 것만 되돌린다.
+   ⚠️ 두 곳은 일부러 남긴다 — ::placeholder(값이 아니라 힌트다. 진해지면 입력된 것처럼 보인다)와
+      :disabled(눌리지 않는다는 신호가 흐림 그 자체다). */
+.k-dim,
+.k-footer {
+  color: var(--muted);
+}
+
+/* 킷의 .k-section > h2 는 --t-sm 회색 **라벨**이다. 이 제품에서 그 자리는 홈의 구역 제목
+   ("이 사이트는" · "유닛 하나는 이렇게 흘러갑니다")이라 제목으로 읽혀야 한다 —
+   본문(--t-md)보다 한 단 위, 색은 본문색으로 올린다(§19-2). */
+.k-section > h2 {
+  font-size: var(--t-lg);
+  color: var(--text);
+}
+
+/* ── ③ 세 단 위계 (§19-2) ──────────────────────────────────────────
+   1단 제목 --t-xl/--w-heavy/--text · 2단 내용 --t-md/기본/--text · 3단 라벨 --w-bold/--muted.
+   굵기는 1단에만 쓴다 — 전부 굵으면 아무것도 강조되지 않는다.
+
+   페이지 제목(.k-page-title)은 킷이 이미 --t-xl 이다. 여기서는 **카드 안 제목**을 올린다:
+   기본값이 본문과 같은 크기(--t-md)라 카드에서 제목이 튀지 않았다. */
+/* ⚠️ 화면을 훑을 때마다 **이 목록에 이름만 더한다** — 화면별 절에 같은 값을 다시 적지 않는다. */
+.course-name,
+.home-strength-title,
+.step-title,
+.mypage-card h2 {
   font-size: var(--t-xl);
   font-weight: var(--w-heavy);
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
 }
 
-/* 본문(대상·도달점): 읽으라고 있는 줄이다 — 본문 크기 + 본문 색으로 올린다 */
-.courses-page .course-line {
+/* 2단 — 읽으라고 있는 글은 본문 크기·본문 색이다 */
+.course-line,
+.home-strength-body {
   font-size: var(--t-md);
   color: var(--text);
   line-height: var(--lh-relaxed);
 }
 
-/* 줄머리 "대상"·"도달점"은 라벨이지 내용이 아니다 — 작게 눌러 내용이 앞에 오게 한다.
-   ⚠️ 색은 --muted2(#9aa0ae)가 아니라 --muted(#5f6473)다.
-   카드 면이 흰색에서 회색(#f5f6fa)으로 바뀌면서 --muted2 는 대비가 약 2:1까지 떨어져
-   **면과 같은 색으로 보였다**(2026-09-10 사용자 지적). --muted 는 같은 면에서 약 5.6:1이다.
-   위계는 크기와 굵기로 이미 서고 있으므로, 색까지 흐릴 필요가 없다. */
-.course-line-label {
-  display: inline-block;
-  margin-right: var(--sp-2);
-  /* 크기는 **내용과 같다**(2026-09-10 사용자 요청) — 라벨과 내용이 한 줄로 자연스럽게 이어진다.
-     구분은 굵기와 색으로만 한다: 크기까지 줄이면 줄 안에서 두 번 꺾여 오히려 산만했다. */
-  font-size: inherit;
+/* 3단 — 라벨은 **크기를 내용과 같게** 두고 굵기와 색으로만 가른다.
+   작게까지 줄이면 한 줄 안에서 두 번 꺾여 오히려 산만하다(2026-09-10 사용자 요청). */
+.course-line-label,
+.kv-label,
+.summary-label {
   font-weight: var(--w-bold);
   color: var(--muted);
   letter-spacing: var(--tracking-wide);
 }
+.kv-label {
+  font-size: var(--t-md);
+}
 
-/* 코스 목록에서는 라벨과 내용을 **두 줄로 쌓는다**(2026-09-10 사용자 요청):
+/* 라벨의 **최소선은 --t-sm 이다** — --t-xs(12px)까지 줄이면 한 줄 안에서 두 번 꺾여
+   오히려 산만하다(§19-2). 킷이 --t-xs 로 두는 자리 중 이 제품이 글로 읽는 것만 올린다.
+   ⚠️ 원판 안 숫자(.home-flow-no)·화자 배지(.speaker-badge)처럼 **글자가 아니라 표시**인
+   자리는 그대로 --t-xs 다 — 키우면 원이 깨진다. */
+.k-badge,
+.k-table th {
+  font-size: var(--t-sm);
+}
+
+/* 안내 띠는 **읽으라고 있는 글**이다(2단). 킷 기본형은 회색 면 + 회색 글씨라
+   대비가 약해 읽기 애매했다 — 크기와 색을 본문 급으로 올린다.
+   의미색 변형(--ok/--warn/--err)은 자기 색이 이미 있으므로 건드리지 않는다. */
+.k-alert:where(:not([class*="k-alert--"])) {
+  font-size: var(--t-md);
+  color: var(--text);
+}
+
+/* ── ④ 헤더 블록 (§19-5) ───────────────────────────────────────────
+   ① 헤더 안에서 설명의 아래 여백을 죽인다 — 헤더가 이미 아래 여백을 갖고 있어
+      킷 .k-page-desc 의 20px 은 블록 높이만 부풀리는 죽은 공간이다.
+   ② 글리프를 글 높이에 가깝게 키우고 세로 가운데로 맞춘다(40px 글리프 옆 83px 글 블록은 떠 보인다).
+   헤더 띠와 본문의 왼쪽 선 맞춤은 파일 맨 위 `.k-topnav` 규칙이 맡는다. */
+.page-header {
+  align-items: center;
+}
+.page-header .k-page-desc {
+  margin-bottom: 0;
+}
+.page-avatar {
+  width: calc(var(--sp-10) + var(--sp-2));
+  height: calc(var(--sp-10) + var(--sp-2));
+  flex: 0 0 calc(var(--sp-10) + var(--sp-2));
+  font-size: var(--t-xl);
+}
+
+/* ── ⑤ 라벨·내용 두 줄 배치 (§19-5) ────────────────────────────────
        대상
        - 일본어를 처음 접하는 분
-   한 줄로 붙여 두면 긴 문장(대상만 33~77자)이 라벨 뒤에서 접혀 시작점이 흐트러졌다.
-   줄을 나누면 어느 카드에서나 내용이 같은 왼쪽 선에서 시작한다. */
-.courses-page .course-line-label {
+   한 줄로 붙여 두면 긴 문장이 라벨 뒤에서 접혀 카드마다 시작점이 흐트러진다.
+   줄을 나누면 어느 카드에서나 내용이 같은 왼쪽 선에서 시작한다.
+   ⚠️ 글머리표는 CSS ::before 로 넣는다 — 실제 문자로 쓰면 낭독기가 "대시"라고 읽는다. */
+.course-line-label {
   display: block;
   margin-right: 0;
   margin-bottom: var(--sp-1);
 }
-.courses-page .course-line-value {
+.course-line-value {
   display: block;
   padding-left: var(--sp-3);
   text-indent: calc(var(--sp-3) * -1); /* 두 줄로 넘어가도 글머리 아래로 정렬 */
 }
-/* 글머리표는 **장식이다** — 실제 문자로 넣으면 낭독기가 "대시"라고 읽는다 */
-.courses-page .course-line-value::before {
+.course-line-value::before {
   content: "- ";
   color: var(--muted);
 }
 
-/* 코스 목록에서는 "코스 0 · 문자" 줄을 **화면에서만** 감춘다(2026-09-10 사용자 요청).
-   번호는 왼쪽 원판이 이미 말하고, 레벨은 제목·본문으로 충분하다 — 한 줄을 덜어 제목이 먼저 읽힌다.
 
-   ⚠️ `display:none`이 아니라 킷의 시각적 숨김(.k-sr)과 같은 방식이다.
-   원판은 `aria-hidden="true"`라 낭독기에 안 읽힌다 — 이 줄까지 없애면
-   **화면 낭독기 사용자는 코스 번호도 레벨도 알 수 없다.**
-   ⚠️ 마크업은 그대로 둔다: 코스 상세·영어 목록 등 다른 화면은 이 줄을 눈으로 쓴다. */
-.courses-page .course-level {
+/* ═══════════════════════════════════════════════════════════════════
+   §19 화면별 — 코스 카드 (일본어 목록 `/courses` · 영어 목록 `/en/courses`)
+
+   2026-09-09~10 사용자와 한 줄씩 맞춘 화면이다. **드러난 취향은 §19 공용으로 올렸고**
+   (세 단 위계 · 면 계층 · 라벨 두 줄 · 헤더 블록), 여기 남은 것은 코스 카드 고유 배치뿐이다.
+   ⚠️ 선택자를 `.courses-page` 로 가두지 않는다 — `CourseCard` 는 두 과정이 함께 쓰는
+   **한 부품**이라, 가둬 두면 영어 목록만 옛 모습으로 남아 갈린다(설계/08 C-11).
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* 카드 안 숨 쉴 공간 — 줄이 촘촘하면 굵기와 상관없이 안 읽힌다 */
+.course-card {
+  gap: var(--sp-3);
+}
+
+/* 준비중 카드는 반대로 눕힌다 — 들어갈 수 없는 카드가 떠 있으면 시선을 뺏는다.
+   면을 한 단 더 눌러(--bg-sunken) "파인" 쪽으로 보내 열린 카드와 구별한다(§19-3).
+   ⚠️ 인셋은 공용 기본값(--surface, 흰 면) 그대로 둔다 — --surface-alt 로 낮추면
+   라이트 모드에서 --bg-sunken(#f2f3fb)과 거의 같은 색이라 "준비중" 배지가 사라진다(§19-7). */
+.course-card.disabled {
+  background: var(--bg-sunken);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+/* 시작점 카드도 **면 색은 다른 카드와 같다**(2026-09-09 사용자 결정 — 한 장만 색이 다르면 튄다).
+   "여기서 시작하세요" 배지가 그 자리를 표시하는 유일한 신호다(§19-4).
+   ⚠️ 되살리더라도 그림자로 강조하지 않는다 — hover(--card-hover-shadow = --sh-2)와 같아지면
+   그 카드만 hover 반응이 사라진다. 강조는 색으로, 눌림 신호는 그림자로 나눠 쓴다. */
+
+/* ── 높낮이 맞추기 (§19-5) ──
+   진짜 원인은 글자가 아니라 **가변 영역을 안 잡아둔 것**이었다.
+   대상 문구가 33~77자로 달라 카드마다 1~3줄이 되고, 그 아래 진도 막대·배지가
+   제각각 높이에 놓여 눈이 가로줄을 못 따라간다.
+   글을 자르지 않고, **이 블록 하나가 편차를 전부 흡수**하게 해서
+   아래 요소들을 카드 바닥에서 같은 거리에 고정한다. */
+.course-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0; /* 긴 단어가 격자를 밀지 않게 */
+}
+
+.course-card-top {
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* ── 덜어내기 (§19-6) ──
+   "코스 0 · 문자" 줄은 **화면에서만** 감춘다. 레벨은 제목·본문으로 충분하다.
+   ⚠️ `display:none`이 아니라 킷의 시각적 숨김(.k-sr)과 같은 방식이다 —
+   지우면 낭독기 사용자가 코스 번호·레벨을 통째로 잃는다. */
+.course-level {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -3181,129 +3330,30 @@ a.expr-text:hover {
   white-space: nowrap;
   border: 0;
 }
-
-/* 카드 안 숨 쉴 공간 — 줄이 촘촘하면 굵기와 상관없이 안 읽힌다.
-
-   ── 면 구별 ──
-   카드 배경(--card-bg → --surface)이 페이지 배경(--bg)과 **똑같은 #ffffff**이고
-   그림자는 none, 경계는 --border(#e8e9f0) 하나뿐이라 카드가 바닥에 묻혔다.
-   바깥 흰색은 그대로 두고 **카드만 띄운다**:
-     · 경계선을 한 단 진하게(--border → --border-strong)
-     · 아주 옅은 그림자 한 겹(--sh-1, 불투명도 5%)
-   킷은 그림자가 아니라 1px 선으로 구조를 만드는 쪽이라 그림자는 최소로만 얹는다.
-   hover(--sh-2)보다 확실히 약해야 "누를 수 있다"는 신호가 죽지 않는다. */
-.courses-page .course-card {
-  gap: var(--sp-3);
-  /* 면 색은 **회색**(--surface-alt). 연보라(--point-soft)도 대 봤지만 사용자가 회색을 골랐다
-     (2026-09-10). 6장 모두 같은 색이고 시작점 카드도 예외가 아니다. */
-  background: var(--surface-alt);
-  border-color: var(--border-strong);
-  box-shadow: var(--sh-1);
-}
-
-/* ⚠️ 카드 면을 --surface-alt 로 올리면 **같은 색을 쓰던 카드 속 요소들이 사라진다.**
-   흰 페이지 위 흰 카드에서는 안 보이던 충돌이라 면을 바꾸는 순간 드러난다:
-     · 진도 막대 트랙(.k-bar)     — 빈 구간이 카드에 묻혀 채운 부분만 떠 보인다
-     · 중립 배지(.status-badge.neutral) — "바로 볼 수 있어요"가 통째로 사라진다
-   둘 다 카드보다 한 단 **밝게**(흰 면) 되돌려 안쪽으로 파인 것처럼 읽히게 한다.
-   결과: 흰 페이지 → 회색 카드 → 흰 인셋. */
-.courses-page .course-card .k-bar,
-.courses-page .course-card .status-badge.neutral {
-  background: var(--surface);
-}
-
-/* (카드가 연보라였을 때는 안내 알약도 --point-soft 라 사라져서 흰 면으로 띄웠었다.
-    카드가 회색으로 돌아오며 그 충돌이 없어져 되돌렸다 — 알약은 킷 기본 연보라 그대로다.) */
-
-/* 시작점 카드는 한 단 더 — 이 화면에서 눈이 가장 먼저 닿아야 하는 자리다.
-   화면당 한 장뿐인 것이 계산으로 보장된다(badgeView — CONTINUE·START·NEXT 배타).
-
-   ⚠️ 그림자는 --sh-1 그대로 둔다. 여기에 --sh-2 를 주면 hover(--card-hover-shadow = --sh-2)와
-   같아져 **강조 카드만 hover 반응이 사라진다** — 강조는 색으로, 눌림 신호는 그림자로 나눠 쓴다. */
-/* 시작점 카드도 **면 색은 다른 카드와 같다**(2026-09-09 사용자 결정 — 한 장만 색이 다르면 튄다).
-   "여기서 시작하세요" 배지가 그 자리를 표시하는 유일한 신호다. */
-
-/* 준비중 카드는 반대로 눕힌다 — 들어갈 수 없는 카드가 떠 있으면 시선을 뺏는다.
-   면도 한 단 더 눌러(--bg-sunken) "파인" 쪽으로 보내 열린 카드와 구별한다. */
-.courses-page .course-card.disabled {
-  background: var(--bg-sunken);
-  border-color: var(--border);
-  box-shadow: none;
-}
-
-/* ── 높낮이 맞추기 ──
-   진짜 원인은 글자가 아니라 **가변 영역을 안 잡아둔 것**이었다.
-   대상 문구가 33~77자로 달라 카드마다 1~3줄이 되고, 그 아래 진도 막대·배지가
-   제각각 높이에 놓여 눈이 가로줄을 못 따라간다.
-   글을 자르지 않고, **이 블록 하나가 편차를 전부 흡수**하게 해서
-   아래 요소들을 카드 바닥에서 같은 거리에 고정한다. */
-.courses-page .course-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-  min-width: 0; /* 긴 단어가 격자를 밀지 않게 */
-}
-
-/* ── 글리프와 글의 높이 맞추기 ──
-   `学` 40px 옆에 제목+설명 블록이 83px이라 두 배 넘게 차이 났다.
-   글리프가 왼쪽 위에 떠 있고 글이 아래로 흘러내려 줄이 안 맞아 보인다.
-   ① 헤더 안에서는 설명의 **아래 여백을 죽인다** — 헤더 자체가 이미 아래 여백을 갖고 있어
-      그 20px이 블록 높이만 부풀리는 죽은 공간이었다.
-   ② 글리프를 글 높이에 가깝게 키우고 **세로 가운데로 맞춘다**. */
-.courses-page .page-header {
-  align-items: center;
-}
-.courses-page .page-header .k-page-desc {
-  margin-bottom: 0;
-}
-.courses-page .page-avatar {
-  width: calc(var(--sp-10) + var(--sp-2));
-  height: calc(var(--sp-10) + var(--sp-2));
-  flex: 0 0 calc(var(--sp-10) + var(--sp-2));
-  font-size: var(--t-xl);
-}
-
-/* 코스 카드도 같은 문제 — 번호판 40px 옆에 "코스 0 · 문자" + "입문"이 52px이다 */
-.courses-page .course-card-top {
-  align-items: center;
-  gap: var(--sp-3);
-}
-/* 번호 원판도 **없앤다**(2026-09-10 사용자 요청) — 코스는 이름만으로 충분하다
-   (입문·왕초보·초급·중급·중상급·고급이 이미 순서를 말한다).
-   원판은 `aria-hidden="true"`라 낭독기에 원래 안 읽혔으므로 `display:none`으로 끝난다 —
-   레벨 줄과 달리 접근성으로 잃는 것이 없다. 코스 번호·레벨은 위에서 시각적으로만 감춘 그 줄이 계속 읽어 준다. */
-.courses-page .course-num {
+/* 번호 원판도 없앤다 — 코스 이름(입문·왕초보·초급…)이 이미 순서를 말한다.
+   원판은 `aria-hidden="true"`라 낭독기에 원래 안 읽혔으므로 `display:none`으로 끝난다:
+   레벨 줄과 달리 접근성으로 잃는 것이 없다(§19-6 표). */
+.course-num {
   display: none;
 }
 
 /* ── 시작 안내 띠 ──
-   킷 기본 `.k-alert`는 **회색 면(--surface-alt) + 회색 글씨(--muted)**라
-   면과 글의 대비가 약해 읽기 애매했다. 이 띠는 "여기서 시작하세요"를 말하는
-   **안내**이지 잡음이 아니므로 강조색 계열로 올린다 — 카드 안 `.course-notice`가
-   이미 쓰는 짝(--point-soft / --point-text)과 같게 맞춰 화면 안에서 같은 뜻이 같은 색을 갖게 한다.
-
-   그리고 킷의 `align-items: flex-start` 때문에 글이 위로 붙어, 오른쪽 버튼(--touch 46px)과
-   세로가 어긋나 보였다 — 가운데로 맞춘다. */
-.courses-page .courses-start-notice {
+   킷 기본 `.k-alert`는 회색 면 + 회색 글씨라 대비가 약했다. 이 띠는 "여기서 시작하세요"를
+   말하는 **안내**이지 잡음이 아니므로, 카드 안 `.course-notice`가 이미 쓰는 짝
+   (--point-soft / --point-text)과 같게 맞춰 같은 뜻이 같은 색을 갖게 한다.
+   킷의 `align-items: flex-start` 때문에 글이 위로 붙어 오른쪽 버튼(--touch 46px)과
+   세로가 어긋나 보였다 — 가운데로 맞춘다(§19-5). */
+.courses-start-notice {
   align-items: center;
   background: var(--point-soft);
   color: var(--point-text);
-  /* 카드가 회색이라 연보라 띠는 그 자체로 구별된다 — 선을 두르지 않는다.
-     (카드가 연보라였던 동안만 띠에 인디고 선을 둘러 갈라 놓았었다.) */
   border-color: transparent;
-  font-size: var(--t-md);
 }
 
 /* 막대와 배지는 이제 모든 카드에서 같은 자리다 — 붙어 보이지 않게 간격만 준다 */
-.courses-page .course-progress {
+.course-progress {
   margin-top: var(--sp-2);
 }
-.courses-page .course-foot {
+.course-foot {
   padding-top: var(--sp-1);
-}
-
-/* 준비중 카드는 위계를 그대로 두되 전체를 한 단 뒤로 물린다 */
-.courses-page .course-card.disabled .course-line {
-  color: var(--muted);
 }
