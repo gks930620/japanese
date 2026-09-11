@@ -3357,3 +3357,74 @@ pre {
 .course-foot {
   padding-top: var(--sp-1);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   진단 단계 화면 — 6문항이 한 카드 안에 (설계/05 §15-2)
+   문항은 **면이 아니라 선과 여백**으로 가른다: 면 계층이 이미 찼다
+   (페이지 흰 → 카드 회색 → 보기 알약 흰 --surface-inset).
+   한 겹 더 칠하면 흰 알약이 묻혀 사라진다(§19-7 조용한 실종).
+   새 토큰·새 색 0개, 새 클래스는 .diag-question 하나뿐이다.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* fieldset 기본값 해제 — 끄지 않으면 회색 판 위에 문항마다 이중 테두리가 생긴다 */
+.diag-question {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+/* 문항 사이만 가른다 — **첫 장에는 선이 없다** */
+.diag-question + .diag-question {
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-6);
+  border-top: var(--bw) solid var(--border);
+}
+/* legend — 3단 라벨(§19-2): 작게·굵게·낮은 명도. 브라우저 기본 좌우 패딩도 끈다 */
+.diag-question > legend {
+  padding: 0;
+  margin: 0 0 var(--sp-2);
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
+  color: var(--muted);
+}
+
+/* 보기는 **라벨**이다 — 제출 전까지 답을 바꿀 수 있어야 해서 버튼이 아니라 라디오를 쓴다(09 §3-7).
+   .quiz-choice는 유닛·자료실 퀴즈(버튼)와 공유하므로, 라벨용 규칙은 전부 .diag-question 안으로 한정한다.
+   그래야 버튼 전용 규칙(.correct/.wrong·:disabled)이 라벨로 새지도, 저쪽이 깨지지도 않는다. */
+.diag-question .quiz-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.diag-question .quiz-choice input[type="radio"] {
+  flex: 0 0 auto;
+  margin: 0;
+  accent-color: var(--point);
+}
+/* 알약이 떠오르지 않는다 — 한 화면에 6문항 × 5보기, 반복 요소다(§19-4) */
+.diag-question .quiz-choice:hover {
+  box-shadow: none;
+}
+/* 포커스 링은 라디오가 아니라 알약 전체에 — 누르는 면이 곧 보기다 */
+.diag-question .quiz-choice:focus-within {
+  box-shadow: var(--sh-point);
+}
+/* 고른 보기는 면으로 답한다. 라디오는 클래스를 받을 수 없어 :has 말고는 수단이 없다 */
+.diag-question .quiz-choice:has(input:checked) {
+  background: var(--point-soft);
+}
+
+/* [모르겠어요]는 보기가 아니라 **포기 버튼**이다 — 마지막 보기 위를 1px 선으로 가른다.
+   .diag-question 안으로 한정한다: 보기가 4개인 유닛·자료실 퀴즈에는 이 선이 생기면 안 된다 */
+.diag-question .quiz-choices > .quiz-choice:last-child {
+  position: relative;
+  margin-top: var(--sp-3);
+}
+.diag-question .quiz-choices > .quiz-choice:last-child::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * var(--sp-3));
+  border-top: var(--bw) solid var(--border);
+}
