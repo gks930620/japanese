@@ -185,9 +185,25 @@ export function kanjiDetailFixture({ id, letter, meaningKo, onyomi = null, kunyo
   };
 }
 
-/** GET /api/library/grammar 의 한 행 */
-export function grammarListItemFixture({ id, name, nameKo, hasRules = false }) {
-  return { id, name, nameKo, level: "N5", hasRules };
+/**
+ * GET /api/library/grammar 의 한 행.
+ * ★ 2026-09-10부터 **예문이 목록에도 실린다**(설계/04 §3-5 · 08 B-12) — 없으면 `[]`이고 `null`이 아니다.
+ * 진단의 문장 문항·빈칸 문항이 이 재료를 쓴다.
+ */
+export function grammarListItemFixture({ id, name, nameKo, hasRules = false, examples = [] }) {
+  return {
+    id,
+    name,
+    nameKo,
+    level: "N5",
+    hasRules,
+    examples: examples.map((example, index) => ({
+      id: id * 10 + index,
+      jp: example.jp,
+      kana: example.kana ?? null,
+      meaningKo: example.meaningKo,
+    })),
+  };
 }
 
 /** GET /api/library/grammar/{id} — examples[]·rules[]에 id가 있다 */

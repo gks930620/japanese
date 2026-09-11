@@ -32,9 +32,21 @@ export function realKanjiItem(id, letter, meaning, onyomi = "オン", kunyomi = 
   return { id, letter, meaningKo: meaning, onyomi, kunyomi, level: "N5" };
 }
 
-/** GET /api/library/grammar — 목록 항목(examples·rules가 없다) */
-export function realGrammarItem(id, name, nameKo, hasRules = false) {
-  return { id, name, nameKo, level: "N5", hasRules };
+/**
+ * GET /api/library/grammar — 목록 항목.
+ * `rules`는 상세에만 있지만 **`examples`는 목록에도 온다**(2026-09-10, 설계/04 §3-5 · 08 B-12).
+ * 기본값은 그 문법의 예문 1건 — 목록이 예문을 준다는 사실이 픽스처에서 사라지면 진단 배선이 다시 깨진다(08 C-9).
+ */
+export function realGrammarItem(id, name, nameKo, hasRules = false, examples = null) {
+  const expression = name.replace(/^〜/, "");
+  return {
+    id,
+    name,
+    nameKo,
+    level: "N5",
+    hasRules,
+    examples: examples ?? [{ id: id * 10, jp: `これは ${expression}です。`, kana: null, meaningKo: `${nameKo} 예문` }],
+  };
 }
 
 /** LibraryPageResponse */

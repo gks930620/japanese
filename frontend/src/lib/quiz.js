@@ -107,11 +107,13 @@ function kanjiQuestion(target, others, rng) {
   return null;
 }
 
-function vocabQuestion(target, others, rng) {
+function vocabQuestion(target, others, rng, { only = null, render = null } = {}) {
+  const shown = render ? render(target) : { main: target.word, kana: null };
   const types = ["VOCAB_MEANING", "VOCAB_WORD"];
   if (target.kana) types.push("VOCAB_READING"); // kana 계약 = 출제 가능 여부(설계/09 §1-2)
 
-  for (const type of shuffle(types, rng)) {
+  // 진단은 레벨이 유형을 정한다(09 §3-3) — only가 오면 대체 유형을 찾지 않는다
+  for (const type of only ? [only] : shuffle(types, rng)) {
     let question = null;
     if (type === "VOCAB_MEANING") {
       // 같은 품사 우선, 3개 못 채우면 범위 전체에서 보충
@@ -120,7 +122,7 @@ function vocabQuestion(target, others, rng) {
       question = makeQuestion({
         type,
         targetId: target.id,
-        prompt: { main: target.word, sub: "이 단어의 뜻은?" },
+        prompt: { main: shown.main, kana: shown.kana ?? null, sub: "이 단어의 뜻은?" },
         answer: target.meaningKo,
         candidates: [samePos, rest],
         evidence: target,
@@ -130,7 +132,7 @@ function vocabQuestion(target, others, rng) {
       question = makeQuestion({
         type,
         targetId: target.id,
-        prompt: { main: target.meaningKo, sub: "이 뜻에 맞는 단어는?" },
+        prompt: { main: target.meaningKo, kana: null, sub: "이 뜻에 맞는 단어는?" },
         answer: target.word,
         candidates: others.map((v) => v.word),
         evidence: target,
@@ -140,7 +142,7 @@ function vocabQuestion(target, others, rng) {
       question = makeQuestion({
         type,
         targetId: target.id,
-        prompt: { main: target.word, sub: "이 단어의 읽는 법은?" },
+        prompt: { main: shown.main, kana: null, sub: "이 단어의 읽는 법은?" },
         answer: target.kana,
         candidates: others.map((v) => v.kana).filter(Boolean),
         evidence: target,
@@ -152,13 +154,14 @@ function vocabQuestion(target, others, rng) {
   return null;
 }
 
-function grammarQuestion(target, others, rng) {
+function grammarQuestion(target, others, rng, { only = null } = {}) {
   // 예문 jp에 표현이 실제로 포함된 것이 있을 때만 빈칸, 못 찾으면 뜻 유형(Q8)
   const expression = grammarExpression(target);
   const clozeSource = (target.examples ?? []).filter((ex) => expression && ex.jp.includes(expression));
 
   const types = clozeSource.length > 0 ? ["GRAMMAR_CLOZE", "GRAMMAR_MEANING"] : ["GRAMMAR_MEANING"];
-  for (const type of shuffle(types, rng)) {
+  if (only && !types.includes(only)) return null; // 진단은 유형이 고정이라 다른 유형으로 대체하지 않는다
+  for (const type of only ? [only] : shuffle(types, rng)) {
     let question = null;
     if (type === "GRAMMAR_CLOZE") {
       const example = clozeSource[Math.floor(rng() * clozeSource.length)];
@@ -166,7 +169,7 @@ function grammarQuestion(target, others, rng) {
         type,
         targetId: target.id,
         // 표현을 가린 지문 + 뜻 문장(sub)이 힌트다
-        prompt: { main: example.jp.split(expression).join("＿＿"), sub: example.meaningKo },
+        prompt: { main: example.jp.split(expression).join("＿＿"), kana: null, sub: example.meaningKo },
         answer: target.name,
         candidates: others.map((g) => g.name),
         evidence: target,
@@ -176,7 +179,7 @@ function grammarQuestion(target, others, rng) {
       question = makeQuestion({
         type,
         targetId: target.id,
-        prompt: { main: target.name, sub: "이 문법의 뜻은?" },
+        prompt: { main: target.name, kana: null, sub: "이 문법의 뜻은?" },
         answer: target.nameKo,
         candidates: others.map((g) => g.nameKo),
         evidence: target,
@@ -238,6 +241,37 @@ function expressionQuestion(target, others, rng) {
     if (question) return question;
   }
   return null;
+}
+
+/**
+ * 문장 뜻 문항 SENTENCE_MEANING (설계/09 §1-2 · §3-3) — **진단에서 쓰는 유형**이다.
+ * 지문은 문법의 예문이고 정답은 그 예문의 뜻, 오답은 **같은 레벨 다른 문법**의 예문 뜻이다.
+ * 보기는 여기서도 4개다 — 다섯 번째 [모르겠어요]는 진단이 따로 얹는다(09 §1-4).
+ *
+ * @param {(example) => boolean} [canUseExample] 표기 규칙상 지문으로 쓸 수 있는 예문인가(09 §3-4)
+ * @param {(example) => {main: string, kana: string|null}} [render] 레벨별 표기(치환·병기)
+ */
+function sentenceQuestion(target, others, rng, { canUseExample = () => true, render = null } = {}) {
+  const example = (target.examples ?? []).find(
+    (item) => item?.jp && item?.meaningKo && canUseExample(item),
+  );
+  if (!example) return null;
+
+  const shown = render ? render(example) : { main: example.jp, kana: null };
+  const candidates = others
+    .flatMap((item) => item.examples ?? [])
+    .map((item) => item?.meaningKo)
+    .filter(Boolean);
+
+  return makeQuestion({
+    type: "SENTENCE_MEANING",
+    targetId: target.id,
+    prompt: { main: shown.main, kana: shown.kana ?? null, sub: "이 문장의 뜻은?" },
+    answer: example.meaningKo,
+    candidates,
+    evidence: target,
+    rng,
+  });
 }
 
 /** 오답 후보 = 출제 범위 + 오답 풀(호출자가 준다) − 정답 대상 자신 (설계/09 §1-3) */
@@ -304,3 +338,14 @@ export function buildLibraryQuizSet({ type, items, count, rng }) {
 export function buildRetrySet(set, wrongIds) {
   return { questions: set.questions.filter((question) => wrongIds.includes(question.id)) };
 }
+
+/**
+ * 진단 전용 진입점 (설계/09 §3-3 구현 경계표) — **문항 한 개를 만드는 규칙은 이 파일 하나**다.
+ * 단계 구성·표기 규칙 적용·[모르겠어요] 얹기는 lib/diagnosis.js가 한다.
+ */
+export const diagnosisGenerators = {
+  vocab: vocabQuestion,
+  grammar: grammarQuestion,
+  sentence: sentenceQuestion,
+  others: otherItems,
+};

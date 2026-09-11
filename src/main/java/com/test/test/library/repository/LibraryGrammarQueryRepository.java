@@ -8,13 +8,18 @@ import com.test.test.course.CourseLanguage;
 import com.test.test.course.CourseUnitEntity;
 import com.test.test.course.QCourseEntity;
 import com.test.test.course.QCourseUnitEntity;
+import com.test.test.course.content.GrammarExampleEntity;
 import com.test.test.course.content.GrammarPointEntity;
+import com.test.test.course.content.QGrammarExampleEntity;
 import com.test.test.course.content.QGrammarPointEntity;
 import com.test.test.course.content.QGrammarRuleEntity;
 import com.test.test.course.mapping.QUnitGrammarEntity;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +38,7 @@ public class LibraryGrammarQueryRepository {
 
     private static final QGrammarPointEntity GRAMMAR = QGrammarPointEntity.grammarPointEntity;
     private static final QGrammarRuleEntity GRAMMAR_RULE = QGrammarRuleEntity.grammarRuleEntity;
+    private static final QGrammarExampleEntity GRAMMAR_EXAMPLE = QGrammarExampleEntity.grammarExampleEntity;
     private static final QUnitGrammarEntity UNIT_GRAMMAR = QUnitGrammarEntity.unitGrammarEntity;
     private static final QCourseUnitEntity UNIT = QCourseUnitEntity.courseUnitEntity;
     private static final QCourseEntity COURSE = QCourseEntity.courseEntity;
@@ -49,6 +55,31 @@ public class LibraryGrammarQueryRepository {
                 .distinct()
                 .from(GRAMMAR_RULE)
                 .fetch());
+    }
+
+    /**
+     * 문법 id 묶음 → 예문 (설계/04 §3-5) — <b>페이지 전체를 한 번에</b> 읽는다.
+     *
+     * <p>문법마다 상세를 부르면 N1 한 레벨이 69번의 왕복이 된다(설계/08 B-12가 없앤 것이 그것이다).
+     * 정렬은 상세와 같은 {@code sortOrder ASC}라 같은 문법의 예문 순서가 두 화면에서 어긋나지 않는다.</p>
+     *
+     * @return 예문이 있는 문법만 담긴 맵 — 없는 문법은 키 자체가 없다(호출부가 빈 배열로 채운다)
+     */
+    public Map<Long, List<GrammarExampleEntity>> findExamplesByGrammarIds(Collection<Long> grammarIds) {
+        if (grammarIds == null || grammarIds.isEmpty()) {
+            return Map.of();
+        }
+        List<GrammarExampleEntity> examples = queryFactory
+                .selectFrom(GRAMMAR_EXAMPLE)
+                .where(GRAMMAR_EXAMPLE.grammarPoint.id.in(grammarIds))
+                .orderBy(GRAMMAR_EXAMPLE.grammarPoint.id.asc(), GRAMMAR_EXAMPLE.sortOrder.asc())
+                .fetch();
+
+        Map<Long, List<GrammarExampleEntity>> byGrammarId = new LinkedHashMap<>();
+        for (GrammarExampleEntity example : examples) {
+            byGrammarId.computeIfAbsent(example.getGrammarPoint().getId(), unused -> new ArrayList<>()).add(example);
+        }
+        return byGrammarId;
     }
 
     public long countAll(CourseLanguage language) {

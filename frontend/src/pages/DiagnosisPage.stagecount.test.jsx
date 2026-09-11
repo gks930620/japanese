@@ -1,5 +1,9 @@
-// frontend-dev 작성 — 최대 문항 수는 상수가 아니라 계단(코스 수)에서 파생된다.
-// N1이 열리면 계단이 5단계가 되고 안내 문구도 15문제로 따라 움직여야 한다(설계/05 §15-2).
+// 시작 화면이 말하는 **최대 단계 수**는 상수가 아니라 공개 코스에서 계산된 값이다 (설계/09 §3-1 · 인수 조건 A1).
+// 2026-09-10 개편: "최대 {계단×3}문제"(한 문항씩 넘기던 화면) → **"최대 {계단}단계"**(레벨마다 6문항 한 화면).
+// 문항 수가 아니라 **단계 수**를 말하는 이유는, 단계마다 재료 사정으로 5문항이 나올 수 있어
+// "최대 36문항"이 정확한 약속이 아니기 때문이다(E5). 단계 수는 코스 상태만으로 정확하다.
+//
+// ★ 이 규칙은 이 파일 하나가 고정한다(08 C-11) — `DiagnosisPage.test.jsx`는 문구·흐름만 본다.
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
@@ -31,33 +35,29 @@ function renderPage(courses) {
   );
 }
 
-describe("시작 화면의 최대 문항 수 (계단 × 3)", () => {
-  // 문항 수는 상수가 아니라 **계단 길이에서 파생되는 값**이다 — 코스가 열리면 자동으로 늘어난다.
-  // 그래서 숫자를 적지 않고 stagePlan에서 계산해 비교한다(픽스처가 실제 상태를 따라가므로 이것이 곧 제품 값이다).
-  it("개통된 코스만큼 계단이 늘어난다 — 지금은 N5~N1 다섯 단계", async () => {
+describe("시작 화면의 최대 단계 수 (A1)", () => {
+  it("개통된 코스만큼 계단이 된다 — 지금은 입문~N1 여섯 단계", async () => {
     const courses = coursesFixture();
     renderPage(courses);
 
-    const expected = stagePlan(courses).length * 3;
-    expect(await screen.findByText(new RegExp(`최대 ${expected}문제`))).toBeInTheDocument();
+    const expected = stagePlan(courses).length;
+    expect(expected).toBe(6); // 입문이 계단에 들어왔다(08 §F-13 뒤집힘 절)
+    expect(await screen.findByText(new RegExp(`최대 ${expected}단계`))).toBeInTheDocument();
   });
 
-  it("N1이 준비중으로 돌아가면 문항 수가 줄어든다", async () => {
+  it("N1이 준비중으로 돌아가면 단계 수가 줄어든다", async () => {
     const courses = coursesWithStatus({ 5: "PREPARING" });
     renderPage(courses);
 
-    const expected = stagePlan(courses).length * 3;
-    expect(await screen.findByText(new RegExp(`최대 ${expected}문제`))).toBeInTheDocument();
+    expect(await screen.findByText(new RegExp(`최대 ${stagePlan(courses).length}단계`))).toBeInTheDocument();
   });
 
-  it("입문이 열려도 계단에 들어가지 않아 문항 수가 늘지 않는다", async () => {
-    // 입문은 한자 0자라 단계를 만들 수 없다(설계/06 §2·§6 판정 J-5) — 추천 대상이긴 하다(설계/08 C-11)
-    const withIntro = coursesWithStatus({ 0: "AVAILABLE" });
+  it("입문이 준비중이면 단계가 하나 줄고 계단은 N5부터다 (E9)", async () => {
     const withoutIntro = coursesWithStatus({ 0: "PREPARING" });
-    expect(stagePlan(withIntro).length).toBe(stagePlan(withoutIntro).length);
+    const withIntro = coursesFixture();
+    expect(stagePlan(withoutIntro).length).toBe(stagePlan(withIntro).length - 1);
 
-    renderPage(withIntro);
-    const expected = stagePlan(withIntro).length * 3;
-    expect(await screen.findByText(new RegExp(`최대 ${expected}문제`))).toBeInTheDocument();
+    renderPage(withoutIntro);
+    expect(await screen.findByText(new RegExp(`최대 ${stagePlan(withoutIntro).length}단계`))).toBeInTheDocument();
   });
 });

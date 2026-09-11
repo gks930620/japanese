@@ -4,6 +4,7 @@ import com.test.test.common.exception.EntityNotFoundException;
 import com.test.test.course.CourseLanguage;
 import com.test.test.course.CourseLevelCatalog;
 import com.test.test.course.CourseUnitEntity;
+import com.test.test.course.content.GrammarExampleEntity;
 import com.test.test.course.content.GrammarPointEntity;
 import com.test.test.library.dto.GrammarDetailDTO;
 import com.test.test.library.dto.GrammarListItemDTO;
@@ -11,6 +12,7 @@ import com.test.test.library.dto.LibraryPageResponse;
 import com.test.test.library.repository.GrammarRow;
 import com.test.test.library.repository.LibraryGrammarQueryRepository;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -84,11 +86,9 @@ public class LibraryGrammarService {
         if (ids == null) {
             long totalElements = libraryGrammarQueryRepository.count(levelCodes, language, q, onlyGrammarIds, null);
             int pageNumber = LibraryPaging.resolvePage(page, totalElements, pageSize);
-            List<GrammarListItemDTO> content = libraryGrammarQueryRepository
-                    .findPage(levelCodes, language, q, onlyGrammarIds, (long) pageNumber * pageSize, pageSize)
-                    .stream()
-                    .map(row -> GrammarListItemDTO.from(row, grammarIdsWithRules.contains(row.getId())))
-                    .toList();
+            List<GrammarListItemDTO> content = toListItems(libraryGrammarQueryRepository
+                    .findPage(levelCodes, language, q, onlyGrammarIds, (long) pageNumber * pageSize, pageSize),
+                    grammarIdsWithRules);
             return LibraryPageResponse.of(content, pageNumber, pageSize, totalElements,
                     libraryGrammarQueryRepository.countAll(language));
         }
@@ -107,9 +107,27 @@ public class LibraryGrammarService {
         long totalAll = libraryGrammarQueryRepository.count(List.of(), language, null, null, ids);
         int pageNumber = LibraryPaging.resolvePage(page, totalElements, pageSize);
 
-        List<GrammarListItemDTO> content = LibraryPaging.slice(matched, pageNumber, pageSize).stream()
-                .map(row -> GrammarListItemDTO.from(row, grammarIdsWithRules.contains(row.getId())))
-                .toList();
+        List<GrammarListItemDTO> content =
+                toListItems(LibraryPaging.slice(matched, pageNumber, pageSize), grammarIdsWithRules);
         return LibraryPageResponse.of(content, pageNumber, pageSize, totalElements, totalAll);
+    }
+
+    /**
+     * 행 → 목록 항목. 예문은 <b>페이지 전체를 한 번에</b> 읽어 채운다(설계/04 §3-5 · 08 B-12).
+     *
+     * <p>항목마다 예문을 조회하면 그것이 정확히 이 계약이 없애려던 N+1이다 — 진단 한 단계가
+     * 문법 수만큼(N1이면 69번) 왕복하던 것을 한 번으로 줄이는 것이 목적이기 때문이다.
+     * 예문이 없는 문법은 맵에 키가 없고, 그 자리는 {@code []}가 된다(컬렉션은 null이 아니다 — 08 B-5).</p>
+     */
+    private List<GrammarListItemDTO> toListItems(List<GrammarRow> rows, Set<Long> grammarIdsWithRules) {
+        Map<Long, List<GrammarExampleEntity>> examplesByGrammarId = libraryGrammarQueryRepository
+                .findExamplesByGrammarIds(rows.stream().map(GrammarRow::getId).toList());
+
+        return rows.stream()
+                .map(row -> GrammarListItemDTO.from(row, grammarIdsWithRules.contains(row.getId()),
+                        examplesByGrammarId.getOrDefault(row.getId(), List.of()).stream()
+                                .map(GrammarDetailDTO.ExampleDTO::from)
+                                .toList()))
+                .toList();
     }
 }

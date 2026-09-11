@@ -283,11 +283,25 @@ data: { id, letter, meaningKo, onyomi, kunyomi, level,
 기본 `size=20`. 파라미터 `page` `size` `q` `level` `hasRules`.
 
 ```
-content: [ { id, name, nameKo, level, hasRules } ]
+content: [ {
+  id, name, nameKo, level, hasRules,
+  examples: [ { id, jp, kana, meaningKo } ]      // 2026-09-10 추가 — 없으면 [] (null 아님)
+} ]
 ```
 
 - `hasRules` — 활용 규칙표 보유 여부. 목록 배지와 필터가 이걸 근거로 한다.
 - 필터로서의 `hasRules`는 **`true`만 지원한다.** `false`는 "규칙표 없는 것만"이 아니라 **필터 미적용**으로 처리된다.
+- **`examples`는 상세(§3-6)의 예문과 같은 데이터·같은 모양**이다(같은 `ExampleDTO`). 목록이 예문을 따로 만들지 않는다(08 C-7).
+  `kana`는 없으면 `null`이고, 예문이 없는 문법은 **`[]`** 다 — **`null`을 내려보내지 않는다**(08 B-5).
+- **조건부 파라미터(`withExamples` 같은 스위치)를 두지 않는다.** shape이 요청에 따라 갈리면
+  프론트가 "요청하지 않아서 빈 것"과 "예문이 없어서 빈 것"을 구분해야 해 분기가 두 겹이 된다(08 B-5·B-12).
+- **왜 목록에 싣나**: 실력 진단의 문장 문항(`SENTENCE_MEANING`)·빈칸 문항(`GRAMMAR_CLOZE`) 재료가 예문인데,
+  목록에 없으면 한 단계를 만들려고 상세를 **문법 수(최대 69회)만큼** 불러야 한다. 한 화면의 재료는 호출 한 번이다(08 B-7).
+- **레벨 전량이 한 페이지에 온다**: 레벨별 문법은 최대 69개이고 자료실 `size` 상한이 100이라
+  `?level={코드}&size=100` 한 번이면 그 레벨 전부다(진단이 이 호출을 쓴다).
+- 영어 자료실(`/api/en/library/grammar`)은 **같은 서비스·같은 DTO**라 이 필드가 동시에 생긴다(§8).
+
+고정 테스트: `integration/LibraryGrammarExamplesIntegrationTest`
 
 ### 3-6. `GET /api/library/grammar/{grammarId}` — 문법 상세
 
