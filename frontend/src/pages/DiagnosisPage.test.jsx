@@ -1,109 +1,57 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { apiError, apiSuccess, stubFetch } from "../test/helpers.jsx";
 import {
-  coursesFixture,
-  grammarListItemFixture,
-  libraryPageFixture,
-  vocabularyEntryFixture,
-} from "../test/apiFixtures.js";
-import { answerStage, diagnosisCards, submitButton } from "../test/diagnosisHelpers.js";
-import { DiagnosisPage } from "./DiagnosisPage.jsx";
+  answerStage,
+  diagnosisCards,
+  libraryCalls,
+  renderDiagnosis,
+  resultRows,
+  startLevel,
+  submitButton,
+  submitLevel,
+} from "../test/diagnosisHelpers.jsx";
 
 /**
- * 실력 진단 화면 — **레벨 1장, 6문항, 한 번 제출** (설계/09 §3 · 05 §15-2 — TDD Red, senior-dev 2026-09-10)
+ * 실력 진단 — **한 판**(레벨 하나, 6문항, 한 번 제출, 결과 화면에서 멈춤)
+ * (설계/09 §3 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
  *
- * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A1·A2·A3·A4·A5·A6·A7·A8·A19** + 예외 **E6·E7**.
- * 계단·문항 생성·채점 규칙은 `lib/diagnosis.test.js`가 고정한다 — 이 파일은 **화면 동작**만 본다(08 C-11).
+ * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A3·A4·A6·A7·A25·A26·A27·A28·A29·A32** + 예외 **E17·E18**.
+ * 레벨 고르기는 `DiagnosisPage.levels.test.jsx`, 여러 판의 누적은 `DiagnosisPage.rounds.test.jsx`,
+ * 갈래 머리글은 `DiagnosisPage.groups.test.jsx`가 맡는다(08 C-11).
  *
- * ★ 이 화면의 DOM 계약(09 §3-7): 문항 카드 = `<fieldset>`(role=group) · 지문 = `.quiz-prompt` ·
- *   보기 = 한 문항당 같은 `name`을 가진 `<input type="radio">` 5개 · 제출 = 버튼 1개.
- *   라디오인 이유는 **제출 전에 답을 바꿀 수 있어야** 하기 때문이다(A4) — 즉시 채점 퀴즈의 버튼과 성격이 다르다.
+ * ★ 2026-09-14에 이 파일에서 **지운 단언 넷**(덮어쓰지 않고 지웠다 — 두 벌이 공존하면 사고가 난다, 08 C-11):
+ *   · A1 "시작 화면이 최대 단계 수를 말한다"     → 레벨 고르기 화면으로 대체(A21 — levels 파일)
+ *   · A2 "[시작하기]를 누르면 입문 단계가 먼저"  → 기본 선택값 규칙으로 대체(A22 — levels 파일)
+ *   · A5 "마지막 단계에서는 제출 라벨이 바뀐다"  → 라벨은 **언제나 하나**(A25)
+ *   · A8 "4문항 이상 맞히면 다음 단계로 넘어간다" → **통과든 미달이든 결과 화면**(A26). 통과선만 남았다(A27)
+ *
+ * 이 화면의 DOM 계약(09 §3-7): 문항 카드 = `<fieldset>`(role=group) · 지문 = `.quiz-prompt` ·
+ * 보기 = 한 문항당 같은 `name`을 가진 `<input type="radio">` 5개 · 제출 = 버튼 1개 · 결과 머리글 = `.diag-headline`.
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.
  */
 
-const COURSES = coursesFixture();
-
-/** 번호가 짝지어진 재료 — 지문의 번호와 같은 번호의 보기가 정답이다(무작위 출제에도 흔들리지 않는다) */
-const VOCAB = libraryPageFixture(
-  Array.from({ length: 8 }, (_, i) =>
-    vocabularyEntryFixture({ id: 100 + i, word: `たんご${i + 1}`, kana: `たんご${i + 1}`, meanings: [`뜻${i + 1}`] }),
-  ),
-);
-const GRAMMAR = libraryPageFixture(
-  Array.from({ length: 8 }, (_, i) =>
-    grammarListItemFixture({
-      id: 300 + i,
-      name: `〜ぶんぽう${i + 1}`,
-      nameKo: `문법뜻${i + 1}`,
-      examples: [{ jp: `これは ぶんぽう${i + 1}です。`, meaningKo: `예문뜻${i + 1}` }],
-    }),
-  ),
-);
-
-function renderPage(courses = COURSES) {
-  const fetchMock = stubFetch((url) => {
-    if (url.includes("/api/users/me")) return apiError(401, "NOT_AUTHENTICATED");
-    if (url.includes("/api/courses")) return apiSuccess(courses);
-    if (url.includes("/api/library/grammar")) return apiSuccess(GRAMMAR);
-    if (url.includes("/api/library/vocabulary")) return apiSuccess(VOCAB);
-    return apiSuccess(null);
-  });
-
-  render(
-    <MemoryRouter initialEntries={["/diagnosis"]}>
-      <Routes>
-        <Route element={<DiagnosisPage />} path="/diagnosis" />
-      </Routes>
-    </MemoryRouter>,
-  );
-  return fetchMock;
-}
-
 const cards = diagnosisCards;
+const headline = () => document.querySelector(".diag-headline")?.textContent?.trim() ?? null;
 
-async function start(user) {
-  await user.click(await screen.findByRole("button", { name: "시작하기" }));
-  await screen.findByRole("button", { name: /제출하고/ });
-}
-
-describe("시작 화면 (A1)", () => {
-  it("레벨당 문항 수·한 화면 제출·최대 단계 수를 말한다 — '3분'은 없다", async () => {
-    renderPage();
-
-    expect(await screen.findByRole("button", { name: "시작하기" })).toBeInTheDocument();
-    const text = document.body.textContent;
-    expect(text).toMatch(/6문항/);
-    expect(text).toMatch(/한 화면/);
-    expect(text).toMatch(/모르겠어요/); // 첫 문항에서 처음 보면 "눌러도 되나"를 망설인다
-    expect(text).toMatch(/저장되지 않아요/);
-    // 최대 36문항이 될 수 있어 "3분"은 거짓말이 된다
-    expect(text).not.toMatch(/3분/);
-    expect(screen.queryAllByRole("radio")).toHaveLength(0);
-  });
-
-  // 최대 단계 수가 **계산값**이라는 규칙은 `DiagnosisPage.stagecount.test.jsx` 하나가 고정한다(08 C-11).
-});
-
-describe("단계 화면 (A2·A3·A9·A10)", () => {
-  it("첫 단계는 입문이고 진행 줄이 레벨과 문항 수를 말한다", async () => {
-    renderPage();
+describe("문항 화면 (A3·A9·A10·A28)", () => {
+  it("진행 줄은 '{레벨} 레벨 · {n}문항'이다 — 화면에 '단계'라는 말이 없다 (A28·D17)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
+    await startLevel(user);
 
     // 입문 코스의 levelLabel은 "문자"다 — 문자열을 잘라 만든 값이 아니다
-    expect(document.body.textContent).toMatch(/문자 단계 · 6문항/);
-    // 전체 분모("5 / 36")는 쓰지 않는다 — 총 문항이 가변이라 거짓 약속이 된다(05 §15-2)
+    expect(document.body.textContent).toMatch(/문자 레벨 · 6문항/);
+    expect(document.body.textContent).not.toMatch(/단계/);
+    // 전체 분모("5 / 36")는 쓰지 않는다 — 한 번에 치는 것은 한 레벨뿐이라 총량이 없다(A21)
     expect(document.body.textContent).not.toMatch(/\/\s*36/);
   });
 
-  it("문항 6개가 한 화면에 동시에 있고, 문항마다 보기가 5개다", async () => {
-    renderPage();
+  it("문항 6개가 한 화면에 동시에 있고, 문항마다 보기가 5개다 (A3·A9)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
+    await startLevel(user);
 
     expect(cards()).toHaveLength(6);
     cards().forEach((card) => {
@@ -112,10 +60,10 @@ describe("단계 화면 (A2·A3·A9·A10)", () => {
     expect(screen.getAllByRole("radio")).toHaveLength(30);
   });
 
-  it("[모르겠어요]는 문항마다 하나씩, 언제나 맨 아래다", async () => {
-    renderPage();
+  it("[모르겠어요]는 문항마다 하나씩, 언제나 맨 아래다 (A10)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
+    await startLevel(user);
 
     cards().forEach((card) => {
       const radios = within(card).getAllByRole("radio");
@@ -125,11 +73,11 @@ describe("단계 화면 (A2·A3·A9·A10)", () => {
   });
 });
 
-describe("답 고르기와 제출 (A4·A5·A6)", () => {
-  it("제출 전에는 답을 몇 번이든 바꿀 수 있다", async () => {
-    renderPage();
+describe("답 고르기와 제출 (A4·A6·A25)", () => {
+  it("제출 전에는 답을 몇 번이든 바꿀 수 있다 (A4)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
+    await startLevel(user);
 
     const radios = within(cards()[0]).getAllByRole("radio");
     await user.click(radios[0]);
@@ -144,10 +92,10 @@ describe("답 고르기와 제출 (A4·A5·A6)", () => {
     expect(radios[2]).not.toBeChecked();
   });
 
-  it("미응답이 있으면 그 개수를 한 줄로 말하고, 0이면 그 줄이 사라진다", async () => {
-    renderPage();
+  it("미응답이 있으면 그 개수를 한 줄로 말하고, 0이면 그 줄이 사라진다 (A6)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
+    await startLevel(user);
 
     expect(screen.getByText(/아직 6문항을 고르지 않았어요/)).toBeInTheDocument();
     expect(document.body.textContent).toMatch(/모름으로 처리/);
@@ -161,109 +109,139 @@ describe("답 고르기와 제출 (A4·A5·A6)", () => {
     expect(submitButton()).toBeEnabled();
   });
 
-  it("제출 버튼은 하나이고, 마지막 단계에서는 라벨이 바뀐다", async () => {
-    renderPage();
+  /** 라벨이 갈리던 규칙(A5)은 폐기됐다 — 제출은 언제나 결과 화면으로 간다(D10) */
+  it("제출 버튼은 하나이고 라벨은 언제나 '제출하고 결과 보기 ›'다 (A25)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
+    await startLevel(user, "고급(JLPT N1)"); // 어느 레벨을 고르든 같은 라벨이다
 
     expect(screen.getAllByRole("button", { name: /제출하고/ })).toHaveLength(1);
-    expect(submitButton()).toHaveAccessibleName(/제출하고 다음 단계로/);
-  });
-
-  it("계단이 한 단계뿐이면 처음부터 [제출하고 결과 보기]다", async () => {
-    const onlyIntro = COURSES.map((course) =>
-      course.courseNo === 0 ? course : { ...course, status: "PREPARING", unitCount: 0 },
-    );
-    renderPage(onlyIntro);
-    const user = userEvent.setup();
-    await start(user);
-
-    expect(submitButton()).toHaveAccessibleName(/제출하고 결과 보기/);
+    expect(submitButton()).toHaveAccessibleName("제출하고 결과 보기 ›");
+    expect(document.body.textContent).not.toMatch(/다음 단계로/);
   });
 });
 
-describe("제출 결과 (A7·A8·E6·E7)", () => {
-  it("4문항 이상 맞히면 다음 단계로 넘어간다 — 정오는 어디에도 없다", async () => {
-    renderPage();
+describe("제출하면 언제나 결과 화면 (A26·A7·E17·E18)", () => {
+  it("통과해도 다음 레벨 문항이 자동으로 뜨지 않는다 — 결과 화면에서 멈춘다 (A26)", async () => {
+    const fetchMock = renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
-    await answerStage(user, { correct: true });
-    await user.click(submitButton());
+    await startLevel(user);
+    const callsBefore = libraryCalls(fetchMock).length;
 
-    expect(await screen.findByText(/JLPT N5 단계 · 6문항/)).toBeInTheDocument();
-    // 정답 표시·근거 박스·맞은 개수는 **DOM에 없다**(CSS로 숨기는 것이 아니다 — A7)
-    const text = document.body.textContent;
+    await submitLevel(user, { correct: true });
+
+    expect(headline()).toBe("이 레벨은 충분해요");
+    expect(screen.queryAllByRole("radio")).toHaveLength(0);
+    // 제출과 결과 사이에 **로딩이 없다** — 채점이 로컬이고 부를 재료가 없다(D10)
+    expect(libraryCalls(fetchMock)).toHaveLength(callsBefore);
+  });
+
+  it("미달해도 같은 자리에서 멈춘다 — 통과와 미달이 같은 모양으로 끝난다 (A26)", async () => {
+    renderDiagnosis();
+    const user = userEvent.setup();
+    await startLevel(user, "왕초보(JLPT N5)");
+
+    await submitLevel(user, { correct: false });
+
+    expect(headline()).toBe("이 레벨은 아직 조금 어려워요");
+    expect(screen.queryAllByRole("radio")).toHaveLength(0);
+  });
+
+  it("어느 문항이 맞고 틀렸는지가 화면 어디에도 없다 (A7)", async () => {
+    renderDiagnosis();
+    const user = userEvent.setup();
+    await startLevel(user);
+    await submitLevel(user, { correct: true });
+
+    // 정답 표시·근거 박스·"맞은 개수"는 **DOM에 없다**(CSS로 숨기는 것이 아니다).
+    // ★ 결과 표의 열 제목 `정답 수 / 문항 수`는 **판별 집계**라 예외다(09 §3-7) — "정답"이라는 낱말이 허용되는 자리는 그 하나뿐이다.
+    //   (1차의 /정답/ 단언이 통과했던 것은 제출 직후 화면이 결과가 아니라 다음 단계 로딩이었기 때문이다 — 2026-09-15 정정)
+    const text = document.body.textContent.replace(/정답 수 \/ 문항 수/g, "");
     expect(text).not.toMatch(/정답/);
     expect(text).not.toMatch(/오답/);
-    expect(text).not.toMatch(/맞은/);
+    expect(text).not.toMatch(/맞은|틀린/);
+    expect(document.querySelector(".quiz-prompt")).toBeNull(); // 문항 지문·보기가 결과에 남지 않는다
     expect(document.querySelector(".quiz-verdict")).toBeNull();
     expect(document.querySelector(".quiz-evidence")).toBeNull();
   });
 
-  it("3문항 이하면 거기서 끝나고 결과 화면이 나온다 (A8)", async () => {
-    renderPage();
+  it("한 문항도 고르지 않고 제출해도 넘어간다 — 전부 모름 = 0점 (E17)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
-    await answerStage(user, { correct: false });
+    await startLevel(user, "왕초보(JLPT N5)");
+
     await user.click(submitButton());
 
-    expect(await screen.findByText(/부터 시작하세요/)).toBeInTheDocument();
-    expect(screen.queryAllByRole("radio")).toHaveLength(0);
+    expect(headline()).toBe("이 레벨은 아직 조금 어려워요");
+    expect(resultRows()).toEqual([["JLPT N5", "0 / 6", "—"]]);
   });
 
-  it("한 문항도 고르지 않고 제출해도 넘어간다 — 전부 모름 = 0점 (E6)", async () => {
-    renderPage();
+  it("제출 연타는 한 번만 처리한다 (E18)", async () => {
+    const fetchMock = renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
-    await user.click(submitButton());
-
-    expect(await screen.findByText(/부터 시작하세요/)).toBeInTheDocument();
-  });
-
-  it("제출 연타는 한 번만 처리한다 (E7)", async () => {
-    const fetchMock = renderPage();
-    const user = userEvent.setup();
-    await start(user);
-    const callsBefore = fetchMock.mock.calls.filter(([url]) => String(url).includes("/api/library/")).length;
+    await startLevel(user);
+    const callsBefore = libraryCalls(fetchMock).length;
 
     await answerStage(user, { correct: true });
     const submit = submitButton();
     await user.click(submit);
     await user.click(submit);
 
-    await screen.findByText(/JLPT N5 단계/);
-    const callsAfter = fetchMock.mock.calls.filter(([url]) => String(url).includes("/api/library/")).length;
-    // 다음 단계 재료를 두 번 부르지 않는다(부르면 6문항이 두 번 갈린다)
-    expect(callsAfter - callsBefore).toBe(2); // 어휘 1 + 문법 1
+    // 결과 표에 같은 레벨이 두 행으로 서지 않는다. 재료를 다시 부르지도 않는다
+    expect(resultRows()).toHaveLength(1);
+    expect(libraryCalls(fetchMock)).toHaveLength(callsBefore);
   });
 });
 
-describe("결과 화면 (A19)", () => {
-  it("진행한 단계만 행이 되고, 각 행이 정답 수 / 문항 수 / 판정을 보여준다", async () => {
-    renderPage();
+describe("결과 화면 — 한 판 (A29·A27·A32)", () => {
+  it("캡션이 방금 친 레벨을 말하고, 헤드라인이 판정을 말한다 (A29)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
-    await answerStage(user, { correct: false });
-    await user.click(submitButton());
-    await screen.findByText(/부터 시작하세요/);
+    await startLevel(user, "중상급(JLPT N2)");
+    await submitLevel(user, { correct: true });
 
-    // 진행한 단계만 행이 된다 — 가지 않은 단계로 빈 행을 만들지 않는다(05 §15-2)
-    const row = screen.getByRole("row", { name: /문자/ });
-    expect(within(row).getByText(/0\s*\/\s*6/)).toBeInTheDocument();
-    expect(screen.queryByRole("row", { name: /JLPT N5/ })).toBeNull();
-    // 판정에 쓰지 않는 숫자(모름 개수)를 따로 만들지 않는다(D1·05 §19-6)
-    expect(document.body.textContent).not.toMatch(/모름 \d/);
+    expect(screen.getByText("진단 결과 · 중상급(JLPT N2)")).toBeInTheDocument();
+    expect(headline()).toBe("이 레벨은 충분해요");
+    expect(screen.getByText("다음 레벨에 도전해 볼까요?")).toBeInTheDocument();
   });
 
-  it("추천 코스로 가는 주 버튼과 [다시 진단하기]가 있다", async () => {
-    renderPage();
+  it("행이 하나뿐인 첫 판에서도 표를 그린다 — 근거는 언제나 같은 자리다 (A32)", async () => {
+    renderDiagnosis();
     const user = userEvent.setup();
-    await start(user);
-    await user.click(submitButton());
-    await screen.findByText(/부터 시작하세요/);
+    await startLevel(user, "중상급(JLPT N2)");
+    await submitLevel(user, { correct: true });
 
-    expect(screen.getByRole("link", { name: /코스 시작하기/ }).getAttribute("href")).toMatch(/^\/courses\/\d+$/);
-    expect(screen.getByRole("button", { name: "다시 진단하기" })).toBeInTheDocument();
-    expect(screen.getByText(/저장되지 않아요/)).toBeInTheDocument();
+    // 3열 — 레벨 / `정답 수 / 문항 수`(한 칸) / 판정. 판정 낱말은 `통과` / `—` 다(D12 · §14-3)
+    expect(resultRows()).toEqual([["JLPT N2", "6 / 6", "통과"]]);
+    expect(screen.getByRole("row", { name: /JLPT N2/ })).toBeInTheDocument();
+  });
+
+  it("추천 한 줄과 '저장되지 않아요' 한 줄이 따라온다", async () => {
+    renderDiagnosis();
+    const user = userEvent.setup();
+    await startLevel(user, "중상급(JLPT N2)");
+    await submitLevel(user, { correct: true });
+
+    // N2를 통과했으니 그 위 = N1 코스다(D14). 코스명·레벨명은 API 값이다
+    expect(screen.getByText("지금 시작한다면 고급(JLPT N1) 코스가 좋아요.")).toBeInTheDocument();
+    expect(
+      screen.getByText("지금까지 친 레벨 기록은 저장되지 않아요. 새로고침하면 사라져요."),
+    ).toBeInTheDocument();
+  });
+
+  /** 통과선은 만들어진 문항 수에서 나온다 — 6문항이면 4개가 통과선이다(A27) */
+  it("6문항 중 4문항을 맞히면 통과다 (A27)", async () => {
+    renderDiagnosis();
+    const user = userEvent.setup();
+    await startLevel(user, "중급(JLPT N3)");
+
+    await answerStage(user, { correct: true });
+    for (const card of cards().slice(4)) {
+      await user.click(within(card).getByRole("radio", { name: "모르겠어요" }));
+    }
+    await user.click(submitButton());
+
+    expect(headline()).toBe("이 레벨은 충분해요");
+    expect(resultRows()).toEqual([["JLPT N3", "4 / 6", "통과"]]);
   });
 });

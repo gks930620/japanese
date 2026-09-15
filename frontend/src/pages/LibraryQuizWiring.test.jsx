@@ -44,6 +44,13 @@ describe("자료실 어휘 퀴즈 (QA 치명 2)", () => {
   });
 
   it("뜻 유형(VOCAB_MEANING)도 출제된다 — 표제어에서 뜻이 사라지지 않는다", async () => {
+    // ★ 화면은 Math.random을 직접 쓴다(rng 주입 없음). 유형 배분이 무작위라 "8문항 중 한 번은 뜻 유형"이
+    //   확률적으로 실패했다(전체 실행 1/N flaky — 2026-09-15). 시드 고정 LCG로 갈아끼워 결정적으로 만든다.
+    let seed = 7;
+    vi.spyOn(Math, "random").mockImplementation(() => {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    });
     renderQuiz();
     const user = userEvent.setup();
     await user.click(await screen.findByRole("button", { name: "문제 풀기" }));

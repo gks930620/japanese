@@ -3359,28 +3359,31 @@ pre {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   진단 단계 화면 — 6문항이 한 카드 안에 (설계/05 §15-2)
+   진단 화면 — 레벨 고르기·문항(갈래로 묶인 6문항)·결과가 한 카드 안에 (설계/05 §15-2)
    문항은 **면이 아니라 선과 여백**으로 가른다: 면 계층이 이미 찼다
    (페이지 흰 → 카드 회색 → 보기 알약 흰 --surface-inset).
    한 겹 더 칠하면 흰 알약이 묻혀 사라진다(§19-7 조용한 실종).
-   새 토큰·새 색 0개, 새 클래스는 .diag-question 하나뿐이다.
+   새 토큰·새 색 0개. 클래스는 .diag-question(문항) · .diag-levels(레벨 선택) ·
+   .diag-level-mark(지난 결과) · .diag-group / .diag-group-title(갈래 묶음)뿐이다.
    ═══════════════════════════════════════════════════════════════════ */
 
-/* fieldset 기본값 해제 — 끄지 않으면 회색 판 위에 문항마다 이중 테두리가 생긴다 */
-.diag-question {
+/* fieldset 기본값 해제 — 끄지 않으면 회색 판 위에 문항마다 이중 테두리가 생긴다.
+   레벨 선택(.diag-levels)도 같은 라벨형 라디오 fieldset이라 **선택자 목록에 더한다**(값을 새로 쓰지 않는다) */
+.diag-question,
+.diag-levels {
   border: 0;
   margin: 0;
   padding: 0;
   min-width: 0;
 }
-/* 문항 사이만 가른다 — **첫 장에는 선이 없다** */
+/* 같은 갈래 안의 문항 사이는 **여백만** — 선은 갈래 사이(.diag-group + .diag-group)로 옮겨 갔다.
+   같은 굵기 1px 선이 두 겹이면 묶음이 안 읽힌다. .diag-levels는 fieldset이 한 장뿐이라 여기 더하지 않는다 */
 .diag-question + .diag-question {
   margin-top: var(--sp-6);
-  padding-top: var(--sp-6);
-  border-top: var(--bw) solid var(--border);
 }
 /* legend — 3단 라벨(§19-2): 작게·굵게·낮은 명도. 브라우저 기본 좌우 패딩도 끈다 */
-.diag-question > legend {
+.diag-question > legend,
+.diag-levels > legend {
   padding: 0;
   margin: 0 0 var(--sp-2);
   font-size: var(--t-sm);
@@ -3389,28 +3392,33 @@ pre {
 }
 
 /* 보기는 **라벨**이다 — 제출 전까지 답을 바꿀 수 있어야 해서 버튼이 아니라 라디오를 쓴다(09 §3-7).
-   .quiz-choice는 유닛·자료실 퀴즈(버튼)와 공유하므로, 라벨용 규칙은 전부 .diag-question 안으로 한정한다.
+   .quiz-choice는 유닛·자료실 퀴즈(버튼)와 공유하므로, 라벨용 규칙은 전부 .diag-question · .diag-levels 안으로 한정한다(레벨 선택도 같은 라디오 알약을 쓴다).
    그래야 버튼 전용 규칙(.correct/.wrong·:disabled)이 라벨로 새지도, 저쪽이 깨지지도 않는다. */
-.diag-question .quiz-choice {
+.diag-question .quiz-choice,
+.diag-levels .quiz-choice {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
 }
-.diag-question .quiz-choice input[type="radio"] {
+.diag-question .quiz-choice input[type="radio"],
+.diag-levels .quiz-choice input[type="radio"] {
   flex: 0 0 auto;
   margin: 0;
   accent-color: var(--point);
 }
 /* 알약이 떠오르지 않는다 — 한 화면에 6문항 × 5보기, 반복 요소다(§19-4) */
-.diag-question .quiz-choice:hover {
+.diag-question .quiz-choice:hover,
+.diag-levels .quiz-choice:hover {
   box-shadow: none;
 }
 /* 포커스 링은 라디오가 아니라 알약 전체에 — 누르는 면이 곧 보기다 */
-.diag-question .quiz-choice:focus-within {
+.diag-question .quiz-choice:focus-within,
+.diag-levels .quiz-choice:focus-within {
   box-shadow: var(--sh-point);
 }
 /* 고른 보기는 면으로 답한다. 라디오는 클래스를 받을 수 없어 :has 말고는 수단이 없다 */
-.diag-question .quiz-choice:has(input:checked) {
+.diag-question .quiz-choice:has(input:checked),
+.diag-levels .quiz-choice:has(input:checked) {
   background: var(--point-soft);
 }
 
@@ -3427,4 +3435,34 @@ pre {
   right: 0;
   top: calc(-1 * var(--sp-3));
   border-top: var(--bw) solid var(--border);
+}
+/* ⚠️ 위 두 규칙에 .diag-levels를 더하지 마라 — 마지막 레벨(고급) 위에 선이 그어진다 */
+
+/* ── 레벨 고르기 ── */
+/* 안내 문단과 목록 사이 숨 — .diag-levels가 새로 갖는 유일한 값이다.
+   위 리셋(margin:0)과 특이도가 같으므로 **반드시 뒤에 둔다** — 앞에 두면 조용히 사라진다 */
+.diag-levels {
+  margin-top: var(--sp-5);
+}
+/* 이미 친 레벨의 지난 결과(`4 / 6`) — 알약 안 오른쪽 끝, 3단 라벨. 굵기는 알약의 것을 상속한다.
+   면·배지·의미색을 쓰지 않는다: 판정은 결과 표가 말한다 */
+.diag-levels .quiz-choice > .diag-level-mark {
+  margin-left: auto;
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+
+/* ── 갈래 묶음 ── */
+/* 갈래 사이에만 선이 있다. 첫 갈래 위에는 없다 — 빈 갈래를 미렌더해도 선이 뜨지 않는다 */
+.diag-group + .diag-group {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-8);
+  border-top: var(--bw) solid var(--border);
+}
+/* legend(--t-sm·--muted)와 지문(--t-xl) 사이 — 크기·명도 두 축으로 갈린다. 갈래마다 색·아이콘을 달리하지 않는다 */
+.diag-group-title {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--t-md);
+  font-weight: var(--w-bold);
+  color: var(--text);
 }

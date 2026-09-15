@@ -2,9 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   DONT_KNOW_CHOICE,
   MIN_STAGE_QUESTIONS,
+  QUESTION_GROUP_ORDER,
   STAGE_SIZE,
   buildStageQuestions,
   countCorrect,
+  groupOfQuestion,
+  groupQuestions,
   isStagePassed,
   passThreshold,
   stagePlan,
@@ -14,18 +17,22 @@ import { hasHangul, hasJapanese, hasKanji, hasKatakana } from "./diagnosisScript
 import { coursesFixture } from "../test/apiFixtures.js";
 
 /**
- * 실력 진단 — **측정 규칙** (설계/09 §3 — TDD Red, senior-dev 작성 2026-09-10 개편)
+ * 실력 진단 — **측정 규칙** (설계/09 §3 — TDD Red, senior-dev 작성 2026-09-10 / 2026-09-14 개정)
  *
- * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A2·A8·A9·A10·A11·A12·A18** + 예외 **E5·E6**.
+ * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A9·A10·A11·A12·A18·A21·A27·A42~A46** + 예외 **E15·E17**.
  *
  * ★ 2026-09-10 개편으로 이 파일의 기대값이 통째로 바뀌었다(08 §F-13 뒤집힘):
  *   · 단계당 3문항(어휘1·한자1·문법1) → **6문항(단어 3·문법 2·문장 1 / N2·N1은 단어 3·빈칸 3)**
- *   · 한자 낱자 문항이 진단에서 빠지면서 **입문이 계단에 들어왔다**(6단계)
+ *   · 한자 낱자 문항이 진단에서 빠지면서 **입문이 목록에 들어왔다**(6레벨)
  *   · 통과 = "3중 2" → **정답 ≥ ceil(문항 수 × 2/3)**
  *   · 모든 문항에 다섯 번째 보기 **[모르겠어요]** 가 붙는다(채점은 오답과 같다)
  *
- * 역할 분담(08 C-11): **표기 규칙은 `diagnosis.script.test.js`가 아니라 `diagnosisScript.test.js` 하나**,
- * **추천 판정은 `diagnosis.recommend.test.js` 하나**다. 이 파일은 계단·문항 구성·채점만 맡는다.
+ * ★ 2026-09-14 개편: **계단이 사라졌다.** `stagePlan`이 주는 것은 이제 "자동으로 훑을 순서"가 아니라
+ *   **사용자가 고르는 레벨 선택지**다(A21·D9). 배열·순서는 그대로라 아래 단언은 유효하지만, 뜻이 바뀌었다.
+ *   같은 개편으로 문항 구성에 **갈래 이름이 붙는다** — 문항 수·유형은 하나도 바뀌지 않는다(D18-2).
+ *
+ * 역할 분담(08 C-11): **표기 규칙은 `diagnosisScript.test.js` 하나**, **추천 판정은 `diagnosis.recommend.test.js` 하나**,
+ * **판 기록·이어가기는 `diagnosis.rounds.test.js` 하나**다. 이 파일은 레벨 목록·문항 구성·갈래·채점만 맡는다.
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.
  */
@@ -71,36 +78,40 @@ const build = (levelCode, material = MATERIAL, seed = 1) =>
 
 const typeCount = (questions, type) => questions.filter((question) => question.type === type).length;
 
-describe("계단 (A2 · 코스 비하드코딩 · 레벨 표기 이원화)", () => {
+describe("레벨 목록 (A21 · 코스 비하드코딩 · 레벨 표기 이원화)", () => {
   /**
    * ★ 뒤집힌 규칙(08 F-13 절): 예전에는 "단계마다 한자 1문항이 필요한데 입문은 한자 0자"라 입문이 빠졌다.
    * 한자 낱자 문항이 사라진 지금, 입문을 뺄 근거가 없다 — 입문 문법 20 · 예문 43 · 어휘 150이 그대로 재료다.
+   *
+   * 2026-09-14: 이 목록은 **자동으로 훑는 계단이 아니라 사용자가 고르는 선택지**다(D9).
+   * 순서가 그대로인 이유는 목록의 **기본 선택값이 가장 낮은 레벨**이기 때문이다(A22).
    */
-  it("입장 가능한 코스 전부가 낮은 순으로 계단이 된다 — 입문이 1단계다", () => {
+  it("입장 가능한 코스 전부가 낮은 순으로 선택지가 된다 — 첫 줄이 입문이다", () => {
     expect(stagePlan(COURSES).map((stage) => stage.levelCode)).toEqual(["INTRO", "N5", "N4", "N3", "N2", "N1"]);
     expect(stagePlan(COURSES)).toHaveLength(6);
   });
 
-  it("각 단계는 조회용 코드와 표시용 문구를 함께 준다 (3단계 qa 치명 ①)", () => {
+  it("각 선택지는 조회용 코드와 표시용 문구를 함께 준다 (3단계 qa 치명 ①)", () => {
     const first = stagePlan(COURSES)[0];
     expect(first.levelCode).toBe("INTRO"); // 자료실 필터에 넘기는 값
-    expect(first.levelLabel).toBe("문자"); // 결과 표에 적는 값 — 잘라서 코드를 만들 수 없다
+    expect(first.levelLabel).toBe("문자"); // 선택지·결과 표에 적는 값 — 잘라서 코드를 만들 수 없다
+    expect(first.title).toBe("입문"); // 선택지 문구는 `{title}({levelLabel})`다(A21)
     expect(first.courseId).toBe(1);
   });
 
-  it("입문이 준비중이면 계단은 자동으로 N5부터다 (E9 — 별도 분기가 없다)", () => {
+  it("입문이 준비중이면 목록은 N5부터다 (E22 — 별도 분기가 없다)", () => {
     const introPreparing = COURSES.map((course) =>
       course.courseNo === 0 ? { ...course, status: "PREPARING" } : course,
     );
     expect(stagePlan(introPreparing).map((stage) => stage.levelCode)).toEqual(["N5", "N4", "N3", "N2", "N1"]);
   });
 
-  it("공개 코스가 하나도 없으면 빈 계단이다 (E10 — 배너 미노출의 근거)", () => {
+  it("공개 코스가 하나도 없으면 빈 목록이다 (E10·E12 — 배너 미노출의 근거)", () => {
     expect(stagePlan(COURSES.map((course) => ({ ...course, status: "PREPARING" })))).toEqual([]);
   });
 });
 
-describe("한 단계의 구성 (A18 · D2-4)", () => {
+describe("한 레벨의 구성 (A18 · D2-4)", () => {
   it("입문~N3은 6문항 = 단어 뜻 3 · 문법 뜻 2 · 문장 뜻 1", () => {
     ["INTRO", "N5", "N4", "N3"].forEach((code) => {
       const questions = build(code);
@@ -145,6 +156,69 @@ describe("한 단계의 구성 (A18 · D2-4)", () => {
       .filter((question) => question.type !== "VOCAB_MEANING")
       .map((question) => question.id.replace(/^[a-z-]+-/, ""));
     expect(new Set(grammarIds).size).toBe(grammarIds.length);
+  });
+});
+
+/**
+ * 갈래 — 문항 유형에서 **기계적으로** 나온다(D18-1). 새 분류 체계가 아니라 **이미 있던 묶음에 이름을 붙인 것**이고,
+ * 문항 수·유형·순서는 하나도 바뀌지 않는다(D18-2). 바뀌는 것은 화면에 그 묶음이 **보인다**는 것뿐이다.
+ *
+ * `문법`(규칙 자체를 아는가)과 `어법`(문장 안에서 쓸 수 있는가)을 가르는 이유: 다른 능력이고,
+ * 진단이 실제로 두 유형을 다 내고 있다. N2·N1의 빈칸 문항은 지금 **질문 문구가 없어서**
+ * (legend에 들어가는 값이 질문이 아니라 예문 뜻이다 — 기획 Q10) `어법` 머리글이 그 자리를 메운다.
+ */
+describe("갈래 (A42~A46 · D18)", () => {
+  it("유형이 갈래를 정한다 — 문법(규칙)과 어법(쓰임)은 다른 갈래다", () => {
+    expect(groupOfQuestion({ type: "VOCAB_MEANING" })).toBe("어휘");
+    expect(groupOfQuestion({ type: "VOCAB_READING" })).toBe("어휘");
+    expect(groupOfQuestion({ type: "GRAMMAR_MEANING" })).toBe("문법");
+    expect(groupOfQuestion({ type: "GRAMMAR_CLOZE" })).toBe("어법");
+    expect(groupOfQuestion({ type: "SENTENCE_MEANING" })).toBe("문장");
+  });
+
+  it("화면 순서는 어휘 → 문법 → 어법 → 문장 고정이다 — 레벨이 바뀌어도 같다 (A43)", () => {
+    expect(QUESTION_GROUP_ORDER).toEqual(["어휘", "문법", "어법", "문장"]);
+  });
+
+  it("입문~N3은 어휘 3 · 문법 2 · 문장 1 — 어법 갈래가 서지 않는다 (A44)", () => {
+    ["INTRO", "N5", "N4", "N3"].forEach((code) => {
+      const groups = groupQuestions(build(code));
+      expect(groups.map((group) => group.title)).toEqual(["어휘", "문법", "문장"]);
+      expect(groups.map((group) => group.items.length)).toEqual([3, 2, 1]);
+    });
+  });
+
+  it("N2·N1은 어휘 3 · 어법 3 — 문법·문장 갈래가 서지 않는다 (A44)", () => {
+    ["N2", "N1"].forEach((code) => {
+      const groups = groupQuestions(build(code));
+      expect(groups.map((group) => group.title)).toEqual(["어휘", "어법"]);
+      expect(groups.map((group) => group.items.length)).toEqual([3, 3]);
+    });
+  });
+
+  /** 빈 갈래를 남기면 "여기 있어야 할 것이 없다"는 **결함 신호**로 읽힌다 — 목록에 아예 넣지 않는다 */
+  it("문항이 0개인 갈래는 목록에 없다 — 문장을 못 만들면 어휘 4 · 문법 2다 (A45)", () => {
+    const material = {
+      ...MATERIAL,
+      grammarItems: MATERIAL.grammarItems.map((item) => ({ ...item, examples: [] })),
+    };
+    const groups = groupQuestions(build("N5", material));
+
+    expect(groups.map((group) => group.title)).toEqual(["어휘", "문법"]);
+    expect(groups.map((group) => group.items.length)).toEqual([4, 2]);
+  });
+
+  it("문항 번호는 갈래와 무관하게 화면 전체에서 1부터 이어진다 (A46)", () => {
+    const groups = groupQuestions(build("N5"));
+
+    expect(groups.flatMap((group) => group.items.map((item) => item.number))).toEqual([1, 2, 3, 4, 5, 6]);
+  });
+
+  it("묶는다고 문항이 빠지거나 순서가 바뀌지 않는다", () => {
+    const questions = build("N5");
+
+    expect(groupQuestions(questions).flatMap((group) => group.items.map((item) => item.question))).toEqual(questions);
+    expect(groupQuestions([])).toEqual([]);
   });
 });
 
@@ -266,7 +340,7 @@ describe("표기 규칙이 문항 생성에 실제로 걸린다 (A13·A14·A17)"
   });
 });
 
-describe("재료가 모자랄 때 (E5 · 09 §1-4)", () => {
+describe("재료가 모자랄 때 (E15 · 09 §1-4)", () => {
   it("문장 문항을 못 만들면 단어로 한 개를 채운다 (D2-4)", () => {
     const material = {
       ...MATERIAL,
@@ -301,7 +375,7 @@ describe("재료가 모자랄 때 (E5 · 09 §1-4)", () => {
   });
 });
 
-describe("채점과 통과 판정 (A8·A11·D5)", () => {
+describe("채점과 통과 판정 (A27·A11·D5)", () => {
   it("통과 기준은 비율이다 — 정답 ≥ ceil(문항 수 × 2/3)", () => {
     expect(passThreshold(6)).toBe(4);
     expect(passThreshold(5)).toBe(4);
