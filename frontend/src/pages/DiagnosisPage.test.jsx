@@ -16,17 +16,20 @@ import {
  * 실력 진단 — **한 판**(레벨 하나, 6문항, 한 번 제출, 결과 화면에서 멈춤)
  * (설계/09 §3 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
  *
- * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A3·A4·A6·A7·A25·A26·A27·A28·A29·A32** + 예외 **E17·E18**.
+ * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A3·A4·A7·A25·A26·A27·A28·A29·A32** + 예외 **E18**.
  * 레벨 고르기는 `DiagnosisPage.levels.test.jsx`, 여러 판의 누적은 `DiagnosisPage.rounds.test.jsx`,
- * 갈래 머리글은 `DiagnosisPage.groups.test.jsx`가 맡는다(08 C-11).
+ * 갈래 머리글은 `DiagnosisPage.groups.test.jsx`, **미응답 제출 조건(A48~A56)은 `DiagnosisPage.unanswered.test.jsx`**가 맡는다(08 C-11).
  *
  * ★ 2026-09-14에 이 파일에서 **지운 단언 넷**(덮어쓰지 않고 지웠다 — 두 벌이 공존하면 사고가 난다, 08 C-11):
  *   · A1 "시작 화면이 최대 단계 수를 말한다"     → 레벨 고르기 화면으로 대체(A21 — levels 파일)
  *   · A2 "[시작하기]를 누르면 입문 단계가 먼저"  → 기본 선택값 규칙으로 대체(A22 — levels 파일)
  *   · A5 "마지막 단계에서는 제출 라벨이 바뀐다"  → 라벨은 **언제나 하나**(A25)
  *   · A8 "4문항 이상 맞히면 다음 단계로 넘어간다" → **통과든 미달이든 결과 화면**(A26). 통과선만 남았다(A27)
+ * ★ 2026-09-20(3차 — 미응답 필수)에 **지운 단언 둘**(같은 이유로 지웠다):
+ *   · A6 "안 고른 문항이 있어도 제출된다 + '모름으로 처리돼요'" → **미응답이 있으면 제출되지 않는다**(A48·A51 — unanswered 파일)
+ *   · E17 "한 문항도 고르지 않고 제출해도 넘어간다"            → 제출되지 않는다(E26). 0/6 미달은 **전부 [모르겠어요]를 고른 경우**뿐(A52)
  *
- * 이 화면의 DOM 계약(09 §3-7): 문항 카드 = `<fieldset>`(role=group) · 지문 = `.quiz-prompt` ·
+ * 이 화면의 DOM 계약(09 §3-7): 문항 카드 = `<fieldset class="diag-question" role="radiogroup">`(2026-09-20) · 지문 = `.quiz-prompt` ·
  * 보기 = 한 문항당 같은 `name`을 가진 `<input type="radio">` 5개 · 제출 = 버튼 1개 · 결과 머리글 = `.diag-headline`.
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.
@@ -73,7 +76,7 @@ describe("문항 화면 (A3·A9·A10·A28)", () => {
   });
 });
 
-describe("답 고르기와 제출 (A4·A6·A25)", () => {
+describe("답 고르기와 제출 (A4·A25)", () => {
   it("제출 전에는 답을 몇 번이든 바꿀 수 있다 (A4)", async () => {
     renderDiagnosis();
     const user = userEvent.setup();
@@ -92,23 +95,6 @@ describe("답 고르기와 제출 (A4·A6·A25)", () => {
     expect(radios[2]).not.toBeChecked();
   });
 
-  it("미응답이 있으면 그 개수를 한 줄로 말하고, 0이면 그 줄이 사라진다 (A6)", async () => {
-    renderDiagnosis();
-    const user = userEvent.setup();
-    await startLevel(user);
-
-    expect(screen.getByText(/아직 6문항을 고르지 않았어요/)).toBeInTheDocument();
-    expect(document.body.textContent).toMatch(/모름으로 처리/);
-
-    await user.click(within(cards()[0]).getAllByRole("radio")[0]);
-    expect(screen.getByText(/아직 5문항을 고르지 않았어요/)).toBeInTheDocument();
-
-    await answerStage(user, { correct: true });
-    expect(screen.queryByText(/고르지 않았어요/)).not.toBeInTheDocument();
-    // 미응답이 있어도 제출은 언제나 열려 있다(D7) — 확인 모달도 없다
-    expect(submitButton()).toBeEnabled();
-  });
-
   /** 라벨이 갈리던 규칙(A5)은 폐기됐다 — 제출은 언제나 결과 화면으로 간다(D10) */
   it("제출 버튼은 하나이고 라벨은 언제나 '제출하고 결과 보기 ›'다 (A25)", async () => {
     renderDiagnosis();
@@ -121,7 +107,7 @@ describe("답 고르기와 제출 (A4·A6·A25)", () => {
   });
 });
 
-describe("제출하면 언제나 결과 화면 (A26·A7·E17·E18)", () => {
+describe("제출하면 언제나 결과 화면 (A26·A7·E18)", () => {
   it("통과해도 다음 레벨 문항이 자동으로 뜨지 않는다 — 결과 화면에서 멈춘다 (A26)", async () => {
     const fetchMock = renderDiagnosis();
     const user = userEvent.setup();
@@ -163,17 +149,6 @@ describe("제출하면 언제나 결과 화면 (A26·A7·E17·E18)", () => {
     expect(document.querySelector(".quiz-prompt")).toBeNull(); // 문항 지문·보기가 결과에 남지 않는다
     expect(document.querySelector(".quiz-verdict")).toBeNull();
     expect(document.querySelector(".quiz-evidence")).toBeNull();
-  });
-
-  it("한 문항도 고르지 않고 제출해도 넘어간다 — 전부 모름 = 0점 (E17)", async () => {
-    renderDiagnosis();
-    const user = userEvent.setup();
-    await startLevel(user, "왕초보(JLPT N5)");
-
-    await user.click(submitButton());
-
-    expect(headline()).toBe("이 레벨은 아직 조금 어려워요");
-    expect(resultRows()).toEqual([["JLPT N5", "0 / 6", "—"]]);
   });
 
   it("제출 연타는 한 번만 처리한다 (E18)", async () => {

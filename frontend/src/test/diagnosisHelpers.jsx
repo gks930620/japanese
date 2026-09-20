@@ -1,6 +1,6 @@
 // 진단 화면 테스트 하네스 — **DOM 계약과 재료 픽스처를 한 곳에만** 둔다 (설계/09 §3-7).
 //
-// 계약: 레벨 선택 = `<fieldset class="diag-levels">` 안의 라디오 · 문항 카드 = `<fieldset>`(role=group) ·
+// 계약: 레벨 선택 = `<fieldset class="diag-levels">` 안의 라디오 · 문항 카드 = `<fieldset class="diag-question" role="radiogroup">`(2026-09-20, 09 §3-7) ·
 //       지문 = `.quiz-prompt` · 보기 = 한 문항당 같은 `name`을 가진 `<input type="radio">` 5개(마지막이 [모르겠어요]) ·
 //       갈래 머리글 = `<h2 class="diag-group-title">` · 제출 = 버튼 1개.
 // 여섯 개의 진단 화면 테스트가 같은 조작·같은 재료를 쓰므로, 계약이 바뀌면 고칠 곳도 여기 하나여야 한다.
@@ -72,9 +72,13 @@ export function renderDiagnosis({ courses = coursesFixture(), coursesResponse = 
 export const libraryCalls = (fetchMock) =>
   fetchMock.mock.calls.map(([url]) => decodeURIComponent(String(url))).filter((url) => url.includes("/api/library/"));
 
-/** 한 화면의 문항 카드들 */
+/**
+ * 한 화면의 문항 카드들 — 계약은 `role="radiogroup"`이다(09 §3-7, 2026-09-20).
+ * 역할 자체는 `DiagnosisPage.unanswered.test.jsx`가 고정한다(08 C-11) — 여기서는 그 계약을 그대로 쓴다.
+ * (3차 구현 중 잠시 두었던 `group` 갈래는 Green 확인 뒤 2026-09-20 제거했다 — 두 계약이 공존하면 어느 쪽이 깨졌는지 알 수 없다.)
+ */
 export function diagnosisCards() {
-  return screen.getAllByRole("group");
+  return screen.getAllByRole("radiogroup");
 }
 
 /** 갈래 머리글 문구 — 화면에 선 순서 그대로 */
@@ -138,6 +142,36 @@ export async function answerStage(user, { correct = true } = {}) {
 
 export function submitButton() {
   return screen.getByRole("button", { name: /제출하고/ });
+}
+
+/* ── 3차 개편(2026-09-16 기획 D19~D25) — 미응답 필수. 문구는 여기 한 곳에만 둔다 ── */
+
+/** 제출 버튼 **위** 남은 수 줄 — 미응답이 1개 이상이면 시도 전에도 보인다. 0이면 줄이 통째로 없다(09 §3-6) */
+export const remainingText = (n) => `아직 ${n}문항을 고르지 않았어요 — 모두 고르면 제출할 수 있어요.`;
+/** 미응답 문항 **안** 안내 줄 — 제출을 시도한 뒤, 그 문항이 미응답인 동안만(09 §3-6) */
+export const PICK_LINE = "답을 골라 주세요 — 모르면 [모르겠어요]를 고르면 돼요.";
+
+/** 남은 수 줄(있으면). 개수까지 맞추려면 `getByText(remainingText(n))`을 쓴다 */
+export function remainingLine() {
+  return screen.queryByText(/아직 \d+문항을 고르지 않았어요/);
+}
+
+/** 화면 전체의 안내 줄들 — 시도 전에는 0개여야 한다 */
+export function pickLines() {
+  return screen.queryAllByText(PICK_LINE);
+}
+
+/** 한 문항 안의 안내 줄(없으면 null) */
+export function pickLineIn(card) {
+  return within(card).queryByText(PICK_LINE);
+}
+
+/** 지정한 문항(0부터)만 답한다 — 나머지는 미응답으로 남긴다 */
+export async function answerCards(user, indexes, { correct = true } = {}) {
+  const cards = diagnosisCards();
+  for (const index of indexes) {
+    await answerCard(user, cards[index], { correct });
+  }
 }
 
 /**

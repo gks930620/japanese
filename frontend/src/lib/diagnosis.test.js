@@ -19,7 +19,8 @@ import { coursesFixture } from "../test/apiFixtures.js";
 /**
  * 실력 진단 — **측정 규칙** (설계/09 §3 — TDD Red, senior-dev 작성 2026-09-10 / 2026-09-14 개정)
  *
- * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A9·A10·A11·A12·A18·A21·A27·A42~A46** + 예외 **E15·E17**.
+ * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A9·A10·A11·A12·A18·A21·A27·A42~A46** + 예외 **E15**.
+ * (E6·E17 "한 문항도 고르지 않고 제출"은 2026-09-16 무효 → E26. 제출 여부는 `DiagnosisPage.unanswered.test.jsx`가 맡는다.)
  *
  * ★ 2026-09-10 개편으로 이 파일의 기대값이 통째로 바뀌었다(08 §F-13 뒤집힘):
  *   · 단계당 3문항(어휘1·한자1·문법1) → **6문항(단어 3·문법 2·문장 1 / N2·N1은 단어 3·빈칸 3)**
@@ -393,7 +394,11 @@ describe("채점과 통과 판정 (A27·A11·D5)", () => {
     expect(isStagePassed(3, 5)).toBe(false);
   });
 
-  it("모름과 미응답은 오답과 똑같이 센다 (A11·E6)", () => {
+  /**
+   * ★ E6("한 문항도 고르지 않고 제출")는 2026-09-16 개편으로 **무효**다 — 화면이 그 제출을 막는다(E26 · unanswered 파일).
+   * 그래도 채점 함수의 계약은 그대로 남는다: 빈 답·모자란 배열이 들어와도 예외 없이 0점이다(A11).
+   */
+  it("모름과 미응답은 오답과 똑같이 센다 (A11)", () => {
     const questions = build("N5");
     const answers = questions.map((question) => question.answerIndex);
 
@@ -401,7 +406,7 @@ describe("채점과 통과 판정 (A27·A11·D5)", () => {
     // 4번째만 모름으로 바꾸면 5점
     const withDontKnow = answers.map((value, index) => (index === 3 ? 4 : value));
     expect(countCorrect(questions, withDontKnow)).toBe(5);
-    // 한 문항도 고르지 않으면 0점 → 미달 → 결과 화면(E6)
+    // 한 문항도 고르지 않으면 0점 — 함수의 전역성(빈 배열도 받는다)이지, 화면의 동선이 아니다
     expect(countCorrect(questions, questions.map(() => null))).toBe(0);
     expect(countCorrect(questions, [])).toBe(0);
   });

@@ -19,6 +19,18 @@ import { Table, TableWrap } from "../components/ui/Table.jsx";
 import { btnClass, cardClass } from "../components/ui/kitClass.js";
 import { ApiErrorCard } from "../components/StateCards.jsx";
 
+/** 남은 수 줄의 id — 제출 버튼이 `aria-describedby`로 가리킨다(09 §3-7). 화면에 한 줄뿐이라 상수로 둔다 */
+const REMAINING_ID = "diag-remaining";
+
+/** 문항 안내 줄의 id — 미응답 문항이 `aria-describedby`로 가리킨다. 이 화면이 만드는 id는 위와 이것 둘뿐이다 */
+const helpIdOf = (questionId) => `diag-q${questionId}-help`;
+
+/**
+ * 미응답인가 — **`== null`이어야 한다.** `!value`로 바꾸면 보기 0번(첫 보기)을 고른 문항이
+ * 미응답이 되어 제출이 영영 막힌다. 판정이 세 곳(제출 검사·남은 수·안내 줄)에서 쓰이므로 여기 하나로 둔다.
+ */
+const isUnanswered = (value) => value == null;
+
 /** 자료실 한 번에 받는 양 — 04 §3-5의 size 상한. 문법은 레벨 전량이 한 페이지에 들어온다 */
 const PAGE_SIZE = 100;
 
@@ -89,9 +101,11 @@ export function DiagnosisPage() {
   const [activeLevel, setActiveLevel] = useState(null); // 지금 부르거나 치는 레벨(stagePlan 항목)
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
+  const [attempted, setAttempted] = useState(false); // 제출을 한 번이라도 시도했나 — 미응답 안내 줄은 시도 뒤에만 붙는다(09 §3-6)
   const [results, setResults] = useState([]); // 판 기록 — 레벨당 한 행, 레벨 순(recordLevelResult)
   const [lastRound, setLastRound] = useState(null); // 방금 친 한 판 — 결과 캡션·이어가기의 근거
   const submitting = useRef(false); // 연타 = 첫 클릭만(09 §3-6). 화면 전환이 막고, 같은 틱의 두 번째 클릭은 이 가드가 막는다
+  const questionRefs = useRef([]); // 문항 번호-1 → fieldset. 막힌 제출이 데려갈 곳을 찾는 데만 쓴다(09 §3-7)
 
   useEffect(() => {
     let cancelled = false;
@@ -143,6 +157,7 @@ export function DiagnosisPage() {
 
     setQuestions(stageQuestions);
     setAnswers(stageQuestions.map(() => null));
+    setAttempted(false);
     submitting.current = false;
     setPhase("stage");
   };
@@ -151,8 +166,29 @@ export function DiagnosisPage() {
     setAnswers((prev) => prev.map((value, index) => (index === questionIndex ? choiceIndex : value)));
   };
 
+  /**
+   * 막힌 제출이 데려가는 곳 — 스크롤은 **fieldset**에, 초점은 **그 문항의 첫 라디오**에(09 §3-7).
+   * `behavior`를 넘기지 않는다: 넘기면 킷 base.css의 `prefers-reduced-motion` 처리를 우회한다(화면정의 §4-3 함정 5).
+   * `preventScroll`이 없으면 초점 호출이 라디오 기준으로 다시 스크롤해 안내 줄이 위로 밀린다.
+   */
+  const goToQuestion = (index) => {
+    const card = questionRefs.current[index];
+    if (!card) return;
+    card.scrollIntoView({ block: "start" });
+    // fieldset이 아니라 라디오에 두는 이유: 화살표 한 번이 곧 답이어야 한다 — Tab으로 거슬러 오르지 않는다
+    card.querySelector('input[type="radio"]')?.focus({ preventScroll: true });
+  };
+
   /** 제출 — 채점은 여기서 끝난다. 부를 재료가 없으므로 결과 화면까지 로딩이 없다(09 §3-6) */
   const submitLevel = () => {
+    // ★ 미응답 검사가 가드보다 **먼저**다(09 §3-6). 가드를 먼저 켜면 막힌 첫 클릭이 그 다음 정상 제출까지 영영 막는다
+    const firstUnanswered = answers.findIndex(isUnanswered);
+    if (firstUnanswered >= 0) {
+      // 막힌 시도는 흔적을 남기지 않는다 — 판 기록·채점·추천 어느 것도 일어나지 않고 submitting도 건드리지 않는다
+      setAttempted(true);
+      goToQuestion(firstUnanswered);
+      return;
+    }
     if (submitting.current) return;
     submitting.current = true;
     const correct = countCorrect(questions, answers);
@@ -359,7 +395,7 @@ export function DiagnosisPage() {
   }
 
   /* ── 문항 화면 (A3~A6 · A25 · A28 · A42~A46) — 6문항이 갈래로 묶여 한 화면에, 제출 버튼은 하나 ── */
-  const unanswered = answers.filter((value) => value == null).length;
+  const unanswered = answers.filter(isUnanswered).length;
 
   return (
     <section className="diag-wrap">
@@ -373,39 +409,67 @@ export function DiagnosisPage() {
         {groupQuestions(questions).map((group) => (
           <section key={group.title} className="diag-group">
             <h2 className="diag-group-title">{group.title}</h2>
-            {group.items.map(({ question, number }) => (
-              <fieldset key={question.id} className="diag-question">
-                <legend>
-                  {number}. {question.prompt.sub}
-                </legend>
-                <p className="quiz-prompt jp">{question.prompt.main}</p>
-                {/* 후리가나는 루비가 아니라 줄 병기다 — 데이터가 글자별 대응을 갖고 있지 않다(09 §3-4) */}
-                {question.prompt.kana && <p className="quiz-prompt-sub jp">{question.prompt.kana}</p>}
-                <div className="quiz-choices">
-                  {question.choices.map((choice, choiceIndex) => (
-                    <label key={choiceIndex} className="quiz-choice">
-                      <input
-                        checked={answers[number - 1] === choiceIndex}
-                        name={question.id}
-                        type="radio"
-                        value={choiceIndex}
-                        onChange={() => choose(number - 1, choiceIndex)}
-                      />
-                      <span>{choice}</span>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-            ))}
+            {group.items.map(({ question, number }) => {
+              // 안내 줄은 **제출을 시도한 뒤, 그 문항이 미응답인 동안만** 있다. 답하면 줄과 두 속성을 함께 뗀다(09 §3-7)
+              const needsPick = attempted && isUnanswered(answers[number - 1]);
+              const helpId = helpIdOf(question.id);
+              return (
+                <fieldset
+                  key={question.id}
+                  ref={(node) => {
+                    questionRefs.current[number - 1] = node;
+                  }}
+                  aria-describedby={needsPick ? helpId : undefined}
+                  aria-invalid={needsPick ? "true" : undefined}
+                  className="diag-question"
+                  // ARIA 1.2에서 aria-invalid가 허용되는 역할이다(fieldset 기본 역할 group에는 허용되지 않는다). 이름은 여전히 legend가 준다
+                  role="radiogroup"
+                >
+                  <legend>
+                    {number}. {question.prompt.sub}
+                  </legend>
+                  {/* legend 바로 다음 자식, 지문 위. role="status"·aria-live를 쓰지 않는다 — 초점 이동이 이미 알린다 */}
+                  {needsPick && (
+                    <p className="diag-question-help" id={helpId}>
+                      답을 골라 주세요 — 모르면 [모르겠어요]를 고르면 돼요.
+                    </p>
+                  )}
+                  <p className="quiz-prompt jp">{question.prompt.main}</p>
+                  {/* 후리가나는 루비가 아니라 줄 병기다 — 데이터가 글자별 대응을 갖고 있지 않다(09 §3-4) */}
+                  {question.prompt.kana && <p className="quiz-prompt-sub jp">{question.prompt.kana}</p>}
+                  <div className="quiz-choices">
+                    {question.choices.map((choice, choiceIndex) => (
+                      <label key={choiceIndex} className="quiz-choice">
+                        <input
+                          checked={answers[number - 1] === choiceIndex}
+                          name={question.id}
+                          type="radio"
+                          value={choiceIndex}
+                          onChange={() => choose(number - 1, choiceIndex)}
+                        />
+                        <span>{choice}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              );
+            })}
           </section>
         ))}
 
-        {/* 미응답이 있어도 제출을 막지 않는다 — 사실만 한 줄로 말한다(09 §3-6). 확인 모달은 없다 */}
+        {/* 남은 수는 시도 전에도 말한다. 0이면 줄이 통째로 없고, 그때는 버튼의 aria-describedby도 함께 뗀다(09 §3-7) */}
         {unanswered > 0 && (
-          <p className="quiz-note">아직 {unanswered}문항을 고르지 않았어요 — 그대로 제출하면 모름으로 처리돼요.</p>
+          <p className="quiz-note" id={REMAINING_ID}>
+            아직 {unanswered}문항을 고르지 않았어요 — 모두 고르면 제출할 수 있어요.
+          </p>
         )}
+        {/* disabled는 어느 순간에도 없다 — 막는 방법은 비활성이 아니라 첫 미응답 문항으로 데려가는 것이다(09 §3-6) */}
         <div className="k-flex quiz-result-actions">
-          <Button variant="primary" onClick={submitLevel}>
+          <Button
+            aria-describedby={unanswered > 0 ? REMAINING_ID : undefined}
+            variant="primary"
+            onClick={submitLevel}
+          >
             제출하고 결과 보기 ›
           </Button>
         </div>

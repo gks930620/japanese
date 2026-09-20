@@ -59,7 +59,10 @@ describe("갈래 머리글 (A42·A43·A44)", () => {
     expect(groupTitles()[0]).toBe("어휘");
   });
 
-  /** 갈래 묶음을 fieldset으로 만들면 role=group이 6개에서 8~9개로 늘어 문항 카드 계약이 깨진다 */
+  /**
+   * 갈래 묶음을 fieldset으로 만들면 낭독기가 그룹을 두 겹으로 읽는다.
+   * (2026-09-20: 문항 카드가 `role="radiogroup"`이 되면서 "group 수"로는 이 규칙을 잡을 수 없다 — 요소로 잡는다)
+   */
   it("묶음은 문항 카드를 한 겹 더 감싸는 그룹이 아니다", async () => {
     renderDiagnosis();
     const user = userEvent.setup();
@@ -67,6 +70,8 @@ describe("갈래 머리글 (A42·A43·A44)", () => {
 
     expect(diagnosisCards()).toHaveLength(6);
     expect(document.querySelectorAll(".diag-group fieldset.diag-question")).toHaveLength(6);
+    document.querySelectorAll(".diag-group").forEach((group) => expect(group.tagName).toBe("SECTION"));
+    expect(document.querySelectorAll("fieldset fieldset")).toHaveLength(0);
   });
 });
 

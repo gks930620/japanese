@@ -5,6 +5,8 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { apiSuccess } from "../test/helpers.jsx";
+// 문항 카드의 역할(group → radiogroup, 2026-09-20)은 헬퍼가 한 곳에서 안다 — 여기서 역할 이름을 직접 쓰지 않는다
+import { diagnosisCards } from "../test/diagnosisHelpers.jsx";
 import { REAL_COURSES, realGrammarItem, realLibraryPage, realVocabEntry } from "../test/realShapes.js";
 import { DiagnosisPage } from "./DiagnosisPage.jsx";
 
@@ -102,7 +104,7 @@ describe("실제 응답으로 문항이 채워진다 (QA 치명 2)", () => {
     await user.click(await screen.findByRole("button", { name: "시작하기" }));
     await screen.findByRole("button", { name: /제출하고/ });
 
-    const cards = screen.getAllByRole("group");
+    const cards = diagnosisCards();
     expect(cards).toHaveLength(6);
     cards.forEach((card) => {
       expect(card.querySelector(".quiz-prompt").textContent.trim()).not.toBe("");
@@ -119,9 +121,7 @@ describe("실제 응답으로 문항이 채워진다 (QA 치명 2)", () => {
     await user.click(await screen.findByRole("button", { name: "시작하기" }));
     await screen.findByRole("button", { name: /제출하고/ });
 
-    const prompts = screen
-      .getAllByRole("group")
-      .map((card) => card.querySelector(".quiz-prompt").textContent.trim());
+    const prompts = diagnosisCards().map((card) => card.querySelector(".quiz-prompt").textContent.trim());
     // realGrammarItem의 예문은 "これは {표현}です。" 꼴이다
     expect(prompts.some((prompt) => prompt.startsWith("これは"))).toBe(true);
   });
