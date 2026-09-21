@@ -1,5 +1,6 @@
 package com.test.test.jwt.config;
 
+import com.test.test.common.web.SpaRoutes;
 import com.test.test.jwt.JwtUtil;
 import com.test.test.jwt.filter.JwtAccessTokenCheckAndSaveUserInfoFilter;
 import com.test.test.jwt.filter.JwtLoginFilter;
@@ -9,6 +10,7 @@ import com.test.test.jwt.service.CustomOAuth2UserService;
 import com.test.test.jwt.service.CustomUserDetailsService;
 import com.test.test.jwt.service.LoginAttemptGuard;
 import com.test.test.jwt.service.RefreshService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +57,15 @@ public class SecurityConfig {
     @Value("${spring.h2.console.enabled:false}")
     private boolean h2ConsoleEnabled;
 
+    /**
+     * 화면·정적 자원 요청인가 — 화이트리스트가 쓰는 {@code RequestMatcher} (설계/04 §1-7).
+     *
+     * <p>판정 자체는 {@link SpaRoutes}에 있다. 폴백(forward)과 <b>같은 함수</b>를 봐야 두 곳이 갈리지 않는다.</p>
+     */
+    private static boolean isScreenRequest(HttpServletRequest request) {
+        return SpaRoutes.isScreenRequest(request.getMethod(), SpaRoutes.pathOf(request));
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // H2 콘솔 관련 완화는 콘솔이 켜진 환경(로컬)에만 존재한다 — 꺼지면 규칙 자체가 없다(감사 H1).
@@ -82,26 +93,20 @@ public class SecurityConfig {
                 .logoutSuccessHandler(customLogoutSuccessHandler));
 
         http.authorizeHttpRequests(auth -> auth
+                // 화면·정적 자원 = 예약 네임스페이스의 여집합인 GET·HEAD (설계/04 §1-7 · 08 C-25).
+                // 판정은 SpaRoutes 하나다 — 폴백(GlobalExceptionHandler)과 같은 규칙을 쓰지 않으면 곧 갈리고,
+                // 갈리는 순간 화면에 401 JSON이 보이거나 보호 네임스페이스가 함께 열린다(설계/07 §5-2).
+                // 이 매처는 /api·/actuator·/h2-console 등 예약 네임스페이스를 절대 포섭하지 않으며,
+                // 화면 경로로 오는 POST 등 GET·HEAD가 아닌 요청도 포섭하지 않는다(401 유지).
+                .requestMatchers(SecurityConfig::isScreenRequest).permitAll()
                 .requestMatchers(
-                        // 정적 리소스 (Vite 번들은 /assets/**, 아이콘/파비콘 포함)
-                        "/", "/index.html", "/assets/**",
-                        "/css/**", "/js/**", "/images/**",
-                        "/favicon.ico", "/favicon.svg", "/icons.svg", "/uploads/**",
+                        // 예약 네임스페이스 중 공개해야 하는 것들 — 위 매처가 포섭하지 않으므로 여기에 명시한다.
+                        "/images/**", "/uploads/**",
                         "/error",
                         // h2-console은 여기에 없다 — 콘솔이 켜진 환경에서만 위쪽 조건부 블록이 등록한다(감사 H1)
                         "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**",
                         // actuator는 health/info만 공개(헬스체크용). metrics 등 나머지는 인증 필요(anyRequest로 처리).
                         "/actuator/health", "/actuator/health/**", "/actuator/info",
-                        // SPA 페이지 라우트 (HomeController가 index.html로 forward)
-                        "/login", "/signup", "/mypage", "/mypage/**", "/community/**",
-                        "/courses", "/courses/**",
-                        "/library", "/library/**",
-                        // 영어 과정 화면 (설계/05 §16) — /en 단독 홈은 없고 SPA가 /en/courses로 보낸다.
-                        // 학습에 관한 모든 것은 비로그인 공개라 일본어와 같은 정책이다.
-                        "/en", "/en/**",
-                        // 보관함 화면 — 비로그인도 본다(게스트는 localStorage 기록을 그린다)
-                        "/bookmarks",
-                        "/diagnosis",
                         // OAuth2: 커스텀 시작점 + 스프링 표준 인가/콜백 엔드포인트
                         "/custom-oauth2/login/**", "/oauth2/**", "/login/oauth2/**"
                 ).permitAll()

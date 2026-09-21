@@ -2,6 +2,7 @@ package com.test.test.community.comment;
 
 import com.test.test.common.dto.ApiResponse;
 import com.test.test.common.dto.PageResponse;
+import com.test.test.common.paging.ClientSort;
 import com.test.test.community.comment.dto.CommentCreateDTO;
 import com.test.test.community.comment.dto.CommentDTO;
 import com.test.test.community.comment.dto.CommentUpdateDTO;
@@ -30,12 +31,19 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    /**
+     * 댓글 목록 — 정렬은 서버가 정한다(설계/04 §1-5 · 08 C-26).
+     *
+     * <p>클라이언트가 보낸 {@code sort}는 <b>읽지 않는다.</b> {@code @PageableDefault}에도 정렬을 두지 않는다 —
+     * 순서의 단일 출처는 리포지토리 {@code @Query}의 {@code ORDER BY}(최신순)다. 두 곳에 두면 갈린다.</p>
+     */
     @GetMapping("/communities/{communityId}/comments")
     public ResponseEntity<ApiResponse<PageResponse<CommentDTO>>> getComments(
             @PathVariable Long communityId,
-            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
+            @PageableDefault(size = 10) Pageable pageable) {
 
-        Page<CommentDTO> comments = commentService.getCommentsByCommunityId(communityId, pageable);
+        Page<CommentDTO> comments =
+                commentService.getCommentsByCommunityId(communityId, ClientSort.ignore(pageable));
         return ResponseEntity.ok(ApiResponse.success("Comments fetched", PageResponse.from(comments)));
     }
 

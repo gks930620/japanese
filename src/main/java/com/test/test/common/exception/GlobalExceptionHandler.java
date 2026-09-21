@@ -1,6 +1,9 @@
 package com.test.test.common.exception;
 
 import com.test.test.common.dto.ErrorResponse;
+import com.test.test.common.web.SpaRoutes;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -29,7 +33,55 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-/** 응답에 값을 되돌려주면 안 되는 필드 — 필드명에 password가 들어가면 전부(passwordConfirm·newPassword 포함). 마스킹 = 키 생략(2026-09 판정 D-13) */    private static boolean isSensitiveField(String field) {        return field != null && field.toLowerCase().contains("password");    }
+    /** 응답에 실을 수 있는 문자열 거부값의 상한 — 넘으면 생략한다(설계/04 §1-2 · 08 C-28) */
+    private static final int MAX_REJECTED_VALUE_LENGTH = 100;
+
+    /**
+     * 응답에 값을 되돌려주면 안 되는 필드 — 필드명에 password가 들어가면 전부(passwordConfirm·newPassword 포함).
+     * 마스킹 = 키 생략(2026-09 판정 D-13)
+     */
+    private static boolean isSensitiveField(String field) {
+        return field != null && field.toLowerCase().contains("password");
+    }
+
+    /**
+     * 응답에 실어도 되는 거부값인가 — <b>짧은 스칼라만</b> 싣는다 (설계/04 §1-2 · 08 C-28).
+     *
+     * <p>싣는 것: 100자 이하 문자열 · 숫자 · 불리언 · null.
+     * 생략하는 것: 비밀번호류(D-13) · 100자 초과 문자열 · <b>배열/컬렉션/맵/객체</b>.
+     * 생략은 {@code null} 반환으로 표현되고, {@code ErrorResponse.FieldError}가 {@code NON_NULL}이라
+     * <b>키 자체가 사라진다</b> — 마스킹 방식이 D-13과 하나다.</p>
+     *
+     * <p>검증 실패 응답의 목적은 "무엇이 왜 거부됐는지"를 알리는 것이지 요청을 되비추는 것이 아니다.
+     * 501건 배열·15,000자 본문을 되돌려주면 에러 응답이 <b>요청 크기에 비례하는 증폭기</b>가 되고,
+     * 그 값이 로그·에러 수집기에 한 번 더 복제된다. 사용자는 {@code message}로 고칠 수 있다.</p>
+     */
+    private static Object echoableRejectedValue(String field, Object rejectedValue) {
+        if (rejectedValue == null || isSensitiveField(field)) {
+            return null;
+        }
+        if (rejectedValue instanceof CharSequence text) {
+            return text.length() <= MAX_REJECTED_VALUE_LENGTH ? rejectedValue : null;
+        }
+        if (rejectedValue instanceof Number || rejectedValue instanceof Boolean
+                || rejectedValue instanceof Character || rejectedValue instanceof Enum<?>) {
+            return rejectedValue;
+        }
+        return null; // 배열·컬렉션·맵·그 밖의 객체
+    }
+
+    /**
+     * 필수 값 누락 응답 — <b>전송 방식과 무관하게 같은 답</b>이다 (설계/04 §1-2, 2026-09-21 qa 결함 D).
+     *
+     * <p>쿼리 파라미터 누락도 multipart 파트 누락도 여기서 문구를 만든다. 두 곳에서 만들면 곧 갈리고,
+     * 클라이언트는 같은 상황("필수 입력이 안 왔다")을 두 갈래로 처리하게 된다.</p>
+     */
+    private ResponseEntity<ErrorResponse> missingParameter(String name) {
+        return ResponseEntity.badRequest().body(ErrorResponse.of(
+                "필수 파라미터가 누락되었습니다: " + name,
+                "MISSING_PARAMETER"
+        ));
+    }
 
     /**
      * 비즈니스 예외 처리 (커스텀 예외들의 부모)
@@ -60,7 +112,8 @@ public class GlobalExceptionHandler {
                 .map(error -> ErrorResponse.FieldError.builder()
                         .field(error.getField())
                         .message(error.getDefaultMessage())
-                        .rejectedValue(isSensitiveField(error.getField()) ? null : error.getRejectedValue()) // 비밀번호류는 생략(D-13)
+                        // 실어도 되는 값인지의 판정은 한 곳이다 — 비밀번호류·긴 문자열·배열/객체는 생략(D-13 · C-28)
+                        .rejectedValue(echoableRejectedValue(error.getField(), error.getRejectedValue()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -87,17 +140,27 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 필수 요청 파라미터 누락
+     * 필수 요청 파라미터 누락 → 400
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingParameter(MissingServletRequestParameterException e) {
         log.warn("Missing Parameter: {}", e.getParameterName());
+        return missingParameter(e.getParameterName());
+    }
 
-        ErrorResponse response = ErrorResponse.of(
-                "필수 파라미터가 누락되었습니다: " + e.getParameterName(),
-                "MISSING_PARAMETER"
-        );
-        return ResponseEntity.badRequest().body(response);
+    /**
+     * multipart 필수 파트 누락 → <b>400</b> (설계/04 §1-2, 2026-09-21 qa 결함 D)
+     *
+     * <p>핸들러가 없으면 최후의 {@code Exception} 핸들러가 받아 500이 된다. 파트 누락은
+     * <b>요청을 고쳐야 회복되는 클라이언트 잘못</b>이라 재시도로 낫지 않는데, 500이면 모니터링에
+     * 서버 장애로 잡히고 프론트는 "잠시 후 다시 시도"를 띄운다(컨벤션 §2). 405·413·415를 이미 같은 이유로 고쳤다.</p>
+     *
+     * <p>응답은 쿼리 파라미터 누락과 <b>완전히 같다</b> — 같은 코드, 같은 문구({@link #missingParameter}).</p>
+     */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponse> handleMissingPart(MissingServletRequestPartException e) {
+        log.warn("Missing Part: {}", e.getRequestPartName());
+        return missingParameter(e.getRequestPartName());
     }
 
     /**
@@ -179,22 +242,39 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 매핑되지 않은 경로 → 404 (설계 §4-B-6 · §7-17 ②)
+     * 매핑된 핸들러도 정적 파일도 없다 → <b>화면이면 SPA로, 아니면 404</b> (설계/04 §1-7 · 08 C-25)
      *
-     * <p>없는 API를 부르면 500이 아니라 404여야 한다 — 500은 "잠시 후 다시 시도"로 읽혀
-     * 클라이언트가 성공하지 못할 재시도를 반복한다.</p>
+     * <p>판정은 {@link SpaRoutes} 하나다 — 시큐리티 화이트리스트와 <b>같은 함수</b>를 본다(설계/07 §5-2).
+     * <ul>
+     *   <li>예약 밖의 <b>점 없는 GET·HEAD</b> → 200 + {@code forward:/index.html}.
+     *       라우팅의 단일 기준은 React 라우터이고, 없는 화면은 {@code NotFoundPage}가 그린다.
+     *       예전처럼 화면 경로를 열거하면 열거 밖 주소가 401 JSON 원문으로 보인다(qa 결함 A).</li>
+     *   <li>그 밖 → 404 JSON. 없는 API에 index.html(200)을 주면 클라이언트가 HTML을 JSON으로 파싱하다 실패하고,
+     *       없는 번들에 주면 브라우저가 HTML을 JS로 파싱해 죽는다.</li>
+     * </ul>
      *
      * <p>두 예외를 함께 받는 이유: {@code throw-exception-if-no-handler-found=true}로 올라오는
-     * NoHandlerFoundException 외에, 정적 리소스 핸들러(/**)가 파일을 못 찾을 때 던지는
-     * NoResourceFoundException도 지금은 아래 Exception 핸들러에 걸려 500이 된다.
-     * 화면 경로는 HomeController가 SPA로 forward하므로 여기까지 오지 않는다.</p>
+     * NoHandlerFoundException 외에, 정적 리소스 핸들러({@code /**})가 파일을 못 찾을 때 던지는
+     * NoResourceFoundException도 같은 상황이다(핸들러가 없으면 아래 Exception 핸들러에 걸려 500이 된다).</p>
+     *
+     * <p>forward를 여기서 하는 이유: 컨트롤러 매핑으로 {@code /**}를 잡으면 <b>정적 리소스 핸들러를 가려</b>
+     * 실제 파일({@code /favicon.svg}·{@code /assets/*.js})까지 삼킨다. "핸들러도 파일도 없을 때"가
+     * 정확히 폴백 조건이라, 그 지점에서 한 번만 판정한다.</p>
      */
     @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
-    public ResponseEntity<ErrorResponse> handleNoHandlerFound(Exception e) {
+    public ResponseEntity<ErrorResponse> handleNoHandlerFound(Exception e,
+                                                              HttpServletRequest request,
+                                                              HttpServletResponse response) throws Exception {
+        if (SpaRoutes.isSpaFallback(request)) {
+            // 200 + forward — 상태코드를 건드리지 않는다(주소창 진입의 결과는 화면이다)
+            request.getRequestDispatcher(SpaRoutes.SPA_ENTRY).forward(request, response);
+            return null;
+        }
+
         log.warn("No handler found: {}", e.getMessage());
 
-        ErrorResponse response = ErrorResponse.of("요청한 경로를 찾을 수 없습니다.", "NOT_FOUND");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        ErrorResponse errorResponse = ErrorResponse.of("요청한 경로를 찾을 수 없습니다.", "NOT_FOUND");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     /**

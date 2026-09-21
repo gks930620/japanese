@@ -74,10 +74,12 @@ public class AccountService {
         userRepository.lockForUserDataWrite(userId);
         UserEntity user = requireUser(userId);
 
-        // trim은 바인딩에서 끝났다(ProfileUpdateRequest) — 여기서 다시 하면 검증과 저장이 다른 값을 보게 된다
+        // trim과 소문자 정규화는 바인딩에서 끝났다(ProfileUpdateRequest · 08 C-24) —
+        // 여기서 다시 하면 검증과 저장이 다른 값을 보게 된다. 정규화된 값끼리 비교하므로
+        // "대소문자만 바뀐 내 이메일"은 바뀐 것이 아니고(검사 생략), 남의 이메일을 대문자로 적은 것은 409다.
         String email = request.getEmail();
         if (!user.isSocial() && !email.equals(user.getEmail())
-                && userRepository.existsByEmailAndProviderIgnoreCaseAndIdNot(email, "LOCAL", userId)) {
+                && userRepository.existsByEmailAndProviderAndIdNot(email, "LOCAL", userId)) {
             throw new DuplicateResourceException("이미 사용 중인 이메일입니다: " + email);
         }
 

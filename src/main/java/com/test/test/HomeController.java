@@ -1,37 +1,25 @@
 package com.test.test;
 
+import com.test.test.common.web.SpaRoutes;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * SPA 진입점 — 화면 경로를 모두 index.html로 forward한다 (설계 §4-B-6 · §7-17 ②).
+ * SPA 진입점 — 루트(`/`)를 index.html로 forward한다 (설계/04 §1-7 · 08 C-25).
  *
- * <p>섹션 하위는 <b>와일드카드</b>로 받는다. 라우팅의 단일 기준은 React 라우터이고, 서버가 화면 경로를
- * 개별로 나열하면 프론트가 라우트를 추가할 때마다 백엔드도 고쳐야 하는 데다, 빠진 경로는 500이 되어
- * 사용자가 "다시 시도"만 반복하게 된다. 없는 하위 경로는 SPA가 받아 404 화면을 그린다.
- * (API 미매핑은 반대로 404 JSON — GlobalExceptionHandler. 화면에 JSON을 주면 사용자가 JSON 텍스트를 본다.)</p>
+ * <p><b>화면 경로를 열거하지 않는다.</b> 예전에는 여기에 화면 경로를 나열했고, 열거 밖 주소
+ * ({@code /nonexistent-page} · {@code /bookmarks/zzz})는 시큐리티 화이트리스트에도 없어 <b>401 JSON 원문</b>이
+ * 화면에 그대로 보였다. 지금은 "예약 네임스페이스의 여집합"이 화면이다 — 판정은 {@link SpaRoutes} 하나이고,
+ * 매핑되지 않은 화면 경로의 forward는 {@code GlobalExceptionHandler}가 그 판정으로 처리한다.</p>
+ *
+ * <p>루트만 여기 남는 이유: {@code /}는 스프링 부트의 welcome page 매핑이 먼저 가져가 상대 경로
+ * ({@code forward:index.html})로 넘긴다. 진입 경로가 하나로 보이도록 루트만 명시적으로 잡아 둔다.</p>
  */
 @Controller
 public class HomeController {
 
-    @GetMapping({
-            "/",
-            "/login",
-            "/signup",
-            "/mypage", "/mypage/**",
-            // 섹션 와일드카드 — 코스·유닛 직접 접근(인수 19), 자료실 새로고침(자료실 인수 6) 포함
-            "/community", "/community/**",
-            "/courses", "/courses/**",
-            "/library", "/library/**",
-            // 영어 과정 (설계/05 §16) — /en 단독 홈은 만들지 않는다. 서버는 index.html로 넘기기만 하고
-            // "/en → /en/courses" 리다이렉트는 SPA 라우터가 한다(라우팅의 단일 기준은 React 라우터다)
-            "/en", "/en/**",
-            // 보관함 — 비로그인도 보는 화면이다(게스트 기록을 그린다 — 설계/04 §6-6)
-            "/bookmarks",
-            // 실력 진단 — 비로그인도 본다(설계/05 §15-2)
-            "/diagnosis"
-    })
+    @GetMapping("/")
     public String forward() {
-        return "forward:/index.html";
+        return SpaRoutes.FORWARD_TO_SPA;
     }
 }

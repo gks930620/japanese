@@ -1,5 +1,6 @@
 package com.test.test.jwt.filter;
 
+import com.test.test.common.util.IdentityNormalizer;
 import com.test.test.jwt.JwtUtil;
 import com.test.test.jwt.model.CustomUserAccount;
 import com.test.test.jwt.service.LoginAttemptGuard;
@@ -53,7 +54,10 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
             // jwt는 API서버 분리된방식.  username,password는  body에 포함되서 옴.
             // 파라미터에 포함되서 오지않음 보통.  이것때문에 재정의. UsernamePasswordAuthetnctionFilter는 parameter 를 처리함.
             Map<String, String> credentials = OBJECT_MAPPER.readValue(request.getInputStream(), new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {});
-            String username = credentials.get("username");
+            // 아이디는 대소문자를 구분하지 않는 식별자다(설계/04 §4 · 08 C-24) — 이후 경로는 전부 정규화된 값을 쓴다.
+            // 시도 제한(§1-6)이 username 키라, 여기서 정규화하지 않으면 대소문자를 바꿔 부르는 것만으로 카운터가
+            // 초기화돼 제한을 우회할 수 있다. 조회(CustomUserDetailsService)와 카운트가 같은 값을 봐야 한다.
+            String username = IdentityNormalizer.normalize(credentials.get("username"));
             String password = credentials.get("password");
 
             // 시도 제한(판정 B-1) — <b>비밀번호 대조 전에</b> 본다.

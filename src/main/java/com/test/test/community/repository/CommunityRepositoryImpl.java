@@ -3,7 +3,7 @@ package com.test.test.community.repository;
 import com.test.test.community.CommunityEntity;
 import com.test.test.community.QCommunityEntity;
 import com.test.test.community.comment.QCommentEntity;
-import com.test.test.community.dto.CommunityDTO;
+import com.test.test.community.dto.CommunityListItemDTO;
 import com.test.test.jwt.entity.QUserEntity;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -26,7 +26,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<CommunityDTO> searchCommunity(String searchType, String keyword, Pageable pageable) {
+    public Page<CommunityListItemDTO> searchCommunity(String searchType, String keyword, Pageable pageable) {
         QCommunityEntity community = QCommunityEntity.communityEntity;
         QUserEntity user = QUserEntity.userEntity;
         QCommentEntity comment = QCommentEntity.commentEntity;
@@ -87,9 +87,9 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
         }
 
         // 5. DTO 변환 및 반환
-        List<CommunityDTO> content = entities.stream()
+        List<CommunityListItemDTO> content = entities.stream()
                 .map(entity -> {
-                    CommunityDTO dto = CommunityDTO.from(entity);
+                    CommunityListItemDTO dto = CommunityListItemDTO.from(entity);
                     dto.setCommentCount(commentCountMap.getOrDefault(entity.getId(), 0L));
                     return dto;
                 })

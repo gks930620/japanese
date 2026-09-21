@@ -41,10 +41,10 @@ public class CommentService {
     @Transactional
     public CommentDTO createComment(Long communityId, CommentCreateDTO createDTO, String username) {
         CommunityEntity community = communityRepository.findByIdAndIsDeletedFalse(communityId)
-                .orElseThrow(() -> EntityNotFoundException.of("Community", communityId));
+                .orElseThrow(() -> EntityNotFoundException.of("게시글", communityId));
 
         UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> EntityNotFoundException.of("User", username));
+                .orElseThrow(() -> EntityNotFoundException.of("사용자", username));
 
         CommentEntity comment = createDTO.toEntity(community, user);
         return CommentDTO.from(commentRepository.save(comment));
@@ -69,7 +69,7 @@ public class CommentService {
      */
     private CommentEntity findActiveCommentByIdAndValidateUser(Long commentId, String username, boolean forUpdate) {
         CommentEntity comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
-                .orElseThrow(() -> EntityNotFoundException.of("Comment", commentId));
+                .orElseThrow(() -> EntityNotFoundException.of("댓글", commentId));
 
         // 부모 게시글이 소프트삭제되었으면 수정/삭제도 막는다(조회 404와 대칭). soft-delete가 댓글로 cascade되지 않으므로 필요.
         CommunityEntity parent = comment.getCommunity();
@@ -79,8 +79,8 @@ public class CommentService {
 
         if (!comment.isWrittenBy(username)) {
             throw forUpdate
-                    ? AccessDeniedException.forUpdate("Comment")
-                    : AccessDeniedException.forDelete("Comment");
+                    ? AccessDeniedException.forUpdate("댓글")
+                    : AccessDeniedException.forDelete("댓글");
         }
 
         return comment;

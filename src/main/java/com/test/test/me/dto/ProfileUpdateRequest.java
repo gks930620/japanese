@@ -1,5 +1,6 @@
 package com.test.test.me.dto;
 
+import com.test.test.common.util.IdentityNormalizer;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -30,7 +31,14 @@ public class ProfileUpdateRequest {
         this.nickname = nickname == null ? null : nickname.trim();
     }
 
+    /**
+     * 이메일은 trim에 더해 <b>소문자로 정규화</b>한다 (설계/04 §4 · 08 C-24).
+     *
+     * <p>정규화를 바인딩에서 하면 중복 검사·비교·저장이 전부 같은 값을 본다.
+     * 덕분에 "대소문자만 바꾼 내 이메일"은 §4-1의 "값이 바뀔 때만 검사"에서 <b>바뀌지 않은 것</b>이 되고,
+     * 남의 이메일을 대문자로 적는 것은 그대로 409다.</p>
+     */
     public void setEmail(String email) {
-        this.email = email == null ? null : email.trim();
+        this.email = IdentityNormalizer.normalize(email == null ? null : email.trim());
     }
 }

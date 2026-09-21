@@ -4,6 +4,7 @@ import com.test.test.common.dto.ApiResponse;
 import com.test.test.common.dto.PageResponse;
 import com.test.test.community.dto.CommunityCreateDTO;
 import com.test.test.community.dto.CommunityDTO;
+import com.test.test.community.dto.CommunityListItemDTO;
 import com.test.test.community.dto.CommunityUpdateDTO;
 import com.test.test.jwt.model.CustomUserAccount;
 import jakarta.validation.Valid;
@@ -31,12 +32,12 @@ public class CommunityController {
     private final CommunityService communityService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<CommunityDTO>>> getCommunityList(
+    public ResponseEntity<ApiResponse<PageResponse<CommunityListItemDTO>>> getCommunityList(
             @RequestParam(required = false) String searchType,
             @RequestParam(required = false) String keyword,
             Pageable pageable) {
 
-        Page<CommunityDTO> communities = communityService.getCommunityList(searchType, keyword, pageable);
+        Page<CommunityListItemDTO> communities = communityService.getCommunityList(searchType, keyword, pageable);
         return ResponseEntity.ok(ApiResponse.success("Community list fetched", PageResponse.from(communities)));
     }
 
