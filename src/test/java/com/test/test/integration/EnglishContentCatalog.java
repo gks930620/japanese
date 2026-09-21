@@ -42,6 +42,69 @@ final class EnglishContentCatalog {
      */
     static final List<String> CEFR_CODES = List.of("A1", "A2", "B1", "B2", "C1", "C2");
 
+    // ── 유닛 구성 수량 (설계/06 §11-4) ────────────────────────────────────────
+    //
+    // 일본어와 같은 값이 섞여 있지만(문법 2~3 · 어휘 15~20) 여기 한 벌 더 적는다:
+    // 영어 콘텐츠의 유일한 기준은 §11이고, 일본어 표가 바뀔 때 영어가 딸려 움직이면 안 되기 때문이다(§11 첫 문단).
+
+    /** 문법 — 유닛당 2~3개 (§11-4 · §11-8) */
+    static final int MIN_GRAMMARS_PER_UNIT = 2;
+    static final int MAX_GRAMMARS_PER_UNIT = 3;
+
+    /** 문법 예문 — 문법 하나당 1개 이상(권장 2~4, 실측 3) (§11-4) */
+    static final int MIN_EXAMPLES_PER_GRAMMAR = 1;
+
+    /**
+     * 표현 — 유닛당 6~10개 (§11-4 · §11-5). 일본어 <b>한자 자리</b>지만 수량 규칙의 모양이 다르다:
+     * 한자는 코스별 <b>고정 수</b>(입문 0 · N5 5 · N4 10 …)이고 표현은 <b>범위</b>다.
+     * 한자가 닫힌 집합(상용한자 2,136자)이라 총량을 배분할 수 있는 반면 영어 표현은 열린 집합이라
+     * 누적 총량 목표를 두지 않기로 했기 때문이다(§11-4).
+     */
+    static final int MIN_EXPRESSIONS_PER_UNIT = 6;
+    static final int MAX_EXPRESSIONS_PER_UNIT = 10;
+
+    /** 표현 예문 — 표현 하나당 1개 이상 (§11-5) */
+    static final int MIN_EXAMPLES_PER_EXPRESSION = 1;
+
+    /** 어휘 — 유닛당 15~20개 (§11-4, 일본어와 동일) */
+    static final int MIN_VOCABULARIES_PER_UNIT = 15;
+    static final int MAX_VOCABULARIES_PER_UNIT = 20;
+
+    /** 회화 화자 — 2명 이상. 1인 낭독 장면은 만들지 않는다 (§11-7) */
+    static final int MIN_DIALOG_SPEAKERS = 2;
+
+    /**
+     * 회화 <b>대사 줄 수의 상한</b> — 전 코스 공통 12줄 (설계/06 §11-7 · §11-12 ②, 2026-09-21 확정).
+     *
+     * <p><b>상한은 목표가 아니라 난간이다.</b> 하한만 두면 30줄짜리 대본도 계약을 지킨 것이 되는데,
+     * 회화는 <b>한 스텝에 통째로</b> 들어가므로 길어지면 학습자에게 남는 것이 스크롤뿐이다.
+     */
+    static final int MAX_DIALOG_LINES = 12;
+
+    /**
+     * 회화 <b>대사 줄 수의 하한</b> — 코스별 차등 (설계/06 §11-7 · §11-12 ②, 2026-09-21 확정).
+     *
+     * <p><b>왜 코스마다 다른가</b>: 영어 코스의 단계 정의 자체가 <b>"얼마나 길게 말할 수 있느냐"</b> 다 —
+     * E3의 이름이 「이어 말하기」이고 E5는 회의·이메일이다. 줄 수가 고정이면 코스가 올라가도
+     * <b>학습자가 보는 장면의 길이가 같아</b> 단계가 올랐다는 체감이 없다.
+     * 일본어가 N3부터 4줄로 올린 것(§5 · {@code CourseApiIntegrationTest.minDialogLinesOf})과 같은 논리이고,
+     * 그래서 <b>모양도 같은 {@code levelCode → 값} 매핑</b>으로 둔다.
+     *
+     * <p><b>왜 하한이 4부터인가</b>: 맛보기 실측이 4줄이라 <b>소급 보강 없이</b> 그대로 계약이 된다.
+     * 5로 올렸다면 이미 공개된 2유닛을 고쳐야 했다.
+     *
+     * <p>{@code default}가 E1·E2인 것은 안전하다 — 레벨 코드가 {@code E1}~{@code E5}이고
+     * {@code E}{courseNo}와 일치한다는 것은 {@code EnglishContentRuleIntegrationTest}의 <b>규칙 5</b>가 이미 고정하고 있어,
+     * 여기 들어올 값의 집합은 닫혀 있다.
+     */
+    static int minDialogLinesOf(CourseCatalog.Course course) {
+        return switch (course.levelCode) {
+            case "E5" -> 8;
+            case "E3", "E4" -> 6;
+            default -> 4; // E1 · E2
+        };
+    }
+
     private EnglishContentCatalog() {
     }
 

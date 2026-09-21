@@ -65,7 +65,9 @@ export function enCourseDetailFixture(overrides = {}) {
     title: "다시 세우기",
     targetAudience: "단어는 아는데 문장이 안 만들어지는 사람",
     goal: "문장 만드는 규칙 다시 세우기",
-    notice: "지금은 맛보기 유닛 2개만 열려 있어요",
+    // 실제 문구와 같게 둔다 — 안내에 유닛 수를 적지 않는 것이 규칙이다(06 §11-12 ③).
+    // 숫자가 든 옛 문구를 픽스처에 남기면 "안내에 숫자가 없다"를 검증할 때 위양성이 난다.
+    notice: "앞 유닛부터 순서대로 채우는 중이에요 — 열려 있는 유닛까지는 지금 그대로 학습하면 됩니다",
     description: "학교에서 배운 조각들을 문장 만드는 규칙으로 다시 세웁니다",
     status: "AVAILABLE",
     summary: { unitCount: 2, grammarCount: 5, expressionCount: 14, vocabCount: 32 },

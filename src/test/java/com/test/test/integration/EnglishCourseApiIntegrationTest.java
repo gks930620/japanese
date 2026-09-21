@@ -1,6 +1,7 @@
 package com.test.test.integration;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -34,15 +35,24 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data[0].title").value("다시 세우기"));
     }
 
-    /** 맛보기 — 코스 1만 열려 있고 나머지는 준비중이다 */
+    /**
+     * 코스 1만 열려 있고 나머지는 준비중이다 — <b>열림 여부와 유닛 수를 기대치 표에서 받아온다</b>.
+     *
+     * <p>예전 이름은 {@code ..._with_two_units}였고 본문에도 2가 박혀 있었다. 2026-09-21 E1이
+     * 유닛 5개로 늘자 이름과 본문이 <b>동시에 거짓</b>이 됐다 — 이름에 숫자를 박으면 콘텐츠가 자랄 때마다
+     * 같은 수정이 되풀이되고, 고치는 것을 잊으면 <b>테스트 이름이 거짓말을 한다</b>(이름은 컴파일러가 봐주지 않는다).
+     * 이제 고칠 곳은 {@link CourseCatalog#ENGLISH} 한 줄이고 이 파일은 콘텐츠가 늘어도 그대로다.
+     */
     @Test
-    void only_the_first_english_course_is_open_with_two_units() throws Exception {
-        mockMvc.perform(get("/api/en/courses"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].status").value("AVAILABLE"))
-                .andExpect(jsonPath("$.data[0].unitCount").value(2))
-                .andExpect(jsonPath("$.data[1].status").value("PREPARING"))
-                .andExpect(jsonPath("$.data[4].status").value("PREPARING"));
+    void only_the_first_english_course_is_open_and_the_rest_are_preparing() throws Exception {
+        ResultActions response = mockMvc.perform(get("/api/en/courses")).andExpect(status().isOk());
+
+        for (int index = 0; index < CourseCatalog.ENGLISH.size(); index++) {
+            CourseCatalog.Course course = CourseCatalog.ENGLISH.get(index);
+            response.andExpect(jsonPath("$.data[" + index + "].status")
+                            .value(course.available ? "AVAILABLE" : "PREPARING"))
+                    .andExpect(jsonPath("$.data[" + index + "].unitCount").value(course.unitCount));
+        }
     }
 
     /** ★ 일본어 목록에 영어가 섞이지 않는다 */

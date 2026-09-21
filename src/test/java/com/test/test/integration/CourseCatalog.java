@@ -32,9 +32,28 @@ final class CourseCatalog {
         final int vocabularyCount;
         final int ruleTableCount;  // 활용 규칙표를 가진 문법 수 — 자료실 hasRules 필터의 기대치
 
+        /**
+         * 코스 전체 표현 수 — <b>영어에만 있는 자리</b>이고 일본어는 언제나 0이다.
+         *
+         * <p>일본어의 {@code kanjiCount} 자리를 영어에서는 표현이 대신 센다(설계/04 §8 ·
+         * {@code EnglishCourseDetailIntegrationTest}). 같은 필드를 돌려쓰지 않고 따로 둔 이유:
+         * 한자와 표현은 <b>규칙의 모양이 다르다</b>(한자는 코스 간 UNIQUE + 유닛당 고정 수,
+         * 표현은 코스 간 재등장 허용 + 유닛당 범위). 한 필드에 담으면 어느 규칙을 적용할지가
+         * 읽는 사람 머릿속에만 남는다.
+         */
+        final int expressionCount;
+
+        /** 일본어 코스 — 한자를 가지고 표현은 없다 */
         private Course(long id, int courseNo, String levelCode, String levelLabel, String title,
                        boolean available, int unitCount, int grammarCount, int kanjiCount,
                        int kanjiPerUnit, int vocabularyCount, int ruleTableCount) {
+            this(id, courseNo, levelCode, levelLabel, title, available, unitCount, grammarCount,
+                    kanjiCount, kanjiPerUnit, vocabularyCount, ruleTableCount, 0);
+        }
+
+        private Course(long id, int courseNo, String levelCode, String levelLabel, String title,
+                       boolean available, int unitCount, int grammarCount, int kanjiCount,
+                       int kanjiPerUnit, int vocabularyCount, int ruleTableCount, int expressionCount) {
             this.id = id;
             this.courseNo = courseNo;
             this.levelCode = levelCode;
@@ -47,7 +66,22 @@ final class CourseCatalog {
             this.kanjiPerUnit = kanjiPerUnit;
             this.vocabularyCount = vocabularyCount;
             this.ruleTableCount = ruleTableCount;
+            this.expressionCount = expressionCount;
         }
+    }
+
+    /**
+     * 영어 코스 한 줄 — 일본어의 <b>한자 자리가 표현</b>이다(설계/06 §11-4 · 계약 §8).
+     *
+     * <p>{@code new Course(...)}를 그대로 쓰지 않는 이유는 영어에서 언제나 같은 값이 되는 인자
+     * (한자 0 · 유닛당 한자 0 · 규칙표 0)와 <b>레벨 라벨 = 레벨 코드</b>를 표에서 지우기 위해서다.
+     * 라벨이 코드와 같은 것은 취향이 아니라 계약이고({@code EnglishContentRuleIntegrationTest} 규칙 5),
+     * 표에 두 번 적으면 한쪽만 고치는 길이 열린다.
+     */
+    private static Course english(long id, int courseNo, String levelCode, String title, boolean available,
+                                  int unitCount, int grammarCount, int expressionCount, int vocabularyCount) {
+        return new Course(id, courseNo, levelCode, levelCode, title, available,
+                unitCount, grammarCount, 0, 0, vocabularyCount, 0, expressionCount);
     }
 
     /**
@@ -70,16 +104,31 @@ final class CourseCatalog {
             new Course(6L, 5, "N1", "JLPT N1", "고급", true, 25, 69, 350, 14, 450, 6));
 
     /**
-     * <b>영어 코스</b> (설계/03 §5-2) — 맛보기라 E1만 열려 있다.
+     * <b>영어 코스</b> (설계/03 §5-2) — E1만 열려 있다.
      * 별도 목록인 이유: `/api/courses`와 `/api/en/courses`가 서로를 절대 포함하지 않는다는 것이 계약이고,
      * 총계도 언어별로 갈리기 때문이다. 준비중 동작을 검증할 대상은 이제 <b>여기에만</b> 있다.
+     *
+     * <p><b>여기 적힌 {@code unitCount}가 곧 영어 콘텐츠 전수 검증의 순회 범위</b>다
+     * ({@code EnglishContentRuleIntegrationTest}의 세 검사가 {@code unitNo <= course.unitCount}로 돈다).
+     * 즉 <b>유닛을 늘려 놓고 이 숫자를 안 올리면 새 유닛은 어떤 규칙 검사도 받지 않는다</b> —
+     * 시드가 통과한 것이 아니라 <b>아무도 보지 않은</b> 것이고, 2026-09-21 유닛 3~5 증설 때 실제로 그 상태였다.
+     * 콘텐츠를 늘릴 때 고칠 곳은 이 표 <b>한 줄</b>이다.
+     *
+     * <p>2026-09-21 E1 증설 반영: 유닛 2 → <b>5</b> · 문법 4 → <b>13</b> · 표현 12 → <b>33</b> · 어휘 30 → <b>78</b>
+     * (시드 {@code data-course-en-units.sql}의 매핑 행 수 = `/api/en/courses/101` summary와 일치 확인).
      */
     static final List<Course> ENGLISH = List.of(
-            new Course(101L, 1, "E1", "E1", "다시 세우기", true, 2, 4, 0, 0, 30, 0),
-            new Course(102L, 2, "E2", "E2", "일상 말하기", false, 0, 0, 0, 0, 0, 0),
-            new Course(103L, 3, "E3", "E3", "이어 말하기", false, 0, 0, 0, 0, 0, 0),
-            new Course(104L, 4, "E4", "E4", "뉘앙스", false, 0, 0, 0, 0, 0, 0),
-            new Course(105L, 5, "E5", "E5", "실전과 격식", false, 0, 0, 0, 0, 0, 0));
+            english(101L, 1, "E1", "다시 세우기", true, 5, 13, 33, 78),
+            english(102L, 2, "E2", "일상 말하기", false, 0, 0, 0, 0),
+            english(103L, 3, "E3", "이어 말하기", false, 0, 0, 0, 0),
+            english(104L, 4, "E4", "뉘앙스", false, 0, 0, 0, 0),
+            english(105L, 5, "E5", "실전과 격식", false, 0, 0, 0, 0));
+
+    /** 영어 코스 하나 — 일본어 {@link #byId}와 표를 섞지 않는다(두 목록은 서로를 포함하지 않는 것이 계약이다) */
+    static Course englishById(long id) {
+        return ENGLISH.stream().filter(course -> course.id == id).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("표(CourseCatalog.ENGLISH)에 없는 영어 코스: " + id));
+    }
 
     private CourseCatalog() {
     }

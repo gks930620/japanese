@@ -3,10 +3,12 @@ package com.test.test.integration;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
@@ -336,5 +338,144 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
                             + "(설계/06 §11-2). 문구: '%s'", where, cefr, value)
                     .isFalse();
         }
+    }
+
+    // ── 규칙 6. 유닛 구성 수량 (설계/06 §11-4 · §11-5 · §11-7 · §11-8) ────────
+
+    /**
+     * <b>콘텐츠를 채우기 전에 치는 그물이다.</b> §11-4의 수량 표는 2026-09-21까지 "사람이 지켜야 하는 것"이었다 —
+     * 일본어 전수 검증({@code CourseApiIntegrationTest})은 {@code CourseCatalog.available()}(= 일본어)만 순회하므로
+     * <b>영어 유닛은 표현이 3개여도 어휘가 40개여도 {@code ./gradlew test}가 통과</b>했다.
+     * 맛보기 2유닛이 규칙을 지키고 있어 <b>지금은 Green이 정상</b>이고, 이 테스트가 막는 대상은 앞으로 들어올 콘텐츠다.
+     *
+     * <p>실패 메시지에 <b>어느 코스·어느 유닛·무엇이 몇 개인지</b>를 전부 담는다 — 콘텐츠 작업자가 메시지만 보고
+     * 고칠 수 있어야 하고, "어딘가 틀렸다"는 메시지는 전수 검증의 값어치를 절반 깎아먹는다.
+     *
+     * <p>기대 수량은 {@link EnglishContentCatalog}가, 순회 범위는 {@link CourseCatalog#ENGLISH}가 단일 출처다 —
+     * 코스가 열리고 유닛이 늘어도 <b>이 파일을 고치지 않는다</b>(2026-09 점검 H3).
+     *
+     * <p><b>여기서 보지 않는 것 둘</b>(08 C-11 — 한 규칙은 한 파일에서만 고정한다):
+     * <ul>
+     *   <li>§11-4의 <b>한자 0행</b> — 영어 유닛 DTO에 {@code kanjis} 필드 자체가 없어 구조적으로 불가능하고,
+     *       그 부재는 {@code EnglishCourseApiIntegrationTest}가 고정한다(자료실 한자 탭 부재도 같은 파일).</li>
+     *   <li>표현·어휘의 <b>발음·품사</b> — 위 규칙 2·3이 이미 전량을 훑는다. 여기서는 <b>개수</b>만 본다.</li>
+     * </ul>
+     */
+    @Test
+    void every_english_unit_meets_the_quantity_contract() throws Exception {
+        for (CourseCatalog.Course course : EnglishContentCatalog.availableCourses()) {
+            for (int unitNo = 1; unitNo <= course.unitCount; unitNo++) {
+                JsonNode unit = unit(course.id, unitNo);
+                String at = "코스 " + course.id + "(" + course.title + ") 유닛 " + unitNo;
+
+                assertGrammars(unit, at);
+                assertDialog(unit, course, at);
+                assertExpressions(unit, at);
+                assertVocabularies(unit, at);
+            }
+        }
+    }
+
+    /** 문법 2~3개 · 문법당 예문 1개 이상 (§11-4 · §11-8) */
+    private void assertGrammars(JsonNode unit, String at) {
+        JsonNode grammars = unit.path("grammars");
+        assertThat(grammars.size())
+                .as("%s — 문법이 %s개다. 유닛당 %s~%s개여야 한다(설계/06 §11-4). 넘치면 다음 유닛으로 옮긴다",
+                        at, grammars.size(),
+                        EnglishContentCatalog.MIN_GRAMMARS_PER_UNIT, EnglishContentCatalog.MAX_GRAMMARS_PER_UNIT)
+                .isBetween(EnglishContentCatalog.MIN_GRAMMARS_PER_UNIT, EnglishContentCatalog.MAX_GRAMMARS_PER_UNIT);
+
+        for (JsonNode grammar : grammars) {
+            String name = text(grammar.path("name"));
+            assertThat(grammar.path("examples").size())
+                    .as("%s 문법 '%s' — 예문이 %s개다. 문법 하나당 %s개 이상이어야 한다(설계/06 §11-4·§11-8)."
+                                    + " 설명만 있고 예문이 없는 문법은 학습자에게 규칙만 던지는 것이다",
+                            at, name, grammar.path("examples").size(),
+                            EnglishContentCatalog.MIN_EXAMPLES_PER_GRAMMAR)
+                    .isGreaterThanOrEqualTo(EnglishContentCatalog.MIN_EXAMPLES_PER_GRAMMAR);
+        }
+    }
+
+    /**
+     * 회화 정확히 1편 · 대사 줄 수 · 화자 2명 이상 (§11-7 · §11-12 ②).
+     *
+     * <p>"정확히 1편"은 응답 구조가 이미 보장한다({@code dialog}는 배열이 아니라 객체 하나) — 그래서 여기서 볼 것은
+     * <b>그 하나가 실제로 있는가</b>다. 매핑을 빠뜨린 유닛은 {@code dialog: null}로 나가고 화면의 회화 스텝이 사라진다.
+     *
+     * <p><b>줄 수는 2026-09-21에 계약이 됐다</b>(그전까지 §11-12의 미결이라 이 자리는 주석이었다):
+     * 하한 E1·E2 4 / E3·E4 6 / E5 8, 상한 전 코스 12. 하한을 코스별로 차등한 것은
+     * <b>영어 코스의 단계 정의 자체가 "얼마나 길게 말할 수 있느냐"</b> 이기 때문이다 — E3의 이름이 「이어 말하기」이고
+     * E5는 회의·이메일이다. 줄 수가 고정이면 코스가 올라가도 <b>장면의 길이가 같아 단계 체감이 없다</b>
+     * (일본어가 N3부터 4줄로 올린 것과 같은 논리). 상한 12는 목표가 아니라 <b>난간</b>이다 —
+     * 회화는 한 스텝에 통째로 들어가므로 길어지면 스크롤만 남는다.
+     */
+    private void assertDialog(JsonNode unit, CourseCatalog.Course course, String at) {
+        JsonNode dialog = unit.path("dialog");
+        assertThat(dialog.isObject())
+                .as("%s — 회화가 없다(dialog = %s). 유닛당 정확히 1편이다(설계/06 §11-7)", at, dialog)
+                .isTrue();
+        assertThat(text(dialog.path("title")))
+                .as("%s 회화 — 한국어 장면 제목이 비었다(설계/06 §11-7 예: '첫 출근 날, 옆자리에서')", at)
+                .isNotBlank();
+
+        JsonNode lines = dialog.path("lines");
+        int minLines = EnglishContentCatalog.minDialogLinesOf(course);
+        assertThat(lines.size())
+                .as("%s 회화 '%s' — 대사가 %s줄이다. %s 코스는 %s~%s줄이어야 한다(설계/06 §11-7 · §11-12 ②)."
+                                + " 하한은 코스가 올라갈수록 길어지고(E1·E2 4 · E3·E4 6 · E5 8), 상한 12는"
+                                + " 회화가 한 스텝에 통째로 들어가기 때문에 둔 난간이다",
+                        at, text(dialog.path("title")), lines.size(), course.levelCode,
+                        minLines, EnglishContentCatalog.MAX_DIALOG_LINES)
+                .isBetween(minLines, EnglishContentCatalog.MAX_DIALOG_LINES);
+
+        Set<String> speakers = new HashSet<>();
+        for (JsonNode line : lines) {
+            assertThat(text(line.path("speaker")))
+                    .as("%s 회화 — 화자 이름이 빈 대사가 있다. 화면이 화자 배지를 그리지 못한다(설계/06 §11-7)", at)
+                    .isNotBlank();
+            speakers.add(text(line.path("speaker")));
+        }
+        assertThat(speakers.size())
+                .as("%s 회화 '%s' — 화자가 %s명(%s)이다. %s명 이상이어야 한다. 1인 낭독 장면은 만들지 않는다(설계/06 §11-7)",
+                        at, text(dialog.path("title")), speakers.size(), speakers,
+                        EnglishContentCatalog.MIN_DIALOG_SPEAKERS)
+                .isGreaterThanOrEqualTo(EnglishContentCatalog.MIN_DIALOG_SPEAKERS);
+    }
+
+    /** 표현 6~10개 · 표현당 예문 1개 이상 (§11-4 · §11-5) */
+    private void assertExpressions(JsonNode unit, String at) {
+        JsonNode expressions = unit.path("expressions");
+        assertThat(expressions.size())
+                .as("%s — 표현이 %s개다. 유닛당 %s~%s개여야 한다(설계/06 §11-4). 일본어 한자 자리이며,"
+                                + " 모자라면 그 유닛의 회화·문법과 같은 테마에서 더 뽑는다(§11-5)",
+                        at, expressions.size(),
+                        EnglishContentCatalog.MIN_EXPRESSIONS_PER_UNIT, EnglishContentCatalog.MAX_EXPRESSIONS_PER_UNIT)
+                .isBetween(EnglishContentCatalog.MIN_EXPRESSIONS_PER_UNIT,
+                        EnglishContentCatalog.MAX_EXPRESSIONS_PER_UNIT);
+
+        for (JsonNode expression : expressions) {
+            String label = text(expression.path("text"));
+            assertThat(label)
+                    .as("%s — 표기가 빈 표현이 있다(설계/06 §11-5)", at)
+                    .isNotBlank();
+            assertThat(expression.path("examples").size())
+                    .as("%s 표현 '%s' — 예문이 %s개다. 표현 하나당 %s개 이상이어야 한다(설계/06 §11-5)."
+                                    + " 통째로 외워 쓰는 덩어리는 쓰이는 문장 없이는 외울 수 없다",
+                            at, label, expression.path("examples").size(),
+                            EnglishContentCatalog.MIN_EXAMPLES_PER_EXPRESSION)
+                    .isGreaterThanOrEqualTo(EnglishContentCatalog.MIN_EXAMPLES_PER_EXPRESSION);
+        }
+    }
+
+    /** 어휘 15~20개 (§11-4) */
+    private void assertVocabularies(JsonNode unit, String at) {
+        JsonNode vocabularies = unit.path("vocabularies");
+        assertThat(vocabularies.size())
+                .as("%s — 어휘가 %s개다. 유닛당 %s~%s개여야 한다(설계/06 §11-4, 일본어와 같은 값)",
+                        at, vocabularies.size(),
+                        EnglishContentCatalog.MIN_VOCABULARIES_PER_UNIT,
+                        EnglishContentCatalog.MAX_VOCABULARIES_PER_UNIT)
+                .isBetween(EnglishContentCatalog.MIN_VOCABULARIES_PER_UNIT,
+                        EnglishContentCatalog.MAX_VOCABULARIES_PER_UNIT);
     }
 }

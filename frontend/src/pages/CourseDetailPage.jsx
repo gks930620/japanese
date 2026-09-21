@@ -45,7 +45,7 @@ function ctaState(done, next) {
  * 코스 상세 — 유닛 목록 (설계/05 §7 + §8).
  *
  * 영어 과정은 **같은 화면의 한 자리를 갈아 끼운다**(설계/05 §16):
- * 한자 집계 → 표현 집계, 레벨 괄호 없음, 맛보기 안내(course.notice). 진도·CTA 분기는 그대로다.
+ * 한자 집계 → 표현 집계, 레벨 괄호 없음, 진행 안내(course.notice). 진도·CTA 분기는 그대로다.
  */
 export function CourseDetailPage({ lang = "ja" }) {
   const en = lang === "en";

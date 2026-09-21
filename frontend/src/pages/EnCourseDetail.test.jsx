@@ -1,5 +1,5 @@
 // frontend-dev 작성 — 영어 코스 상세 (설계/05 §16-2).
-// 일본어 상세와 갈리는 지점만 본다: 레벨 괄호 없음 · 한자 자리가 표현 · 맛보기 안내(course.notice).
+// 일본어 상세와 갈리는 지점만 본다: 레벨 괄호 없음 · 한자 자리가 표현 · 진행 안내(course.notice).
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
@@ -56,10 +56,14 @@ describe("영어 코스 상세", () => {
     expect(screen.queryByText(/약 32/)).not.toBeInTheDocument();
   });
 
-  it("맛보기 안내를 course.notice로 낸다", async () => {
-    renderDetail(enCourseDetailFixture());
+  it("진행 안내를 course.notice로 낸다", async () => {
+    // 문구를 리터럴로 적지 않는다 — 픽스처와 같은 문자열을 두 곳에 두면 한쪽만 고치는 길이 열린다.
+    // 이 테스트가 고정하는 것은 "notice 값이 화면에 그대로 나온다"이지 문구 자체가 아니다.
+    const fixture = enCourseDetailFixture();
+    renderDetail(fixture);
 
-    expect(await screen.findByText(/맛보기 유닛 2개만 열려 있어요/)).toBeInTheDocument();
+    // 화면은 `✎ {notice}`로 렌더하므로 부분 일치로 본다 — 접두 기호는 이 테스트가 고정할 것이 아니다.
+    expect(await screen.findByText(fixture.notice, { exact: false })).toBeInTheDocument();
   });
 
   it("유닛 행 메타가 문법·회화·표현·어휘다", async () => {

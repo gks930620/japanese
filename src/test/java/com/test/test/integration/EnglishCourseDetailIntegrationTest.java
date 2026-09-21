@@ -28,18 +28,36 @@ class EnglishCourseDetailIntegrationTest extends ApiIntegrationTestSupport {
     private static final long EN_COURSE_1 = 101L;
     private static final long EN_COURSE_2_PREPARING = 102L;
 
+    /** 유닛 1의 표현 수 — 코스 합계와 달리 <b>유닛별 값</b>이라 코스 표에서 파생되지 않는다(아래 주석 참고) */
+    private static final int UNIT_1_EXPRESSIONS = 6;
+
+    /**
+     * 집계는 <b>DB 값</b>이다 — 그래서 기대치도 시드 사실의 단일 출처인 {@link CourseCatalog#ENGLISH}에서 받아온다.
+     *
+     * <p>2026-09-21 E1이 2유닛 → 5유닛으로 늘자 여기 박혀 있던 네 숫자(12·2·4·30)가 한꺼번에 깨졌다.
+     * "집계는 하드코딩 금지"라고 적어 두고 <b>기대치를 하드코딩</b>하면 유닛이 늘 때마다 같은 수정이 되풀이된다.
+     * 이제 콘텐츠가 자라도 고칠 곳은 {@code CourseCatalog.ENGLISH} 한 줄이다.
+     *
+     * <p>{@link #UNIT_1_EXPRESSIONS}만 숫자로 남은 이유: 코스 표가 들고 있는 것은 <b>코스 합계</b>이고
+     * 이 단언은 <b>유닛 1 하나</b>를 본다. 유닛별 수량은 코스마다 균일하지 않아(유닛 1·2는 표현 6개,
+     * 3~5는 7개) 합계에서 나눠 구할 수 없다. 유닛별 수량이 <b>범위 안인가</b>는
+     * {@code EnglishContentRuleIntegrationTest}의 규칙 6이 전 유닛에 대해 따로 본다 —
+     * 여기서 고정하는 것은 "코스 상세의 유닛 줄에 {@code expressionCount} 필드가 실린다"는 <b>응답 모양</b>이다.
+     */
     @Test
     void the_english_course_detail_counts_expressions_where_japanese_counts_kanji() throws Exception {
+        CourseCatalog.Course english1 = CourseCatalog.englishById(EN_COURSE_1);
+
         mockMvc.perform(get("/api/en/courses/{courseId}", EN_COURSE_1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.levelCode").value("E1"))
-                .andExpect(jsonPath("$.data.summary.expressionCount").value(12))
+                .andExpect(jsonPath("$.data.levelCode").value(english1.levelCode))
+                .andExpect(jsonPath("$.data.summary.expressionCount").value(english1.expressionCount))
                 .andExpect(jsonPath("$.data.summary.kanjiCount").doesNotExist())
-                .andExpect(jsonPath("$.data.summary.unitCount").value(2))
-                .andExpect(jsonPath("$.data.summary.grammarCount").value(4))
-                .andExpect(jsonPath("$.data.summary.vocabCount").value(30))
-                .andExpect(jsonPath("$.data.units", hasSize(2)))
-                .andExpect(jsonPath("$.data.units[0].expressionCount").value(6))
+                .andExpect(jsonPath("$.data.summary.unitCount").value(english1.unitCount))
+                .andExpect(jsonPath("$.data.summary.grammarCount").value(english1.grammarCount))
+                .andExpect(jsonPath("$.data.summary.vocabCount").value(english1.vocabularyCount))
+                .andExpect(jsonPath("$.data.units", hasSize(english1.unitCount)))
+                .andExpect(jsonPath("$.data.units[0].expressionCount").value(UNIT_1_EXPRESSIONS))
                 .andExpect(jsonPath("$.data.units[0].kanjiCount").doesNotExist());
     }
 
