@@ -2,6 +2,7 @@ import { useState } from "react";
 import { errorText } from "../lib/errorText.js";
 import { useNavigate } from "react-router-dom";
 import { callApi, uploadFiles } from "../lib/http.js";
+import { invalidateQueries } from "../hooks/useApiQuery.js";
 import { formatFileSize, getErrorMessage } from "../lib/format.js";
 import { btnClass, fieldClass, inputClass, labelClass, textareaClass } from "../components/ui/kitClass.js";
 
@@ -69,6 +70,8 @@ export function CommunityWritePage() {
         }
       }
 
+      // 방금 쓴 글이 목록에 보여야 한다 — 캐시된 옛 목록을 버린다
+      invalidateQueries("/api/communities");
       navigate(`/community/detail?id=${communityId}`);
     } catch (e) {
       alert(getErrorMessage(e, "게시글 작성에 실패했습니다."));

@@ -1,28 +1,55 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import DOMPurify from "dompurify";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Pagination } from "../components/Pagination.jsx";
 import { useAuth } from "../context/authStore.js";
-import { callApi, callPublicApi } from "../lib/http.js";
+import { invalidateQueries, useApiQuery } from "../hooks/useApiQuery.js";
+import { callApi } from "../lib/http.js";
 import { formatDateTime, formatFileSize, getErrorMessage } from "../lib/format.js";
 import { btnClass, emptyClass } from "../components/ui/kitClass.js";
 
+/**
+ * 글 상세.
+ *
+ * 글·첨부·댓글 모두 공용 조회 훅(캐시)으로 읽는다 — 목록에서 다시 들어오면 첫 렌더가 곧바로 본문이다.
+ * **댓글 페이지는 주소(`?cpage=`)에서 온다**(설계/05 §9 — 페이지는 쿼리스트링). 다만 replace로 쓴다:
+ * 상세 안의 하위 목록이라 히스토리를 쌓지 않고, 스크롤 규칙(PUSH=맨 위)에 걸려 본문 위로 튀지도 않는다.
+ * 쓰기(댓글 작성·수정·삭제, 글 삭제) 뒤에는 그 접두사의 캐시를 무효화한다.
+ */
 export function CommunityDetailPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const communityId = searchParams.get("id");
   const { user, isAuthenticated } = useAuth();
+  // 0-base, 기본값(0)은 주소에서 생략한다 — 게시판 목록의 page와 같은 규칙
+  const commentPage = Math.max(0, Number.parseInt(searchParams.get("cpage") ?? "0", 10) || 0);
 
-  const [post, setPost] = useState(null);
-  const [attachments, setAttachments] = useState([]);
-  const [comments, setComments] = useState([]);
-  const [commentPageInfo, setCommentPageInfo] = useState({ page: 0, totalPages: 0, totalElements: 0 });
   const [commentInput, setCommentInput] = useState("");
   const [commentSending, setCommentSending] = useState(false); // 연타 방어(B-M7)
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+
+  const commentsPrefix = communityId ? `/api/communities/${communityId}/comments` : null;
+  const { data: post, loading: postLoading, error: postError } = useApiQuery(
+    communityId ? `/api/communities/${communityId}` : null,
+  );
+  const { data: fileList } = useApiQuery(
+    communityId ? `/api/files?refId=${communityId}&refType=COMMUNITY&usage=ATTACHMENT` : null,
+  );
+  const { data: commentData } = useApiQuery(commentsPrefix ? `${commentsPrefix}?page=${commentPage}&size=10` : null);
+
+  const attachments = fileList ?? [];
+  const comments = commentData?.content ?? [];
+  const commentPageInfo = {
+    page: commentData?.page ?? commentPage,
+    totalPages: commentData?.totalPages ?? 0,
+    totalElements: commentData?.totalElements ?? 0,
+  };
+
+  const loading = !!communityId && postLoading;
   // 없는 글(404)과 통신 실패를 가른다 — 404에 "다시 시도"를 두면 고쳐질 리 없는 실패를 권하는 것이다(08 C-12 ④ · 판정 D-5 ③)
-  const [notFound, setNotFound] = useState(false);
+  const notFound = postError?.status === 404 || postError?.status === 400;
+  let error = "";
+  if (!communityId) error = "잘못된 접근입니다.";
+  else if (postError) error = getErrorMessage(postError, "게시글을 불러오지 못했습니다.");
 
   const isMine = useMemo(() => {
     if (!post || !user) return false;
@@ -30,52 +57,18 @@ export function CommunityDetailPage() {
     return post.userId === user.id;
   }, [post, user]);
 
-  const loadPost = async () => {
-    if (!communityId) {
-      setError("잘못된 접근입니다.");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    try {
-      const [postResult, filesResult] = await Promise.all([
-        callPublicApi(`/api/communities/${communityId}`),
-        callPublicApi(`/api/files?refId=${communityId}&refType=COMMUNITY&usage=ATTACHMENT`),
-      ]);
-
-      setPost(postResult.data);
-      setAttachments(filesResult.data ?? []);
-    } catch (e) {
-      if (e?.status === 404 || e?.status === 400) setNotFound(true);
-      setError(getErrorMessage(e, "게시글을 불러오지 못했습니다."));
-    } finally {
-      setLoading(false);
-    }
+  /** 댓글 페이지 이동 — 주소가 단일 출처다. 기본 페이지(0)는 쿼리에서 지운다 */
+  const goCommentPage = (nextPage) => {
+    const next = new URLSearchParams(searchParams);
+    if (nextPage > 0) next.set("cpage", String(nextPage));
+    else next.delete("cpage");
+    setSearchParams(next, { replace: true });
   };
 
-  const loadComments = async (page = 0) => {
-    if (!communityId) return;
-    try {
-      const result = await callPublicApi(`/api/communities/${communityId}/comments?page=${page}&size=10`);
-      setComments(result.data?.content ?? []);
-      setCommentPageInfo({
-        page: result.data?.page ?? 0,
-        totalPages: result.data?.totalPages ?? 0,
-        totalElements: result.data?.totalElements ?? 0,
-      });
-    } catch (e) {
-      setComments([]);
-      setCommentPageInfo({ page: 0, totalPages: 0, totalElements: 0 });
-      setError(getErrorMessage(e, "댓글을 불러오지 못했습니다."));
-    }
+  /** 댓글을 쓰고 지운 뒤 — 캐시를 버리고 다시 부른다(화면은 비우지 않는다) */
+  const refreshComments = () => {
+    if (commentsPrefix) invalidateQueries(commentsPrefix);
   };
-
-  useEffect(() => {
-    loadPost();
-    loadComments();
-  }, [communityId]);
 
   const onSubmitComment = async () => {
     if (!isAuthenticated) {
@@ -96,7 +89,8 @@ export function CommunityDetailPage() {
         body: JSON.stringify({ content: commentInput.trim() }),
       });
       setCommentInput("");
-      loadComments(0);
+      refreshComments();
+      goCommentPage(0); // 방금 쓴 댓글은 첫 페이지에 있다
     } catch (e) {
       alert(getErrorMessage(e, "댓글 작성에 실패했습니다."));
     } finally {
@@ -118,7 +112,7 @@ export function CommunityDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: next.trim() }),
       });
-      loadComments(commentPageInfo.page);
+      refreshComments();
     } catch (e) {
       alert(getErrorMessage(e, "댓글 수정에 실패했습니다."));
     }
@@ -128,7 +122,7 @@ export function CommunityDetailPage() {
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
     try {
       await callApi(`/api/comments/${commentId}`, { method: "DELETE" });
-      loadComments(commentPageInfo.page);
+      refreshComments();
     } catch (e) {
       alert(getErrorMessage(e, "댓글 삭제에 실패했습니다."));
     }
@@ -141,6 +135,8 @@ export function CommunityDetailPage() {
       // 백엔드가 글 삭제 시 연결 파일(본문 IMAGES + 첨부 ATTACHMENT)을 트랜잭션으로 함께 삭제한다.
       // 프론트에서 파일을 개별 삭제하지 않는다.
       await callApi(`/api/communities/${communityId}`, { method: "DELETE" });
+      // 지운 글이 든 옛 목록을 한 프레임도 보여주지 않는다 — 목록으로 가기 전에 버린다
+      invalidateQueries("/api/communities");
       navigate("/community");
     } catch (e) {
       alert(getErrorMessage(e, "게시글 삭제에 실패했습니다."));
@@ -308,7 +304,7 @@ export function CommunityDetailPage() {
         <Pagination
           page={commentPageInfo.page}
           totalPages={commentPageInfo.totalPages}
-          onChange={(nextPage) => loadComments(nextPage)}
+          onChange={(nextPage) => goCommentPage(nextPage)}
         />
       </section>
     </section>

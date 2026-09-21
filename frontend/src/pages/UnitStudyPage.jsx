@@ -12,7 +12,6 @@ import { MergeBanner } from "../components/MergeBanner.jsx";
 import { InlineAlert } from "../components/InlineAlert.jsx";
 import { ApiErrorCard, CoursePreparingCard, NotFoundCard, PreparingCard } from "../components/StateCards.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
-import { callPublicApi } from "../lib/http.js";
 import { useUserData } from "../context/userDataStore.js";
 import { isUnitCompleted, resolveStepIndex } from "../lib/progressView.js";
 import { buildUnitQuizSet } from "../lib/quiz.js";
@@ -565,6 +564,20 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
 
   const completed = data ? isUnitCompleted(progress.completedUnits, data.courseId, data.unitNo) : false;
 
+  // 저장된 스텝 복원 — 없는 키(콘텐츠 개편)면 0이 되어 첫 스텝으로 열린다(설계/04 §6-2).
+  // **완료한 유닛은 복원하지 않고 1번 스텝으로 연다**(AC-P-10) — 마지막 위치가 summary인 채로
+  // 복원하면 다시 열 때마다 정리 스텝만 뜨고, 두 안내 띠(이어보기·완료)도 겹친다(설계/05 §8).
+  // 사용자가 스텝을 한 번이라도 누르면(userStep != null) 진도가 늦게 도착해도 덮어쓰지 않는다.
+  const restoredIndex = useMemo(() => {
+    const last = progress.lastPosition;
+    if (!data || !last || completed) return 0;
+    if (last.courseId !== data.courseId || last.unitNo !== data.unitNo) return 0;
+    return resolveStepIndex(steps.map((step) => step.key), last.stepKey);
+  }, [completed, data, progress.lastPosition, steps]);
+
+  const current = steps.length > 0 ? Math.min(userStep ?? restoredIndex, steps.length - 1) : 0;
+  const currentKey = steps[current]?.key;
+
   // 편집 저장 결과 — 응답이 진실이다(A9). 유닛 응답을 다시 받지 않고 그 항목만 갈아끼운다
   const [edits, setEdits] = useState({});
   const applyEdit = (kind) => (saved) =>
@@ -574,8 +587,35 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
     return saved ? { ...item, ...saved } : item;
   };
 
-  // 오답 풀 — 유닛 문법 2~3개로는 보기 4개를 못 채운다(설계/09 §1-3). 스텝을 열 때 1회 조회한다
-  const [grammarPool, setGrammarPool] = useState(null);
+  // 오답 풀 — 유닛 문법은 2~3개뿐이라 유닛 안에서는 보기 4개를 못 채운다(설계/09 §1-3).
+  // **정답과 같은 레벨에서 먼저 채운다**(감사 높음 2): 레벨 필터 없이 첫 페이지를 가져오면
+  // 학습 순서 정렬이라 낮은 레벨만 담기고, N1 유닛의 보기가 레벨만 봐도 풀린다.
+  // 같은 레벨로 보기 4개를 못 채울 때에 한해 필터를 풀어 넓힌다(조용히 낮은 레벨로 채우지 않는다).
+  // 레벨은 유닛 응답의 levelCode다 — 코스 목록을 따로 부르지 않는다(호출 한 번 계약).
+  //
+  // 조회는 공용 훅(캐시)에 맡긴다 — 확인 문제 스텝을 **처음 열 때** 주소가 생기고, 그 뒤로는 유지한다.
+  // 스텝을 옮겼다고 주소를 거두면 풀이 사라져 풀던 문항이 새로 만들어진다.
+  const [quizOpened, setQuizOpened] = useState(false);
+  useEffect(() => {
+    if (!en && currentKey === "quiz") setQuizOpened(true);
+  }, [en, currentKey]);
+
+  const poolLevel = data?.levelCode ?? null;
+  const poolBase = en ? "/api/en/library/grammar" : "/api/library/grammar";
+  const { data: sameLevelPage } = useApiQuery(
+    quizOpened ? `${poolBase}?${poolLevel ? `level=${encodeURIComponent(poolLevel)}&` : ""}size=100` : null,
+  );
+  const sameLevelPool = sameLevelPage?.content ?? [];
+  // 유닛 재료에서 정답 자신을 뺀 나머지 + 풀 ≥ 3이어야 보기 4개가 된다
+  const poolNeeded = Math.max(0, 3 - Math.max(0, (data?.grammars?.length ?? 0) - 1));
+  const { data: widerPage } = useApiQuery(
+    sameLevelPage && poolLevel && sameLevelPool.length < poolNeeded ? `${poolBase}?size=100` : null,
+  );
+  // 풀을 못 받아도(에러) 유닛 재료만으로 만들 수 있는 문제는 낸다 — 빈 풀은 조용한 실패다
+  const seenInPool = new Set(sameLevelPool.map((item) => item.id));
+  const grammarPool = [...sameLevelPool, ...(widerPage?.content ?? []).filter((item) => !seenInPool.has(item.id))];
+  // 재검증으로 같은 내용이 다시 와도 문항을 새로 만들지 않는다 — 구성이 바뀔 때만 다시 만든다
+  const grammarPoolKey = grammarPool.map((item) => item.id).join(",");
 
   // 확인 문제 재료 — 문항의 자료실 링크는 유형에서 파생한다(결과 화면 Q17)
   const [quizStarted, setQuizStarted] = useState(false);
@@ -605,62 +645,12 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
       })),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, quizNonce, grammarPool, libraryBase, en]);
+  }, [data, quizNonce, grammarPoolKey, libraryBase, en]);
   const restartQuiz = useMemo(() => {
     const fn = () => setQuizNonce((n) => n + 1);
     fn.nonce = quizNonce;
     return fn;
   }, [quizNonce]);
-
-  // 저장된 스텝 복원 — 없는 키(콘텐츠 개편)면 0이 되어 첫 스텝으로 열린다(설계/04 §6-2).
-  // **완료한 유닛은 복원하지 않고 1번 스텝으로 연다**(AC-P-10) — 마지막 위치가 summary인 채로
-  // 복원하면 다시 열 때마다 정리 스텝만 뜨고, 두 안내 띠(이어보기·완료)도 겹친다(설계/05 §8).
-  // 사용자가 스텝을 한 번이라도 누르면(userStep != null) 진도가 늦게 도착해도 덮어쓰지 않는다.
-  const restoredIndex = useMemo(() => {
-    const last = progress.lastPosition;
-    if (!data || !last || completed) return 0;
-    if (last.courseId !== data.courseId || last.unitNo !== data.unitNo) return 0;
-    return resolveStepIndex(steps.map((step) => step.key), last.stepKey);
-  }, [completed, data, progress.lastPosition, steps]);
-
-  const current = steps.length > 0 ? Math.min(userStep ?? restoredIndex, steps.length - 1) : 0;
-  const currentKey = steps[current]?.key;
-
-  // 오답 풀 — 유닛 문법은 2~3개뿐이라 유닛 안에서는 보기 4개를 못 채운다(설계/09 §1-3).
-  // **정답과 같은 레벨에서 먼저 채운다**(설계/09 §1-3 — 감사 높음 2): 레벨 필터 없이 첫 페이지를
-  // 가져오면 학습 순서 정렬이라 낮은 레벨만 담기고, N1 유닛의 보기가 레벨만 봐도 풀린다.
-  // 같은 레벨로 보기 4개를 못 채울 때에 한해 필터를 풀어 넓힌다(조용히 낮은 레벨로 채우지 않는다).
-  // 레벨은 유닛 응답의 levelCode다 — 코스 목록을 따로 부르지 않는다(호출 한 번 계약).
-  useEffect(() => {
-    if (en || currentKey !== "quiz" || grammarPool) return undefined;
-    let cancelled = false;
-    const apiRoot = en ? "/api/en" : "/api";
-    const levelCode = data?.levelCode ?? null;
-    const askPool = (level) =>
-      callPublicApi(
-        `${apiRoot}/library/grammar?${level ? `level=${encodeURIComponent(level)}&` : ""}size=100`,
-      ).then((body) => body?.data?.content ?? []);
-    // 유닛 재료에서 정답 자신을 뺀 나머지 + 풀 ≥ 3이어야 보기 4개가 된다
-    const needed = Math.max(0, 3 - Math.max(0, (data?.grammars?.length ?? 0) - 1));
-
-    askPool(levelCode)
-      .then(async (sameLevel) => {
-        if (!levelCode || sameLevel.length >= needed) return sameLevel;
-        const wider = await askPool(null);
-        const seen = new Set(sameLevel.map((item) => item.id));
-        return [...sameLevel, ...wider.filter((item) => !seen.has(item.id))];
-      })
-      .then((pool) => {
-        if (!cancelled) setGrammarPool(pool);
-      })
-      .catch(() => {
-        // 풀을 못 받아도 유닛 재료만으로 만들 수 있는 문제는 낸다(조용한 실패)
-        if (!cancelled) setGrammarPool([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [currentKey, grammarPool, en, data?.levelCode, data?.grammars?.length]);
 
   // 스텝 전환 시 스크롤 리셋 + 모바일 스텝 바에서 현재 칩이 보이게
   useEffect(() => {

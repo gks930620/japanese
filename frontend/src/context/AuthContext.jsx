@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { authFetch, toApiError } from "../lib/http.js";
+import { clearQueryCache } from "../hooks/useApiQuery.js";
 import { AuthContext } from "./authStore.js";
 
 export function AuthProvider({ children }) {
@@ -55,6 +56,8 @@ export function AuthProvider({ children }) {
       throw await toApiError(response);
     }
 
+    // 인증이 바뀌면 조회 캐시를 버린다 — 이전 상태로 받아 둔 응답이 새 사람의 화면에 남지 않게
+    clearQueryCache();
     return loadMe();
   };
 
@@ -70,6 +73,7 @@ export function AuthProvider({ children }) {
     } catch {
       // 무시: 아래 finally에서 클라이언트 상태 정리
     } finally {
+      clearQueryCache();
       setUser(null);
       setStatus("guest");
     }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { errorText } from "../lib/errorText.js";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { authFetch, callApi, callPublicApi, toApiError, uploadFiles } from "../lib/http.js";
+import { invalidateQueries } from "../hooks/useApiQuery.js";
 import { formatFileSize, getErrorMessage } from "../lib/format.js";
 import { useAuth } from "../context/authStore.js";
 import { btnClass, emptyClass, fieldClass, inputClass, labelClass, textareaClass } from "../components/ui/kitClass.js";
@@ -116,6 +117,8 @@ export function CommunityEditPage() {
         await uploadFiles(newFiles, communityId, "ATTACHMENT");
       }
 
+      // 고친 글이 상세·목록에 바로 보여야 한다 — 캐시된 옛 응답을 버린다
+      invalidateQueries("/api/communities");
       navigate(`/community/detail?id=${communityId}`);
     } catch (e) {
       // 413(용량 초과)은 재시도로 회복되지 않는다 — 한도를 말한다(08 C-12 ④)

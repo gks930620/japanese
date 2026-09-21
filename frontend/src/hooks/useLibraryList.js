@@ -20,7 +20,10 @@ export function useLibraryList(endpoint, size) {
 
   const search = searchParams.toString();
   const params = useMemo(() => parseLibraryParams(search), [search]);
-  const { data, loading, error, reload } = useApiQuery(buildLibraryApiUrl(endpoint, params, size));
+  // 페이지·필터가 바뀌어도 옛 목록을 버리지 않는다 — 새 응답이 올 때까지 흐린 채로 남는다(설계/05 §8 갱신 로딩)
+  const { data, loading, error, reload } = useApiQuery(buildLibraryApiUrl(endpoint, params, size), {
+    keepPreviousData: true,
+  });
 
   /**
    * 조건 변경 — page를 함께 주지 않으면 1페이지로 되돌린다 (인수 7).
