@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
  * 어휘 자료실 목록 1행 = 병합 단위 (설계 §4-B-5, §7-13 ①)
  *
  * <ul>
- *   <li>병합 키는 표기(word) + 읽기(kana) 둘 다 — 읽기가 다르면 별개 행</li>
+ *   <li>병합 키는 표기(word) + 읽기(일본어 {@code kana} · 영어 {@code ipa}) 둘 다 — 읽기가 다르면 별개 행</li>
  *   <li>{@code id}·{@code partOfSpeech}는 그룹에서 학습 순서가 가장 이른 항목의 값(§7-14 ②)</li>
  *   <li>{@code levels}는 정렬 규칙과 무관하게 항상 학습 순서(낮은 레벨 먼저)</li>
  *   <li>{@code senses}는 펼침용 추가 호출이 없도록 목록에 미리 싣는다(§7-13 ②)</li>
@@ -52,7 +52,8 @@ public class VocabularyEntryDTO {
                 .id(representative.getId())
                 .word(representative.getWord())
                 .kana(representative.getKana())
-                // 병합 표제어의 발음은 대표 행의 값이다 — 표기+읽기가 같은 것끼리 묶였으니 발음도 하나다(판정 §7-3)
+                // 병합 표제어의 발음은 대표 행의 값이다 — 표기+읽기가 같은 것끼리 묶였으니 발음도 하나다(판정 §7-3).
+                // 영어의 읽기가 ipa가 되면서(08 A-8) 이 문장이 영어에서도 참이 됐다 — 그룹의 모든 행이 같은 ipa다
                 .ipa(representative.getIpa())
                 .koApprox(representative.getKoApprox())
                 .partOfSpeech(representative.getPartOfSpeech() == null

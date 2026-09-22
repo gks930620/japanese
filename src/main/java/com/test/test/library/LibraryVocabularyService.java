@@ -80,7 +80,7 @@ public class LibraryVocabularyService {
      */
     public Map<Long, Long> resolveEntryIds(Collection<Long> vocabularyIds, CourseLanguage language) {
         Map<Long, Long> entryIdByVocabularyId = new HashMap<>();
-        for (List<VocabularyRow> group : mergeByWordAndKana(
+        for (List<VocabularyRow> group : mergeByWordAndReading(
                 libraryVocabularyQueryRepository.findGroupRowsByVocabularyIds(vocabularyIds, language))) {
             Long entryId = group.get(0).getId();
             group.forEach(row -> entryIdByVocabularyId.put(row.getId(), entryId));
@@ -124,7 +124,7 @@ public class LibraryVocabularyService {
             return LibraryPageResponse.of(List.of(), 0, pageSize, 0L, 0L);
         }
 
-        List<List<VocabularyRow>> allGroups = mergeByWordAndKana(
+        List<List<VocabularyRow>> allGroups = mergeByWordAndReading(
                 libraryVocabularyQueryRepository.findAllRowsInLearningOrder(language));
         if (entryIds != null) {
             // ids는 표제어 대표 id 기준이다(설계/04 §6-7). 없는 id는 조용히 빠진다 — 부분 집합 조회이므로 404가 아니다
@@ -160,13 +160,14 @@ public class LibraryVocabularyService {
 
     /**
      * 표기 + 읽기가 둘 다 같을 때만 한 행으로 병합한다 (설계 §4-B-5 — 읽기가 다르면 별개 행).
+     * 읽기 = 일본어 kana · 영어 ipa (08 A-8) — 행이 스스로 답한다({@link VocabularyRow#reading()}).
      * 병합 키는 두 값의 쌍이라 문자열을 이어붙일 때 생기는 경계 모호성이 없고, 읽기 null도 그대로 키가 된다.
      * 입력이 학습 순서라 각 그룹의 행 순서도 학습 순서로 유지된다 — 그래서 첫 행이 표제어 대표다.
      */
-    private List<List<VocabularyRow>> mergeByWordAndKana(List<VocabularyRow> rows) {
+    private List<List<VocabularyRow>> mergeByWordAndReading(List<VocabularyRow> rows) {
         Map<List<String>, List<VocabularyRow>> groups = new LinkedHashMap<>();
         for (VocabularyRow row : rows) {
-            List<String> mergeKey = Arrays.asList(row.getWord(), row.getKana());
+            List<String> mergeKey = Arrays.asList(row.getWord(), row.reading());
             groups.computeIfAbsent(mergeKey, unused -> new ArrayList<>()).add(row);
         }
         return List.copyOf(groups.values());

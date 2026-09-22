@@ -30,4 +30,12 @@ public class VocabularyRow {
     private String levelCode;
     private Integer unitNo;
     private String unitTitle;
+
+    /**
+     * 읽기 — 일본어는 {@code kana}, 영어는 {@code ipa}. 두 컬럼은 서로 배타적이다(계약 J-8 · 설계/06 §11-3).
+     * 설계/04 §3-7 · 08 A-8
+     */
+    public String reading() {
+        return kana != null ? kana : ipa;
+    }
 }
