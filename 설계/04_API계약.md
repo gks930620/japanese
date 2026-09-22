@@ -279,8 +279,9 @@ data: {
 
 #### 2-3-A. 부분 공개 코스 — "완주"와 "열린 데까지의 끝"은 다른 상태다 (2026-09-21)
 
-> **2026-09-22 현황**: E1이 **15/15로 계획을 채워 완주가 됐다.** 지금 저장소에 `totalUnits < coursePlannedUnits`인
-> 코스는 **하나도 없다** — 아래 규칙은 그대로 유효하지만, 이 상태를 **실데이터로 태우는 백엔드 테스트는 없다**(설계/08 C-30).
+> **2026-09-22 현황**: E1은 **15/15로 계획을 채운 완주 코스**이고, **E2가 5/20으로 부분 공개**됐다.
+> 즉 `totalUnits < coursePlannedUnits`인 코스가 **다시 존재한다**(E2 = 102). 한때 이 상태를 실데이터로 태우는
+> 백엔드 테스트가 없었지만(설계/08 C-30), **E2 개통과 함께 복구했다** — 아래 커버리지 표의 마지막 줄.
 
 `nextUnitNo == null`은 **"이 코스의 마지막 유닛"** 일 뿐 완주가 아니다. 유닛을 앞에서부터 채워 나가는
 코스(E1은 2026-09-21 시점 15유닛 계획 중 **10유닛** 공개였다)에서는 **열린 마지막 유닛**도 `nextUnitNo: null`이라 두 상태가 겹친다.
@@ -305,7 +306,7 @@ completedCourse = nextUnitNo == null && !moreUnitsComing
   이 규칙과 무관하다 — 일본어 N5의 안내 문구는 그대로 정당하다.
 - 프론트는 **유닛 학습 응답 하나로** 판단한다(호출 한 번 계약, 08 B-7). 코스 상세를 추가로 부르지 않는다.
 
-**고정 테스트 — 지금 무엇이 커버되고 무엇이 안 되는가** (2026-09-22 갱신, 설계/08 C-30):
+**고정 테스트 — 지금 무엇이 커버되는가** (2026-09-23 갱신 — E2 개통으로 마지막 줄이 복구됐다, 설계/08 C-30):
 
 | 무엇 | 어디 | 실데이터로 태우는가 |
 |---|---|---|
@@ -313,8 +314,13 @@ completedCourse = nextUnitNo == null && !moreUnitsComing
 | `totalUnits`에서 **파생하지 않는다** | `CourseApiIntegrationTest.unit_study_last_unit_has_no_next_unit` (일본어는 `totalUnits=20`인데 값이 `null`) | ○ |
 | 계획을 채우면 **사람 손 없이** 완주가 된다 | `EnglishCourseApiIntegrationTest.the_last_unit_is_a_finished_course_because_the_plan_is_met` | ○ |
 | 계획을 채운 코스에 `notice`가 남지 않는다 | `EnglishCourseApiIntegrationTest.a_course_that_met_its_plan_carries_no_leftover_notice` | ○ |
+| **채우는 중인 코스는 `notice`를 달고 있다**(반대쪽 · §06 §11-12 ③ R6) | `EnglishCourseApiIntegrationTest.a_partly_published_course_carries_the_shared_notice` | ○ (E2) |
 | 판정식(`moreUnitsComing`)과 상태 2 화면 | `frontend/src/pages/UnitStudyPage.partialCourse.test.jsx` | ✕ **픽스처** |
-| **상태 2를 서버 응답으로 태우기** | — **없다** | ✕ **실데이터가 존재하지 않는다** |
+| **상태 2를 서버 응답으로 태우기**(`totalUnits 5 < coursePlannedUnits 20`) | `EnglishCourseApiIntegrationTest.the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course` | ○ **(E2 — 2026-09-22 복구)** |
+
+> ⚠️ **마지막 줄은 데이터에 얹혀 있다.** E2가 20/20을 채우면 그 전제가 또 거짓이 된다(E1에서 한 번 겪었다 — C-30).
+> 그때 **숫자만 고쳐 테스트를 살리지 않는다**: ① E3를 부분 공개하는 **같은 커밋**에서 대상을 옮기거나
+> ② 옮길 대상이 없으면 이 표에 다시 `— 없다`를 적고 복구 조건을 `CourseCatalog.ENGLISH` 주석에 박는다.
 
 일본어 테스트가 값이 아니라 **키의 존재**를 보는 이유: 필드가 통째로 빠져도 프론트 판정은 false가 되어 지금과 똑같이
 동작하므로, 일본어를 부분 공개하는 날 **조용히** 거짓 완주 안내로 되돌아간다.
@@ -792,7 +798,7 @@ units:   [ { unitNo, title, grammarCount, expressionCount, vocabCount } ]
 // 유닛 학습
 data: {
   courseId, courseTitle, levelCode, unitNo, title, totalUnits,
-  coursePlannedUnits,                      // §2-3-A — E1은 15, 나머지는 null
+  coursePlannedUnits,                      // §2-3-A — E1은 15(완주) · E2는 20(5유닛 공개), 나머지는 null
   prevUnitNo, nextUnitNo, nextCourse,
   grammars: [ ... ],                       // 일본어와 같은 GrammarDTO
   dialog:   { id, title, lines: [ ... ] }, // 일본어와 같은 DialogDTO
@@ -809,12 +815,14 @@ data: {
   필드명을 바꾸면 일본어 응답 계약이 함께 바뀌므로 두었다. 프론트는 `jp`를 "원문"으로 읽는다.
 - `partOfSpeech`는 **영어 7종**(`NOUN`·`VERB`·`ADJECTIVE`·`ADVERB`·`PREPOSITION`·`CONJUNCTION`·`PHRASE`)이다.
   일본어 7종과 코드 집합이 다르다 — 허용 밖 값은 400.
-- 준비중 코스(E2~E5)는 일본어와 같다: 상세 200(빈 units), 유닛 404 `COURSE_PREPARING`.
-- `coursePlannedUnits`는 **일본어와 완전히 같은 필드·같은 규칙**이다(§2-3-A). **2026-09-22 E1은 15/15 — 완주다.**
-  유닛 15가 이 코스의 끝이고 `notice`는 NULL로 지워졌다. 2026-09-21까지는 유닛 10이 "열린 데까지의 끝"이었다.
-  그 자리는 공개 범위를 넓힐 때마다 옮겨 다니므로 **유닛 번호를 계약에 박지 않는다** — 판정식은 언제나
-  `totalUnits < coursePlannedUnits`다. 고정 테스트도 같은 방식으로 `CourseCatalog.ENGLISH`에서 유닛 번호를 받아온다
-  (`EnglishCourseApiIntegrationTest.the_last_unit_is_a_finished_course_because_the_plan_is_met`).
+- 준비중 코스(**2026-09-22부터 E3~E5**)는 일본어와 같다: 상세 200(빈 units), 유닛 404 `COURSE_PREPARING`.
+- `coursePlannedUnits`는 **일본어와 완전히 같은 필드·같은 규칙**이다(§2-3-A).
+  **2026-09-22 현재 E1은 15/15(완주) · E2는 5/20(열린 데까지의 끝)** 이고, `notice`는 E1이 NULL · E2가 공용 문구다.
+  "열린 데까지의 끝"인 유닛 번호는 공개 범위를 넓힐 때마다 옮겨 다니므로(E1은 5 → 10 → 없음, E2는 5 → 10 → 15 → 없음)
+  **유닛 번호를 계약에 박지 않는다** — 판정식은 언제나 `totalUnits < coursePlannedUnits`다.
+  고정 테스트도 같은 방식으로 `CourseCatalog.ENGLISH`에서 유닛 번호를 받아온다
+  (`the_last_unit_is_a_finished_course_because_the_plan_is_met`(E1) ·
+  `the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course`(E2)).
 
 ### 8-2. 영어 자료실
 

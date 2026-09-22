@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EnglishCourseDetailIntegrationTest extends ApiIntegrationTestSupport {
 
     private static final long EN_COURSE_1 = 101L;
-    private static final long EN_COURSE_2_PREPARING = 102L;
 
     /** 유닛 1의 표현 수 — 코스 합계와 달리 <b>유닛별 값</b>이라 코스 표에서 파생되지 않는다(아래 주석 참고) */
     private static final int UNIT_1_EXPRESSIONS = 6;
@@ -61,10 +60,18 @@ class EnglishCourseDetailIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.units[0].kanjiCount").doesNotExist());
     }
 
-    /** 준비중 코스도 200 — 빈 units·0 summary로 내리고 프론트가 status로 분기한다(일본어와 같은 규칙) */
+    /**
+     * 준비중 코스도 200 — 빈 units·0 summary로 내리고 프론트가 status로 분기한다(일본어와 같은 규칙).
+     *
+     * <p><b>2026-09-22 대상을 이름에서 계산으로 바꿨다</b>(senior-dev): 여기 박혀 있던 {@code 102}가
+     * E2 개통과 동시에 준비중이 아니게 되어 <b>멀쩡한 계약을 검증하던 테스트가 데이터 때문에 빨개졌다</b>.
+     * 검증 대상은 "102"가 아니라 <b>준비중 상태</b>이므로 {@link CourseCatalog#somePreparingCourse()}로 찾는다 —
+     * 코스가 하나씩 열려도 테스트가 스스로 다음 대상(E3 → E4 → E5)을 고르고, 준비중 코스가 하나도 남지 않는 날에는
+     * 그 메서드가 <b>"검증할 대상이 사라졌다"고 말하며</b> 실패한다.
+     */
     @Test
     void a_preparing_english_course_still_answers_200_with_an_empty_unit_list() throws Exception {
-        mockMvc.perform(get("/api/en/courses/{courseId}", EN_COURSE_2_PREPARING))
+        mockMvc.perform(get("/api/en/courses/{courseId}", CourseCatalog.somePreparingCourse().id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("PREPARING"))
                 .andExpect(jsonPath("$.data.units", hasSize(0)))

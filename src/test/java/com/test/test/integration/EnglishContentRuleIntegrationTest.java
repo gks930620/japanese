@@ -84,10 +84,27 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
 
     // ── 공통 조회 도우미 ──────────────────────────────────────────────────────
 
+    /**
+     * 유닛 하나 — <b>없으면 그 사실을 말하고 멈춘다.</b>
+     *
+     * <p>{@code status().isOk()}만 걸어 두면 실패 메시지가 "expected:&lt;200&gt; but was:&lt;404&gt;" 한 줄이라
+     * <b>어느 코스의 몇 번 유닛이 비었는지</b>를 리포트를 열어야 알 수 있다. 이 파일의 네 검사가 전부 이 메서드를 지나므로
+     * 여기 한 곳만 말을 시키면 네 실패가 전부 읽히는 실패가 된다(전수 검증의 값어치는 메시지에 있다).
+     *
+     * <p>코스를 <b>계획보다 먼저</b> 표에 올리는 것이 이 프로젝트의 순서다({@link CourseCatalog#ENGLISH} 주석) —
+     * 그래서 콘텐츠가 들어오기 전의 404는 <b>고장이 아니라 의도된 Red</b>이고, 메시지가 그 사실까지 말해 준다.
+     */
     private JsonNode unit(long courseId, int unitNo) throws Exception {
         MvcResult result = mockMvc.perform(get("/api/en/courses/{courseId}/units/{unitNo}", courseId, unitNo))
-                .andExpect(status().isOk())
                 .andReturn();
+
+        assertThat(result.getResponse().getStatus())
+                .as("코스 %s 유닛 %s를 부르면 HTTP %s다. 순회 범위는 CourseCatalog.ENGLISH의 unitCount이므로 "
+                                + "거기 적힌 수만큼 유닛이 실재해야 한다 — 아직 콘텐츠를 안 쓴 유닛이라면 이것이 "
+                                + "**의도된 Red**이고, 시드를 채우면 초록이 된다(표를 나중에 올리면 새 유닛이 "
+                                + "규칙 검사를 하나도 받지 않는다 — 설계/06 §11-11)",
+                        courseId, unitNo, result.getResponse().getStatus())
+                .isEqualTo(200);
         return objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
     }
 

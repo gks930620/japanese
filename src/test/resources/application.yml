@@ -62,9 +62,12 @@ spring:
         # 고급 N1 코스(코스 5) — 한자 350자(누적 1,350자)
         - classpath:data-course-n1-content.sql
         - classpath:data-course-n1-units.sql
-        # 영어 과정 뼈대(코스 101~105) — 설계/06 §11. 맛보기는 코스 1의 유닛 2개
+        # 영어 과정(코스 101~105) — 설계/06 §11. 코스 5행 + E1(15유닛, 완성)
         - classpath:data-course-en-content.sql
         - classpath:data-course-en-units.sql
+        # 영어 코스 2(E2 일상 말하기) — 코스 102를 여는 UPDATE는 en-content 쪽에 있다(코스 행은 한 곳에 모은다)
+        - classpath:data-course-en2-content.sql
+        - classpath:data-course-en2-units.sql
         # H2: 명시 ID INSERT는 IDENTITY 시퀀스를 안 올리므로, 신규 INSERT PK 충돌 방지용 리셋 (test 전용)
         - classpath:data-h2-reset-identity.sql
 

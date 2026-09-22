@@ -60,8 +60,10 @@ const OPEN_END_LINK_LABEL = "유닛 목록으로 ›";
  * 일반 규칙**이라 다음 부분 공개(E2 등)에서 그대로 다시 쓰인다. 여기서 id 101을 쓰는 것은
  * 실제 응답의 배선(코스 id ↔ 라우트 ↔ nextCourse)을 그대로 두기 위해서다.
  *
- * ★ 이 화면 규칙을 **실데이터로** 태우는 백엔드 테스트는 지금 없다 — 그 자리와 복구 조건은
- *   `EnglishCourseApiIntegrationTest`의 "부분 공개 코스" 주석 블록에 적혀 있다.
+ * ★ **2026-09-22 갱신**: 이 상태의 실데이터가 **E2(5/20 공개)로 돌아왔고**, 서버 응답을 직접 태우는 백엔드 테스트도
+ *   복구됐다 — `EnglishCourseApiIntegrationTest.the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course`
+ *   (설계/08 C-30 "복구됨"). 이 픽스처는 그대로 둔다: 픽스처가 고정하는 것은 **화면 규칙**이고, 서버 쪽은 이제
+ *   따로 실데이터로 고정되므로 둘이 겹치지 않는다(08 C-11 — 한 규칙은 한 곳에서 고정한다).
  */
 function partialEndPayload(overrides = {}) {
   return enUnitStudyPayload({
