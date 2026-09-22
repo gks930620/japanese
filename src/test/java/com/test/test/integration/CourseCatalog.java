@@ -114,17 +114,24 @@ final class CourseCatalog {
      * 시드가 통과한 것이 아니라 <b>아무도 보지 않은</b> 것이고, 2026-09-21 유닛 3~5 증설 때 실제로 그 상태였다.
      * 콘텐츠를 늘릴 때 고칠 곳은 이 표 <b>한 줄</b>이다.
      *
-     * <p>2026-09-21 E1 증설 반영: 유닛 2 → 5 → <b>10</b> · 문법 4 → 13 → <b>28</b> · 표현 12 → 33 → <b>68</b> ·
-     * 어휘 30 → 78 → <b>158</b> (시드 {@code data-course-en-units.sql}의 매핑 행 수 =
+     * <p>E1 증설 이력: 유닛 2 → 5 → 10 → <b>15</b> · 문법 4 → 13 → 28 → <b>42</b> · 표현 12 → 33 → 68 → <b>103</b> ·
+     * 어휘 30 → 78 → 158 → <b>238</b> (시드 {@code data-course-en-units.sql}의 매핑 행 수 =
      * `/api/en/courses/101` summary와 일치 확인 — 집계는 DB 값이므로 시드가 곧 기대치다).
      *
-     * <p>⚠️ E1은 <b>15유닛 계획 중 10유닛 공개</b>다. 여기 적는 {@code unitCount}는 <b>지금 열린 수</b>이지
+     * <p><b>2026-09-22 E1이 계획(15유닛)을 채웠다.</b> 여기 적는 {@code unitCount}는 여전히 <b>지금 열린 수</b>이지
      * 계획 수가 아니다 — 계획 수({@code course.planned_unit_count} = 15)는 응답의 {@code coursePlannedUnits}로
      * 따로 내려가고, 그 계약은 {@link EnglishCourseApiIntegrationTest}가 고정한다(설계/04 §2-3-A).
      * 둘을 한 숫자로 합치면 순회 범위가 <b>아직 없는 유닛까지</b> 돌아 전부 404가 된다.
+     * 지금은 두 값이 우연히 같지만(15 = 15) <b>같은 것이 아니다</b>.
+     *
+     * <p>⚠️ <b>영어 코스를 "계획보다 적게" 여는 날 반드시 읽을 것</b>(= 여기 {@code available}을 true로 바꾸면서
+     * {@code unitCount}를 계획 수보다 작게 적는 날): 그 순간 <b>"열린 데까지의 끝"(설계/04 §2-3-A)의 실데이터가
+     * 다시 생긴다.</b> E1이 15/15가 되면서 그 상태를 백엔드에서 태울 데이터가 사라졌고(설계/08 C-30),
+     * 그 커버리지는 <b>다음 부분 공개 때 복구하기로</b> 정해져 있다 —
+     * {@code EnglishCourseApiIntegrationTest}의 "열린 데까지의 끝" 주석 블록에 복구 절차가 적혀 있다.
      */
     static final List<Course> ENGLISH = List.of(
-            english(101L, 1, "E1", "다시 세우기", true, 10, 28, 68, 158),
+            english(101L, 1, "E1", "다시 세우기", true, 15, 42, 103, 238),
             english(102L, 2, "E2", "일상 말하기", false, 0, 0, 0, 0),
             english(103L, 3, "E3", "이어 말하기", false, 0, 0, 0, 0),
             english(104L, 4, "E4", "뉘앙스", false, 0, 0, 0, 0),

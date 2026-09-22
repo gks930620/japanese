@@ -2,7 +2,7 @@
 -- 영어 과정 뼈대 시드 — 코스 5개(101~105) + 코스 1(E1 다시 세우기)의 유닛 콘텐츠
 -- 담당: backend-dev(영어) / 계약: 설계/04_API계약.md §8 · 설계/06_콘텐츠_제작규칙.md §11
 -- 규칙: 설계/06_콘텐츠_제작규칙.md §11-2(코스 5단계 E1~E5) · §11-4(유닛 구성) · §11-10(ID 대역)
---      부분 공개는 5의 배수 경계로만 넓힌다 — E1은 2 → 5 → 10 → 15 (§11-12 ①). 지금은 10유닛.
+--      부분 공개는 5의 배수 경계로만 넓힌다 — E1은 2 → 5 → 10 → 15 (§11-12 ①). 2026-09-22에 15유닛을 다 채워 **완성**됐다(notice 삭제, planned_unit_count는 유지).
 --
 -- ID 대역: 코스 101~105 / 콘텐츠는 전 테이블 9000~9999
 --   일본어 코스 대역(N5 1~999 · N4 1000~ · N3 2000~ · N2 3000~ · 입문 4000~ · N1 5000~)과
@@ -27,10 +27,12 @@
 -- level_label은 코드와 같은 값으로 채워 둔다 — 영어 화면은 라벨을 쓰지 않는다(코스명이 곧 단계 이름).
 -- 열린 코스는 1뿐: AVAILABLE, 나머지 넷은 PREPARING (설계/03 §5-2 조건).
 -- notice에는 집계 수를 적지 않는다(§11-12 ③ R1) — 유닛 수는 화면이 데이터에서 세어 보여준다.
--- 15유닛이 다 차면 notice를 NULL로 지운다(R4).
+-- 2026-09-22: 유닛 15가 들어가 E1이 계획(15)을 채웠으므로 notice를 NULL로 지웠다(§11-12 ③ R4 · 기획 AC-16).
+--   "채우는 중"은 더 이상 사실이 아니고, 유닛 증설과 같은 변경에서 지워야 거짓 안내가 한 순간도 존재하지 않는다(R3 · 예외 E-4).
+--   planned_unit_count = 15는 그대로 둔다 — totalUnits(15) >= planned(15)가 되어 화면이 자동으로 완주로 바뀐다(아래 UPDATE 주석).
 -- ─────────────────────────────────────────────────────────────
 INSERT INTO course (id, course_no, level_code, language, level_label, title, target_audience, goal, notice, description, status) VALUES
-(101, 1, 'E1', 'EN', 'E1', '다시 세우기', '단어는 아는데 문장이 안 만들어지는 학습자', '학교에서 배운 조각들을 문장 만드는 규칙으로 다시 세워, 하고 싶은 말을 한 문장으로 끝맺을 수 있어요', '앞 유닛부터 순서대로 채우는 중이에요 — 열려 있는 유닛까지는 지금 그대로 학습하면 됩니다', '「I am go to school」 같은 문장이 왜 안 되는지부터 다시 답합니다. be동사와 일반동사를 뒤섞지 않고, 묻고 답하는 한 문장을 스스로 만들 수 있게 되는 것이 이 코스의 도착점입니다.', 'AVAILABLE'),
+(101, 1, 'E1', 'EN', 'E1', '다시 세우기', '단어는 아는데 문장이 안 만들어지는 학습자', '학교에서 배운 조각들을 문장 만드는 규칙으로 다시 세워, 하고 싶은 말을 한 문장으로 끝맺을 수 있어요', NULL, '「I am go to school」 같은 문장이 왜 안 되는지부터 다시 답합니다. be동사와 일반동사를 뒤섞지 않고, 묻고 답하는 한 문장을 스스로 만들 수 있게 되는 것이 이 코스의 도착점입니다.', 'AVAILABLE'),
 (102, 2, 'E2', 'EN', 'E2', '일상 말하기', '짧게는 말하는데 시제가 헷갈리는 학습자', '시제·의문·부정을 한 문장 안에서 자유롭게 다룰 수 있어요', NULL, NULL, 'PREPARING'),
 (103, 3, 'E3', 'EN', 'E3', '이어 말하기', '문장은 되는데 길게 못 잇는 학습자', '연결·관계절·비교로 두세 문장을 하나로 이어 말할 수 있어요', NULL, NULL, 'PREPARING'),
 (104, 4, 'E4', 'EN', 'E4', '뉘앙스', '말은 통하는데 어색하다는 말을 듣는 학습자', '조동사·가정·수동·완곡으로 의도와 태도를 얹을 수 있어요', NULL, NULL, 'PREPARING'),
@@ -46,6 +48,12 @@ INSERT INTO course (id, course_no, level_code, language, level_label, title, tar
 --   INSERT는 다시 실행되지 않는다(운영은 sql.init.mode: never — 설계/07). 이 한 줄만 따로 실행하면
 --   신규 DB(H2)와 운영 DB가 같은 상태가 된다. 운영 반영도 이 줄 그대로다.
 UPDATE course SET planned_unit_count = 15 WHERE id = 101;
+
+-- 안내 문구 삭제 (2026-09-22 — 설계/06 §11-12 ③ R4 · 기획 AC-16)
+-- 유닛 15가 들어가 E1이 계획한 15유닛을 다 채웠다. "앞 유닛부터 순서대로 채우는 중이에요"는 더 이상 사실이 아니다.
+-- 위 INSERT의 notice는 이미 NULL이지만(신규 DB용), 운영 DB에는 문구가 들어 있는 course 101 행이 이미 있어
+-- INSERT가 다시 실행되지 않는다(운영은 sql.init.mode: never — 설계/07). 이 한 줄이 운영 반영분이다.
+UPDATE course SET notice = NULL WHERE id = 101;
 
 -- ─────────────────────────────────────────────────────────────
 -- 문법 4개 (9001~9004) — 유닛당 2개 (설계/06 §11-4 "문법 2~3개")
@@ -333,7 +341,7 @@ INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning
 (9069, 9023, 3, 'It takes twenty minutes by bus.', NULL, '버스로 20분 걸려요.');
 
 INSERT INTO dialog (id, title) VALUES
-(9005, '퇴근길 통화 — 어디서 볼까요?');
+(9005, '퇴근길 통화 — 어디서 만나요?');
 
 INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
 (9045, 9005, 1, 'Jun', 'Hi, Mina. Where are you now?', NULL, '미나 씨, 지금 어디예요?'),
@@ -395,6 +403,22 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 --
 -- ⚠️ E1은 현재 시제만 다룬다 — 회화·예문에 과거·미래·진행·완료를 넣지 않았다(E2 몫).
 --    관계절·비교는 E3, 조동사 뉘앙스·가정·수동은 E4 몫이라 같은 이유로 배제했다.
+--
+-- 2026-09-22 검수 반영 (기획 §3-5 + qa 콘텐츠 검수) — 문자열만 바꿨다. id·매핑·개수는 한 줄도 바뀌지 않았다.
+--   ① 한국어에만 의향·과거를 실어 둔 대사 9건(9061·9062·9071·9072·9074·9083·9105·9107·9108).
+--      영어 단순현재는 습관·사실이지 오퍼·즉석 결정이 아니다 — I carry the water는 "제가 들게요"가 아니다(기획 §8-3 16).
+--      원인은 저자가 아니라 장면 지시였다: 유닛 1~11에는 오퍼·제안을 담을 도구가 없으므로(can은 유닛 12, 제안형은 유닛 14)
+--      장면을 "이미 정해진 일의 확인"으로 옮겼다. 유닛 10은 회의 시각을 첫 줄로 올려 3줄을 한꺼번에 고쳤다.
+--   ② 문법 부제 5건(9028·9032·9033·9038·9043). name_ko는 학습자가 읽는 한국어 부제이고 영어 예시를 넣지 않는다.
+--      제목을 되풀이하지도, 바로 밑 설명이 반박하는 프레임을 쓰지도 않는다(기획 §8-3 17·18).
+--   ③ 회화 축약 12줄 — 대사는 구어다. It is · I am · is not을 줄인 형태로 쓴다(유닛 3이 그 축약을 직접 가르친다).
+--      단 There is(유닛 9가 가르치는 형태)와 짧은 대답(Yes, there is.)은 줄이지 않는다.
+--   ④ 처음 꺼내는 불특정 명사를 주어에 세우지 않고 There is/are로 연다(9031 설명 · 9091 · 9069 · 9073 · 9053 · 9065).
+--      유닛 9가 가르치는 것을 두 유닛 앞에서 어기고 있었다. a → the 대비는 그대로 남는다
+--      (There is a package … → Is the package for me?).
+--   ⑤ 테마 이탈 어휘 6개 교체 — once·without / only·under / anyway·about → list·egg / client·envelope / thing·bring.
+--      유닛마다 끝 두 자리를 "부사 1 + 전치사 1"로 맞추던 관행을 버렸다. 품사 분포는 규칙이 아니고(§11-6),
+--      테마 안에서 찾지 못하면 명사·동사로 채운다. 코스 1 전체(유닛 1~15) 표기와 대조 완료.
 -- ═══════════════════════════════════════════════════════════════════
 
 -- ─────────────────────────────────────────────────────────────
@@ -404,7 +428,7 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
 (9026, '셀 수 있는 명사와 셀 수 없는 명사', 'a를 붙일 수 있나부터 본다', '학교에서는 물질명사·추상명사라는 용어로 나눴습니다. 실제로 던질 질문은 두 개뿐입니다 — a를 붙일 수 있나, -s를 붙일 수 있나. water·bread·money·advice는 둘 다 안 되니 셀 수 없는 명사입니다. 그래서 a water나 two advices라는 말이 없습니다. 셀 수 없는 것을 세고 싶으면 담는 그릇을 앞에 세웁니다: a bottle of water, two bags of rice. 세는 것은 그릇이지 물이 아닙니다.'),
 (9027, '복수형 -s', '둘 이상이면 반드시 표시한다', '학교에서는 -s / -es / -ies 변화표를 외웠습니다. 실제로 먼저 몸에 붙여야 할 것은 표가 아니라 "둘 이상이면 무조건 표시한다"입니다. 한국어는 "사과 세 개"처럼 수를 말해도 명사가 그대로여서 -s가 빠집니다. three apple이 아니라 three apples입니다. 모양이 아예 다른 것(man - men, child - children)은 몇 개 안 되니 그때그때 외우면 됩니다. 변화표는 나중 문제이고 -s를 빼먹지 않는 것이 먼저입니다.'),
-(9028, 'a와 an은 철자가 아니라 소리로 고른다', 'an hour, a university', '학교에서는 "모음 앞에는 an"으로 외웠습니다. 실제 기준은 철자가 아니라 첫소리입니다. hour는 h로 쓰지만 첫소리가 "아"라서 an hour이고, university는 u로 쓰지만 첫소리가 "유"라서 a university입니다. 눈으로 철자를 보지 말고 입으로 소리를 내 보세요 — 모음 소리로 시작하면 an, 자음 소리로 시작하면 a입니다.');
+(9028, 'a와 an은 철자가 아니라 소리로 고른다', '첫소리로 고른다', '학교에서는 "모음 앞에는 an"으로 외웠습니다. 실제 기준은 철자가 아니라 첫소리입니다. hour는 h로 쓰지만 첫소리가 "아"라서 an hour이고, university는 u로 쓰지만 첫소리가 "유"라서 a university입니다. 눈으로 철자를 보지 말고 입으로 소리를 내 보세요 — 모음 소리로 시작하면 an, 자음 소리로 시작하면 a입니다.');
 
 INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
 (9076, 9026, 1, 'I need some water.', NULL, '물이 좀 필요해요.'),
@@ -421,15 +445,15 @@ INSERT INTO dialog (id, title) VALUES
 (9006, '장 보러 가는 길');
 
 INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
-(9057, 9006, 1, 'Ben', 'We need a few things for dinner. What is on the list?', NULL, '저녁거리로 몇 가지 사야 해요. 목록에 뭐가 있어요?'),
-(9058, 9006, 2, 'Mina', 'Rice, some bread, and two bottles of water.', NULL, '쌀이랑 빵 조금, 그리고 물 두 병이요.'),
+(9057, 9006, 1, 'Ben', 'We need a few things for dinner. What''s on the list?', NULL, '저녁거리로 몇 가지 사야 해요. 목록에 뭐가 있어요?'),
+(9058, 9006, 2, 'Mina', 'Rice, some bread, an onion, and two bottles of water.', NULL, '쌀이랑 빵 조금, 양파 한 개, 그리고 물 두 병이요.'),
 (9059, 9006, 3, 'Ben', 'How much rice do we need?', NULL, '쌀은 얼마나 필요해요?'),
 (9060, 9006, 4, 'Mina', 'One bag is enough. We still have a little at home.', NULL, '한 봉지면 충분해요. 집에 조금 남아 있거든요.'),
-(9061, 9006, 5, 'Ben', 'I carry the water, then. Two bottles are heavy.', NULL, '그럼 물은 제가 들게요. 두 병은 무거우니까요.'),
-(9062, 9006, 6, 'Mina', 'Thanks. We run out of milk every week, so I buy some, too.', NULL, '고마워요. 우유는 매주 떨어지니까 그것도 살게요.');
+(9061, 9006, 5, 'Ben', 'I always carry the water, then. Two bottles are heavy.', NULL, '그럼 물은 늘 제가 들어요. 두 병은 무거우니까요.'),
+(9062, 9006, 6, 'Mina', 'Thanks. We run out of milk every week, so I buy some, too.', NULL, '고마워요. 우유는 매주 떨어져서 저는 그것도 사요.');
 
 INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
-(9051, 'a lot of', '많은', '셀 수 있는 것과 없는 것 양쪽에 다 씁니다 — a lot of people, a lot of water. many와 much는 둘을 가려 써야 하지만 a lot of는 그 고민이 없어서 말할 때 훨씬 편합니다.', '/ə lɑːt əv/', '어 랏 어브'),
+(9051, 'a lot of', '많은', '셀 수 있는 것과 없는 것 양쪽에 다 씁니다 — a lot of people, a lot of water. many와 much는 둘을 가려 써야 하지만 a lot of는 그 고민이 없어서 말할 때 훨씬 편합니다.', '/ə lɑːt əv/', '어 랏- 어브'),
 (9052, 'a little', '조금 (셀 수 없는 것에)', '뒤에 셀 수 없는 명사가 옵니다: a little water, a little time. a를 빼고 little만 쓰면 "거의 없다"는 부정 쪽으로 뜻이 뒤집힙니다.', '/ə ˈlɪtl/', '어 리틀'),
 (9053, 'a few', '몇 개의 (셀 수 있는 것에)', 'a little의 짝이고 뒤에 복수 명사가 옵니다: a few questions. 여기서도 a를 빼고 few만 쓰면 "거의 없다"가 됩니다. 유닛 1의 a couple of보다 조금 넉넉한 느낌입니다.', '/ə fjuː/', '어 퓨-'),
 (9054, 'run out of', '다 떨어지다 · 다 써 버리다', '유닛 5의 run into(우연히 마주치다)와 모양만 비슷하고 뜻이 전혀 다릅니다. 남은 것이 0이 되는 쪽입니다: run out of paper.', '/rʌn aʊt əv/', '런 아웃 어브'),
@@ -440,9 +464,9 @@ INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
 INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
 (9051, 9051, 1, 'We have a lot of work today.', '오늘은 일이 많아요.'),
 (9052, 9052, 1, 'I take a little sugar in my coffee.', '저는 커피에 설탕을 조금 넣어요.'),
-(9053, 9053, 1, 'A few people are in the shop.', '가게에 사람이 몇 명 있어요.'),
+(9053, 9053, 1, 'There are a few people in the shop.', '가게에 사람이 몇 명 있어요.'),
 (9054, 9054, 1, 'We run out of coffee every Friday.', '금요일마다 커피가 다 떨어져요.'),
-(9055, 9055, 1, 'Do you want some more rice?', '밥 조금 더 드릴까요?'),
+(9055, 9055, 1, 'Do you want some more rice?', '밥 조금 더 드실래요?'),
 (9056, 9056, 1, 'There is plenty of bread at home.', '집에 빵은 충분히 많아요.'),
 (9057, 9057, 1, 'I eat a piece of cake after lunch.', '저는 점심 먹고 케이크 한 조각을 먹어요.');
 
@@ -454,27 +478,27 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 (9095, 'bottle', NULL, '병', 'NOUN', '/ˈbɑːtl/', '바-틀'),
 (9096, 'bag', NULL, '가방 · 봉지', 'NOUN', '/bæɡ/', '백'),
 (9097, 'money', NULL, '돈', 'NOUN', '/ˈmʌni/', '머니'),
-(9098, 'shop', NULL, '가게', 'NOUN', '/ʃɑːp/', '샵'),
+(9098, 'shop', NULL, '가게', 'NOUN', '/ʃɑːp/', '샵-'),
 (9099, 'buy', NULL, '사다', 'VERB', '/baɪ/', '바이'),
 (9100, 'sell', NULL, '팔다', 'VERB', '/sel/', '셀'),
 (9101, 'cook', NULL, '요리하다', 'VERB', '/kʊk/', '쿡'),
 (9102, 'need', NULL, '필요하다', 'VERB', '/niːd/', '니-드'),
 (9103, 'fresh', NULL, '신선한', 'ADJECTIVE', '/freʃ/', '프레시'),
 (9104, 'heavy', NULL, '무거운', 'ADJECTIVE', '/ˈhevi/', '헤비'),
-(9105, 'once', NULL, '한 번', 'ADVERB', '/wʌns/', '원스'),
-(9106, 'without', NULL, '~ 없이', 'PREPOSITION', '/wɪˈðaʊt/', '위드아웃');
+(9105, 'list', NULL, '목록', 'NOUN', '/lɪst/', '리스트'),
+(9106, 'egg', NULL, '달걀', 'NOUN', '/eɡ/', '에그');
 
 -- ─────────────────────────────────────────────────────────────
 -- 유닛 7 「처음엔 a, 다시 말하면 the」 — a와 the의 갈림 · 관사 없는 자리 · 굳은 the
 -- 문법 9031~9033 / 예문 9091~9099 / 회화 9007(대사 9069~9074) / 표현 9061~9067 / 어휘 9111~9126
 -- ─────────────────────────────────────────────────────────────
 INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
-(9031, 'a와 the의 갈림', '듣는 사람이 아는가로 정한다', '학교에서는 "a는 하나, the는 그"로 외웠습니다. 실제 기준은 개수가 아니라 듣는 사람이 무엇인지 아느냐입니다. 처음 꺼낸 것은 a, 이미 나왔거나 서로 아는 것은 the입니다. A package is on your desk. - Is the package for me? 같은 자리에서 a가 the로 바뀝니다. 세상에 하나뿐이거나 그 자리에서 하나뿐이라 서로 알 수밖에 없는 것(the sun, the elevator on this floor)은 처음부터 the입니다.'),
-(9032, '관사를 아예 쓰지 않는 자리', 'have lunch, by bus, go home', '학교에서는 거의 다루지 않은 자리입니다. 실제로 식사(have lunch), 교통수단(by bus), 장소를 기능으로 말할 때(at work, go to bed)에는 관사를 붙이지 않습니다. a lunch나 the bus를 넣으면 "어떤 점심 한 끼" "그 버스 한 대"처럼 물건 하나를 가리키는 말이 되어 뜻이 달라집니다. home 앞에는 to도 관사도 붙지 않습니다 — 유닛 5의 head home이 같은 자리입니다.'),
-(9033, 'the가 통째로 굳은 자리', 'in the morning, on the phone', '학교에서는 이 the도 규칙으로 설명하려 했습니다. 실제로는 규칙이 아니라 덩어리로 굳은 것입니다. in the morning, on the phone, at the moment, all the time — 왜 the가 붙는지 따지는 대신 통째로 외웁니다. 같은 morning인데 this morning, on Monday morning처럼 앞에 다른 말이 오면 the가 사라지는 것도 규칙이 바뀐 게 아니라 덩어리가 다른 것입니다. 따질 대상이 아니라 외울 대상입니다.');
+(9031, 'a와 the의 갈림', '듣는 사람이 아는가로 정한다', '학교에서는 "a는 하나, the는 그"로 외웠습니다. 실제 기준은 개수가 아니라 듣는 사람이 무엇인지 아느냐입니다. 처음 꺼낸 것은 a, 이미 나왔거나 서로 아는 것은 the입니다. There is a package on your desk. - Is the package for me? 같은 자리에서 a가 the로 바뀝니다. 세상에 하나뿐이거나 그 자리에서 하나뿐이라 서로 알 수밖에 없는 것(the sun, the elevator on this floor)은 처음부터 the입니다.'),
+(9032, '관사를 아예 쓰지 않는 자리', '식사·교통수단·집에는 붙지 않는다', '학교에서는 거의 다루지 않은 자리입니다. 실제로 식사(have lunch), 교통수단(by bus), 장소를 기능으로 말할 때(at work, go to bed)에는 관사를 붙이지 않습니다. a lunch나 the bus를 넣으면 "어떤 점심 한 끼" "그 버스 한 대"처럼 물건 하나를 가리키는 말이 되어 뜻이 달라집니다. home 앞에는 to도 관사도 붙지 않습니다 — 유닛 5의 head home이 같은 자리입니다.'),
+(9033, 'the가 통째로 굳은 자리', '따질 대상이 아니라 외울 대상', '학교에서는 이 the도 규칙으로 설명하려 했습니다. 실제로는 규칙이 아니라 덩어리로 굳은 것입니다. in the morning, on the phone, at the moment, all the time — 왜 the가 붙는지 따지는 대신 통째로 외웁니다. 같은 morning인데 this morning, on Monday morning처럼 앞에 다른 말이 오면 the가 사라지는 것도 규칙이 바뀐 게 아니라 덩어리가 다른 것입니다. 따질 대상이 아니라 외울 대상입니다.');
 
 INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
-(9091, 9031, 1, 'A package is on your desk.', NULL, '책상에 택배가 하나 있어요.'),
+(9091, 9031, 1, 'There is a package on your desk.', NULL, '책상에 택배가 하나 있어요.'),
 (9092, 9031, 2, 'The package is for the design team.', NULL, '그 택배는 디자인팀 거예요.'),
 (9093, 9031, 3, 'The elevator on this floor is slow.', NULL, '이 층 엘리베이터는 느려요.'),
 (9094, 9032, 1, 'I have lunch at noon.', NULL, '저는 정오에 점심을 먹어요.'),
@@ -485,15 +509,15 @@ INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning
 (9099, 9033, 3, 'She talks about her team all the time.', NULL, '그분은 늘 자기 팀 이야기를 해요.');
 
 INSERT INTO dialog (id, title) VALUES
-(9007, '그 택배 어디 뒀어요?');
+(9007, '그 택배 어디 있어요?');
 
 INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
-(9069, 9007, 1, 'Jun', 'Mina, a package is on your desk.', NULL, '미나 씨, 책상에 택배가 하나 있어요.'),
-(9070, 9007, 2, 'Mina', 'The package from the design team? I am on the phone at the moment.', NULL, '디자인팀에서 온 그 택배요? 저 지금 통화 중이에요.'),
-(9071, 9007, 3, 'Jun', 'It is not urgent. The box is on the table by the window.', NULL, '급한 건 아니에요. 상자는 창가 탁자에 뒀어요.'),
-(9072, 9007, 4, 'Mina', 'Thanks. I open it after lunch.', NULL, '고마워요. 점심 먹고 열어 볼게요.'),
-(9073, 9007, 5, 'Jun', 'A letter is in the box, too. The letter looks important.', NULL, '상자 안에 편지도 하나 있어요. 그 편지는 중요해 보이더라고요.'),
-(9074, 9007, 6, 'Mina', 'Then I read the letter first. I go home by bus at six.', NULL, '그럼 편지부터 읽을게요. 저는 6시에 버스로 집에 가요.');
+(9069, 9007, 1, 'Jun', 'Mina, there is a package on your desk.', NULL, '미나 씨, 책상에 택배가 하나 있어요.'),
+(9070, 9007, 2, 'Mina', 'The package from the design team? I''m on the phone at the moment.', NULL, '디자인팀에서 온 그 택배요? 저 지금 통화 중이에요.'),
+(9071, 9007, 3, 'Jun', 'It isn''t urgent. The box is on the table by the window.', NULL, '급한 건 아니에요. 상자는 창가 탁자에 있어요.'),
+(9072, 9007, 4, 'Mina', 'Thanks. The package is fine there until lunch.', NULL, '고마워요. 그 택배는 점심때까지 거기 있어도 괜찮아요.'),
+(9073, 9007, 5, 'Jun', 'There is a letter in the box, too. The letter looks important.', NULL, '상자 안에 편지도 하나 있어요. 그 편지는 중요해 보여요.'),
+(9074, 9007, 6, 'Mina', 'Then I always read letters first. I go home by bus at six.', NULL, '그럼 저는 원래 편지부터 읽어요. 6시에 버스로 집에 가거든요.');
 
 INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
 (9061, 'in the morning', '아침에 · 오전에', 'the가 든 채로 굳었습니다. 그런데 앞에 this·every·Monday가 오면 the가 사라집니다 — this morning, on Monday morning. 규칙이 아니라 덩어리가 다른 것입니다.', '/ɪn ðə ˈmɔːrnɪŋ/', '인 더 모-닝'),
@@ -509,13 +533,13 @@ INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) V
 (9062, 9062, 1, 'She is in a meeting at the moment.', '그분은 지금 회의 중이에요.'),
 (9063, 9063, 1, 'He is on the phone with a client.', '그는 고객과 통화 중이에요.'),
 (9064, 9064, 1, 'The printer makes noise all the time.', '그 프린터는 늘 소리가 나요.'),
-(9065, 9065, 1, 'A big box is in the middle of the room.', '큰 상자가 방 한가운데 있어요.'),
+(9065, 9065, 1, 'There is a big box in the middle of the room.', '큰 상자가 방 한가운데 있어요.'),
 (9066, 9066, 1, 'We send the report at the end of the month.', '우리는 월말에 보고서를 보내요.'),
-(9067, 9067, 1, 'I use this machine for the first time today.', '저는 오늘 이 기계를 처음 써 봐요.');
+(9067, 9067, 1, 'This is my first time with this machine.', '이 기계를 쓰는 건 이번이 처음이에요.');
 
 INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
 (9111, 'package', NULL, '택배 · 소포', 'NOUN', '/ˈpækɪdʒ/', '패키지'),
-(9112, 'box', NULL, '상자', 'NOUN', '/bɑːks/', '박스'),
+(9112, 'box', NULL, '상자', 'NOUN', '/bɑːks/', '박-스'),
 (9113, 'letter', NULL, '편지', 'NOUN', '/ˈletər/', '레터'),
 (9114, 'key', NULL, '열쇠', 'NOUN', '/kiː/', '키-'),
 (9115, 'phone', NULL, '전화 · 전화기', 'NOUN', '/foʊn/', '포운'),
@@ -528,8 +552,8 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 (9122, 'use', NULL, '쓰다 · 사용하다', 'VERB', '/juːz/', '유-즈'),
 (9123, 'empty', NULL, '비어 있는', 'ADJECTIVE', '/ˈempti/', '엠프티'),
 (9124, 'light', NULL, '가벼운', 'ADJECTIVE', '/laɪt/', '라이트'),
-(9125, 'only', NULL, '오직 · ~만', 'ADVERB', '/ˈoʊnli/', '오운리'),
-(9126, 'under', NULL, '~ 아래에', 'PREPOSITION', '/ˈʌndər/', '언더');
+(9125, 'client', NULL, '고객 · 거래처', 'NOUN', '/ˈklaɪənt/', '클라이언트'),
+(9126, 'envelope', NULL, '봉투', 'NOUN', '/ˈenvəloʊp/', '엔벌로우프');
 
 -- ─────────────────────────────────────────────────────────────
 -- 유닛 8 「자리가 정해 주는 말 — I·my·me」 — 인칭대명사 네 모양 · it/they로 받기 · this/that
@@ -538,7 +562,7 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
 (9036, '인칭대명사의 네 모양 (I / my / me / mine)', '어디에 앉느냐가 모양을 정한다', '학교에서는 I-my-me-mine을 표로 가로로 외웠습니다. 실제로 필요한 것은 표가 아니라 앉는 자리입니다. 주어 자리면 I, 명사 앞이면 my, 동사나 전치사 뒤면 me, 뒤에 명사가 없으면 mine입니다. 유닛 5에서 자리가 뜻을 정한다고 한 것이 대명사에도 그대로입니다. 그래서 Me and Ben work here가 아니라 Ben and I work here이고, 사이에 다른 사람이 끼어도 자리는 그대로입니다: She gives the key to Ben and me.'),
 (9037, 'it과 they로 다시 받기', '한 번 말한 것은 대명사로 받는다', '학교에서는 "대명사는 명사를 대신한다"로 배웠습니다. 실제 문제는 한국어가 주어·목적어를 통째로 생략한다는 점입니다. "열쇠 필요해. 있어?"를 영어로 옮기면 I need the key. Do you have it?처럼 it을 반드시 채워야 합니다. 앞에 나온 것이 하나면 it, 둘 이상이면 they와 them으로 받습니다. 빈자리로 두면 문장이 끝나지 않습니다 — 유닛 5의 "주어 없는 문장은 없다"와 같은 이유입니다.'),
-(9038, 'this / that / these / those', '가까운 것과 먼 것', '학교에서는 거리로만 배웠습니다(가까우면 this, 멀면 that). 실제로는 거리와 무관하게 굳어 쓰는 자리가 더 잦습니다 — 전화로 자기를 밝힐 때 This is Mina, 사람을 소개할 때 This is my colleague. 그리고 뒤에 오는 명사의 수에 따라 these·those로 바뀝니다: this box - these boxes(유닛 6). 뒤에 명사가 없어도 혼자 쓸 수 있습니다: This is yours.');
+(9038, 'this / that / these / those', '거리로만 고르는 말이 아니다', '학교에서는 거리로만 배웠습니다(가까우면 this, 멀면 that). 실제로는 거리와 무관하게 굳어 쓰는 자리가 더 잦습니다 — 전화로 자기를 밝힐 때 This is Mina, 사람을 소개할 때 This is my colleague. 그리고 뒤에 오는 명사의 수에 따라 these·those로 바뀝니다: this box - these boxes(유닛 6). 뒤에 명사가 없어도 혼자 쓸 수 있습니다: This is yours.');
 
 INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
 (9106, 9036, 1, 'Ben and I work on the same floor.', NULL, '벤과 저는 같은 층에서 일해요.'),
@@ -557,10 +581,10 @@ INSERT INTO dialog (id, title) VALUES
 INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
 (9081, 9008, 1, 'Ben', 'Mina, is this charger yours?', NULL, '미나 씨, 이 충전기 미나 씨 거예요?'),
 (9082, 9008, 2, 'Mina', 'No, mine is white. That one looks like Jun''s.', NULL, '아니요, 제 건 흰색이에요. 그건 준 씨 것 같은데요.'),
-(9083, 9008, 3, 'Ben', 'Then I leave it on his desk. He sits by the window, right?', NULL, '그럼 준 씨 자리에 둘게요. 준 씨가 창가에 앉죠?'),
+(9083, 9008, 3, 'Ben', 'Then it''s Jun''s, not yours. He sits by the window, right?', NULL, '그럼 미나 씨 게 아니라 준 씨 거네요. 준 씨가 창가에 앉죠?'),
 (9084, 9008, 4, 'Mina', 'He does. And this umbrella — is it yours?', NULL, '맞아요. 그런데 이 우산은요, 벤 씨 거예요?'),
-(9085, 9008, 5, 'Ben', 'It is mine, thanks. I always keep it under my desk.', NULL, '제 거 맞아요, 고마워요. 저는 늘 책상 밑에 둬요.'),
-(9086, 9008, 6, 'Mina', 'Our things get mixed up every week. We share this corner, and they all look the same.', NULL, '우리 물건은 매주 섞여요. 이 구역을 같이 쓰는데 다 비슷하게 생겼잖아요.');
+(9085, 9008, 5, 'Ben', 'It''s mine, thanks. I always keep it under my desk.', NULL, '제 거 맞아요, 고마워요. 저는 늘 책상 밑에 둬요.'),
+(9086, 9008, 6, 'Mina', 'We mix up our things every week. We share this corner, and they all look the same.', NULL, '우리는 매주 물건을 섞어 놔요. 이 구역을 같이 쓰는데 다 비슷하게 생겼잖아요.');
 
 INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
 (9071, 'help yourself', '마음껏 드세요 · 편하게 쓰세요', '상대가 직접 가져다 쓰라는 뜻입니다. 사람이 둘 이상이면 help yourselves로 바뀝니다 — 대명사가 자리에 따라 모양을 바꾸는 것이 여기서도 보입니다.', '/help jɔːrˈself/', '헬프 유어셀프'),
@@ -573,7 +597,7 @@ INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
 
 INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
 (9071, 9071, 1, 'The coffee is over there. Help yourself.', '커피는 저쪽에 있어요. 편하게 드세요.'),
-(9072, 9072, 1, 'I finish this report by myself.', '이 보고서는 제가 혼자 끝내요.'),
+(9072, 9072, 1, 'I do this kind of report by myself.', '이런 보고서는 제가 혼자 해요.'),
 (9073, 9073, 1, 'She works on her own most days.', '그분은 보통 혼자서 일해요.'),
 (9074, 9074, 1, 'The meeting room is all yours after three.', '3시 이후에는 회의실 마음껏 쓰세요.'),
 (9075, 9075, 1, 'Who takes care of the office keys?', '사무실 열쇠는 누가 맡고 있어요?'),
@@ -595,8 +619,8 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 (9142, 'careful', NULL, '조심하는', 'ADJECTIVE', '/ˈkerfl/', '케어플'),
 (9143, 'personal', NULL, '개인의', 'ADJECTIVE', '/ˈpɜːrsənl/', '퍼-서널'),
 (9144, 'broken', NULL, '고장 난', 'ADJECTIVE', '/ˈbroʊkən/', '브로우컨'),
-(9145, 'anyway', NULL, '어쨌든', 'ADVERB', '/ˈeniweɪ/', '에니웨이'),
-(9146, 'about', NULL, '~에 대해', 'PREPOSITION', '/əˈbaʊt/', '어바웃');
+(9145, 'thing', NULL, '것 · 물건', 'NOUN', '/θɪŋ/', '씽'),
+(9146, 'bring', NULL, '가져오다 · 데려오다', 'VERB', '/brɪŋ/', '브링');
 
 -- ─────────────────────────────────────────────────────────────
 -- 유닛 9 「있다고 말할 땐 There로 연다」 — There is/are · 그 의문·부정 · 위치는 문장 끝
@@ -605,7 +629,7 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
 (9041, 'There is / There are', '~가 있어요', '학교에서는 "There is = ~가 있다"로 외웠습니다. 실제로 중요한 것은 have와 갈리는 자리입니다. 무엇이 어디에 있는지를 말할 때는 There로 엽니다 — "방에 의자가 있다"를 The room has a chair라고 하지 않고 There is a chair in the room이라고 합니다. have는 사람이 무언가를 가졌을 때 씁니다: I have a chair. There 뒤의 be동사는 뒤에 오는 명사의 수를 따라갑니다(유닛 6): There is a chair / There are two chairs.'),
 (9042, 'There is의 의문·부정', '~가 있나요? · 없어요', '학교에서는 문장 하나만 배우고 넘어갔습니다. 실제로는 유닛 3의 be동사 규칙이 그대로 적용됩니다 — 앞으로 나가는 것은 be동사 하나입니다: Is there a printer on this floor? 부정도 not만 붙입니다: There isn''t a restroom on this side. 대답도 물어본 대로 되받습니다: Yes, there is. / No, there isn''t. 여기에 do를 데려오지 않습니다.'),
-(9043, '위치는 문장 끝에 붙인다', 'There is a cafe on the first floor.', '학교에서는 전치사구를 따로 배웠습니다. 실제로는 유닛 5의 "장소 먼저, 시간 나중"이 여기서도 그대로입니다. There is로 열고 무엇이 있는지를 먼저 말한 다음, 어디에 있는지는 통째로 뒤에 붙입니다. 위치를 가리키는 덩어리(next to, in front of)도 쪼개지 않고 통째로 뒤에 갑니다. 장소를 앞으로 보내는 문장도 있지만 말할 때는 거의 쓰지 않습니다.');
+(9043, '위치는 문장 끝에 붙인다', '무엇이 있는지를 먼저 말한다', '학교에서는 전치사구를 따로 배웠습니다. 실제로는 유닛 5의 "장소 먼저, 시간 나중"이 여기서도 그대로입니다. There is로 열고 무엇이 있는지를 먼저 말한 다음, 어디에 있는지는 통째로 뒤에 붙입니다. 위치를 가리키는 덩어리(next to, in front of)도 쪼개지 않고 통째로 뒤에 갑니다. 장소를 앞으로 보내는 문장도 있지만 말할 때는 거의 쓰지 않습니다.');
 
 INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
 (9121, 9041, 1, 'There is a cafe on the first floor.', NULL, '1층에 카페가 있어요.'),
@@ -623,11 +647,11 @@ INSERT INTO dialog (id, title) VALUES
 
 INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
 (9093, 9009, 1, 'Mina', 'Is there a printer on this floor?', NULL, '이 층에 프린터가 있어요?'),
-(9094, 9009, 2, 'Jun', 'Yes, there is. It is next to the elevator.', NULL, '네, 있어요. 엘리베이터 옆에 있어요.'),
+(9094, 9009, 2, 'Jun', 'Yes, there is. It''s next to the elevator.', NULL, '네, 있어요. 엘리베이터 옆에 있어요.'),
 (9095, 9009, 3, 'Mina', 'Is there a restroom on this side, too?', NULL, '이쪽에 화장실도 있나요?'),
 (9096, 9009, 4, 'Jun', 'No, there isn''t. There are two restrooms downstairs.', NULL, '아니요, 없어요. 화장실은 아래층에 두 개 있어요.'),
-(9097, 9009, 5, 'Mina', 'Is there a cafe in the building?', NULL, '건물 안에 카페는 있어요?'),
-(9098, 9009, 6, 'Jun', 'There is a small one in front of the main entrance. It is quiet in the morning.', NULL, '정문 앞에 작은 카페가 하나 있어요. 아침에는 조용해요.');
+(9097, 9009, 5, 'Mina', 'Is there a cafe inside the building?', NULL, '건물 안에 카페가 있어요?'),
+(9098, 9009, 6, 'Jun', 'No, there isn''t. There is a small one in front of the main entrance. It isn''t noisy in the morning.', NULL, '아니요, 없어요. 정문 앞에 작은 카페가 하나 있어요. 아침에는 시끄럽지 않아요.');
 
 INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
 (9081, 'next to', '~ 옆에', '바로 옆에 붙어 있다는 뜻입니다. 유닛 1의 near는 "근처"라 거리가 더 헐겁습니다. beside도 같은 뜻이지만 말할 때는 next to가 훨씬 흔합니다.', '/nekst tuː/', '넥스트 투-'),
@@ -688,15 +712,15 @@ INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning
 (9144, 9048, 3, 'He never answers the phone in a meeting.', NULL, '그는 회의 중에는 절대 전화를 받지 않아요.');
 
 INSERT INTO dialog (id, title) VALUES
-(9010, '금요일 몇 시에 될까요?');
+(9010, '금요일 10시 회의, 시간 되세요?');
 
 INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
-(9105, 9010, 1, 'Ben', 'Are you free on Friday?', NULL, '금요일에 시간 되세요?'),
-(9106, 9010, 2, 'Mina', 'In the morning, yes. I am always busy after lunch.', NULL, '오전에는요. 점심 뒤에는 늘 바빠요.'),
-(9107, 9010, 3, 'Ben', 'Then at ten? We meet in the small room on the third floor.', NULL, '그럼 10시에요? 3층 작은 방에서 봐요.'),
-(9108, 9010, 4, 'Mina', 'Ten is good. I put it in my schedule now.', NULL, '10시 좋아요. 지금 일정에 넣을게요.'),
-(9109, 9010, 5, 'Ben', 'Thanks. I always send the agenda in advance.', NULL, '고마워요. 저는 늘 자료를 미리 보내요.'),
-(9110, 9010, 6, 'Mina', 'Good. I am never late for a meeting on Friday.', NULL, '좋아요. 저는 금요일 회의에는 절대 안 늦어요.');
+(9105, 9010, 1, 'Ben', 'Our team meeting is on Friday at ten. Are you free in the morning?', NULL, '팀 회의가 금요일 10시예요. 오전에 시간 되세요?'),
+(9106, 9010, 2, 'Mina', 'In the morning, yes. I''m always busy after lunch.', NULL, '오전에는요. 점심 뒤에는 늘 바빠요.'),
+(9107, 9010, 3, 'Ben', 'Good. The meeting is in the small room on the third floor.', NULL, '잘됐네요. 회의는 3층 작은 방에서 해요.'),
+(9108, 9010, 4, 'Mina', 'Ten is good. It''s already in my schedule.', NULL, '10시 좋아요. 제 일정에 이미 들어 있어요.'),
+(9109, 9010, 5, 'Ben', 'Thanks. I always send the agenda in advance.', NULL, '고마워요. 저는 늘 회의 안건을 미리 보내요.'),
+(9110, 9010, 6, 'Mina', 'Great. I''m never late for a meeting on Friday.', NULL, '좋아요. 저는 금요일 회의에는 절대 안 늦어요.');
 
 INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
 (9091, 'in advance', '미리', '미리 해 두는 일에 붙입니다: book in advance, send in advance. before와 달리 무엇보다 앞서는지를 말하지 않아도 되어서 한 마디로 끝납니다.', '/ɪn ədˈvæns/', '인 어드밴스'),
@@ -719,9 +743,9 @@ INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) V
 INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
 (9171, 'day', NULL, '날 · 하루', 'NOUN', '/deɪ/', '데이'),
 (9172, 'week', NULL, '주', 'NOUN', '/wiːk/', '위-크'),
-(9173, 'month', NULL, '달 · 개월', 'NOUN', '/mʌnθ/', '먼스'),
+(9173, 'month', NULL, '달 · 개월', 'NOUN', '/mʌnθ/', '먼쓰'),
 (9174, 'hour', NULL, '시간', 'NOUN', '/ˈaʊər/', '아워'),
-(9175, 'birthday', NULL, '생일', 'NOUN', '/ˈbɜːrθdeɪ/', '버-스데이'),
+(9175, 'birthday', NULL, '생일', 'NOUN', '/ˈbɜːrθdeɪ/', '버-쓰데이'),
 (9176, 'holiday', NULL, '휴일 · 휴가', 'NOUN', '/ˈhɑːlədeɪ/', '할-러데이'),
 (9177, 'schedule', NULL, '일정', 'NOUN', '/ˈskedʒuːl/', '스케줄-'),
 (9178, 'appointment', NULL, '약속 (예약)', 'NOUN', '/əˈpɔɪntmənt/', '어포인트먼트'),
@@ -733,3 +757,365 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 (9184, 'sometimes', NULL, '가끔', 'ADVERB', '/ˈsʌmtaɪmz/', '섬타임즈'),
 (9185, 'soon', NULL, '곧', 'ADVERB', '/suːn/', '순-'),
 (9186, 'until', NULL, '~까지', 'PREPOSITION', '/ənˈtɪl/', '언틸');
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 11~15 콘텐츠 (2026-09-22 증설 — 기획 `진행사항/기획_2026-09_영어_E1커리큘럼.md` §3-3)
+-- ★ 이것으로 E1이 계획한 15유닛을 채운다. 코스 notice를 같은 변경에서 NULL로 지웠다(파일 위쪽 · 설계/06 §11-12 ③ R3·R4).
+--
+-- 덩어리 ③ 「문장에 뜻을 싣는다」 — 꾸밈 · 할 수 있다 · 하고 싶다 · 제안 · 끝맺기.
+--   11 형용사·부사가 앉는 자리 · 12 can(뒤에 원형이 온다) · 13 to와 -ing · 14 주어를 빼는 유일한 자리 · 15 앞 문장을 통째로 넣는 틀.
+--   12~14는 "동사 앞에 뭔가를 얹는다"는 한 규칙의 반복이고(기획 §3-2), 15는 앞 14유닛에서 만든 문장을 목적어 자리에 넣는다.
+--
+-- ⚠️ 제안 장면이 여기서 열린다(기획 §3-4) — 유닛 11 회화는 여전히 "확인·조율"이고,
+--    부탁·허락은 12(can)부터, 제안을 주고받는 대화는 14(Let us / Why not 계열)에서 완성된다.
+--    `how about`은 유닛 4 표현이라 유닛 14의 표현으로 다시 올리지 않았다 — 문법 9068에서만 다룬다(코스 내부 중복 금지).
+--
+-- ID 대역: 기획 §8-2 배정표 그대로.
+--   grammar_point 9011+(n-3)*5 · grammar_example 9031+(n-3)*15 · dialog 9000+n · dialog_line 9021+(n-3)*12
+--   expression 9021+(n-3)*10 · expression_example = 표현 id와 같은 수 · vocabulary 9031+(n-3)*20
+--   실제 최대값: grammar 9072 · grammar_example 9216 · dialog 9015 · dialog_line 9170 · expression 9147 · vocabulary 9286 (전부 9000 대역 안)
+--
+-- 유닛당 실제 사용: 문법 3(유닛 15만 2 — 기획 §3-3) · 문법당 예문 3 · 회화 1편(6줄) · 표현 7 · 표현 예문 7 · 어휘 16 · 한자 0.
+-- 표현·어휘 표기는 코스 1 안에서 유닛 1~10(표현 68 · 어휘 158)과도 서로와도 겹치지 않는다 — 시드 전량 대조.
+--
+-- ⚠️ E1은 현재 시제만 다룬다 — 과거·미래·진행·완료(E2), 관계절·비교(E3), should·would(E4)를 쓰지 않았다.
+--    유닛 12의 Could you ~? 는 모양만 과거이고 설명이 "지금의 부탁"에서 멈춘다 — 과거 시제를 여기서 설명하지 않는다(기획 §2).
+-- ═══════════════════════════════════════════════════════════════════
+
+-- ─────────────────────────────────────────────────────────────
+-- 유닛 11 「꾸미는 말은 앉을 자리가 있다」 — 형용사의 두 자리 · -ly와 예외 · too는 "매우"가 아니다
+-- 문법 9051~9053 / 예문 9151~9159 / 회화 9011(대사 9117~9122) / 표현 9101~9107 / 어휘 9191~9206
+-- ─────────────────────────────────────────────────────────────
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9051, '형용사가 앉는 두 자리', '명사 앞이거나 be동사 뒤거나', '학교에서는 "형용사는 명사를 꾸민다" 한 줄로 배웠습니다. 실제로 형용사가 앉는 자리는 둘입니다 — 명사 바로 앞(a busy day)이거나 be동사 바로 뒤(I am busy)입니다. 세 번째 자리는 없어서 I busy today는 문장이 되지 않습니다. be동사를 빠뜨렸기 때문입니다(유닛 1). 그리고 형용사에는 복수 -s를 붙이지 않습니다: two long days이지 two longs days가 아닙니다. 수를 표시하는 것은 명사 쪽 일입니다(유닛 6).'),
+(9052, '부사의 -ly와 -ly가 붙지 않는 말 (fast / hard / late)', '모양이 그대로인 부사도 있다', '학교에서는 "형용사에 -ly를 붙이면 부사"로 외웠습니다. 실제로는 붙이면 안 되는 말이 있습니다. fast·hard·late·early는 꾸미는 말과 모양이 같아서 fastly라는 단어는 아예 없습니다. 더 위험한 것은 hardly입니다 — 뜻이 "열심히"가 아니라 "거의 ~않다"로 뒤집힙니다. He works very hardly.는 열심히 일한다는 말이 아니라 일을 거의 안 한다는 말이 됩니다. 하려던 말은 He works very hard.입니다.'),
+(9053, 'very / really / too — 정도를 얹는 말', '지나쳐서 곤란하다는 판단', '학교에서는 too를 "너무 · 또한"으로 외웠습니다. 그래서 칭찬하려고 Your English is too good.이라고 말하는 일이 생깁니다. 실제로 too는 정도가 지나쳐서 곤란하다는 판단입니다 — too cold는 "아주 춥다"가 아니라 "추워서 못 견디겠다"에 가깝습니다. 좋다는 뜻으로 정도를 올릴 때는 very나 really를 씁니다. very는 형용사·부사 앞에만 서고, really는 문장 전체에도 붙습니다: I really like this room.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9151, 9051, 1, 'I have a busy day today.', NULL, '저는 오늘 바쁜 하루예요.'),
+(9152, 9051, 2, 'The office is quiet in the morning.', NULL, '사무실은 아침에 조용해요.'),
+(9153, 9051, 3, 'Two long meetings are enough for one day.', NULL, '긴 회의 두 개면 하루치로 충분해요.'),
+(9154, 9052, 1, 'She speaks slowly and clearly.', NULL, '그분은 천천히 또박또박 말해요.'),
+(9155, 9052, 2, 'He works hard every day.', NULL, '그는 매일 열심히 일해요.'),
+(9156, 9052, 3, 'The bus comes late on Friday.', NULL, '금요일에는 버스가 늦게 와요.'),
+(9157, 9053, 1, 'This coffee is really good.', NULL, '이 커피 정말 맛있어요.'),
+(9158, 9053, 2, 'It''s too cold in here.', NULL, '여기 너무 추워요. (추워서 힘들 정도로)'),
+(9159, 9053, 3, 'This bag is too heavy for me.', NULL, '이 가방은 저한테 너무 무거워요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9011, '오늘 좀 춥지 않아요?');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9117, 9011, 1, 'Ben', 'You look tired today. Are you okay?', NULL, '오늘 좀 피곤해 보여요. 괜찮아요?'),
+(9118, 9011, 2, 'Mina', 'I''m fine. It''s just too cold in here.', NULL, '괜찮아요. 그냥 여기가 너무 추워서요.'),
+(9119, 9011, 3, 'Ben', 'I know. The office is always cold in the morning.', NULL, '그러게요. 사무실은 아침엔 늘 추워요.'),
+(9120, 9011, 4, 'Mina', 'And I''m really slow on cold days. Is the small room next to the kitchen warm?', NULL, '게다가 추운 날엔 제가 정말 굼떠져요. 주방 옆 작은 방은 따뜻한가요?'),
+(9121, 9011, 5, 'Ben', 'Yes, it''s warm enough. It''s quiet in the morning, so people work there quite often.', NULL, '네, 충분히 따뜻해요. 아침엔 조용해서 사람들이 꽤 자주 거기서 일해요.'),
+(9122, 9011, 6, 'Mina', 'That''s good to know. I''m in that room every Tuesday morning anyway.', NULL, '좋은 정보네요. 어차피 화요일 아침엔 그 방에 있거든요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9101, 'not at all', '전혀 ~아니다', '부정을 바닥까지 내리는 덩어리입니다: I am not tired at all. 고맙다는 말에 대한 대답으로 쓰면 "천만에요"가 됩니다. 유닛 3의 not really(딱히 아니다)보다 훨씬 셉니다.', '/nɑːt ət ɔːl/', '낫 앳 올-'),
+(9102, 'at least', '적어도 · 그래도', '수를 말할 때는 "최소한"(at least ten people)이고, 문장 앞에 놓으면 아쉬운 상황에서 그래도 남은 좋은 점을 꺼내는 말이 됩니다.', '/ət liːst/', '앳 리-스트'),
+(9103, 'pretty much', '거의 · 사실상', '여기서 pretty는 "예쁜"이 아니라 "꽤"입니다 — very·really와 같은 무리의 말입니다. much가 붙어 "거의 다"가 됩니다: The report is pretty much done.', '/ˈprɪti mʌtʃ/', '프리티 머치'),
+(9104, 'too much', '너무 많이 · 지나치게', 'too의 "지나치다"가 양에 붙은 것입니다. 셀 수 없는 것에는 too much, 셀 수 있는 것에는 too many로 갈립니다(유닛 6): too much coffee / too many meetings.', '/tuː mʌtʃ/', '투- 머치'),
+(9105, 'in a good mood', '기분이 좋다', 'be동사와 함께 씁니다: He is in a good mood today. 반대는 in a bad mood입니다. 성격이 좋다는 말이 아니라 오늘의 기분을 말하는 자리입니다.', '/ɪn ə ɡʊd muːd/', '인 어 굿 무-드'),
+(9106, 'under the weather', '몸이 좀 안 좋다', '날씨와 상관없는 말입니다 — 직역하면 뜻을 놓칩니다. sick만큼 심하지 않고 "컨디션이 좀 그렇다" 정도라 회사에서 말하기 편한 한 마디입니다.', '/ˈʌndər ðə ˈweðər/', '언더 더 웨더'),
+(9107, 'calm down', '진정하다 · 마음을 가라앉히다', '화가 난 사람에게 그대로 던지면 무례하게 들립니다. 나 자신에 대해 쓰거나(I calm down with a cup of tea) 상황이 가라앉는 것에 씁니다.', '/kɑːm daʊn/', '캄- 다운');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9101, 9101, 1, 'I''m not tired at all.', '저는 전혀 안 피곤해요.'),
+(9102, 9102, 1, 'At least the coffee here is good.', '적어도 여기 커피는 맛있잖아요.'),
+(9103, 9103, 1, 'I''m pretty much ready.', '저는 거의 다 준비돼 있어요.'),
+(9104, 9104, 1, 'She works too much on weekends.', '그분은 주말에 일을 너무 많이 해요.'),
+(9105, 9105, 1, 'He''s in a good mood today.', '그는 오늘 기분이 좋아요.'),
+(9106, 9106, 1, 'I feel a little under the weather today.', '오늘은 몸이 좀 안 좋아요.'),
+(9107, 9107, 1, 'She calms down very quickly.', '그분은 아주 빨리 진정해요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9191, 'weather', NULL, '날씨', 'NOUN', '/ˈweðər/', '웨더'),
+(9192, 'mood', NULL, '기분', 'NOUN', '/muːd/', '무-드'),
+(9193, 'feel', NULL, '느끼다 · ~한 기분이 들다', 'VERB', '/fiːl/', '필-'),
+(9194, 'worry', NULL, '걱정하다', 'VERB', '/ˈwɜːri/', '워-리'),
+(9195, 'cold', NULL, '추운 · 차가운', 'ADJECTIVE', '/koʊld/', '코울드'),
+(9196, 'hot', NULL, '더운 · 뜨거운', 'ADJECTIVE', '/hɑːt/', '핫'),
+(9197, 'warm', NULL, '따뜻한', 'ADJECTIVE', '/wɔːrm/', '웜-'),
+(9198, 'hungry', NULL, '배고픈', 'ADJECTIVE', '/ˈhʌŋɡri/', '헝그리'),
+(9199, 'happy', NULL, '기쁜 · 행복한', 'ADJECTIVE', '/ˈhæpi/', '해피'),
+(9200, 'angry', NULL, '화난', 'ADJECTIVE', '/ˈæŋɡri/', '앵그리'),
+(9201, 'quiet', NULL, '조용한', 'ADJECTIVE', '/ˈkwaɪət/', '콰이엇'),
+(9202, 'loud', NULL, '시끄러운 · 소리가 큰', 'ADJECTIVE', '/laʊd/', '라우드'),
+(9203, 'slowly', NULL, '천천히', 'ADVERB', '/ˈsloʊli/', '슬로울리'),
+(9204, 'quickly', NULL, '빨리', 'ADVERB', '/ˈkwɪkli/', '퀴클리'),
+(9205, 'quite', NULL, '꽤 · 상당히', 'ADVERB', '/kwaɪt/', '콰이트'),
+(9206, 'enough', NULL, '충분히', 'ADVERB', '/ɪˈnʌf/', '이너프');
+
+-- ─────────────────────────────────────────────────────────────
+-- 유닛 12 「할 수 있다와 해 주세요는 같은 단어」 — can/can not · Can you?/Can I? · Could you 는 과거가 아니다
+-- 문법 9056~9058 / 예문 9166~9174 / 회화 9012(대사 9129~9134) / 표현 9111~9117 / 어휘 9211~9226
+-- ★ 이 유닛부터 회화에서 부탁·허락을 주고받을 수 있다(기획 §3-4 — 문법이 제안을 감당하는 첫 자리).
+-- ─────────────────────────────────────────────────────────────
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9056, 'can / can''t', '할 수 있어요 · 못 해요', '학교에서는 "can = ~할 수 있다"라고 뜻만 외웠습니다. 실제로 기억할 것은 뒤에 오는 모양입니다 — can 뒤에는 언제나 동사원형이 옵니다. He can swims도, I can to swim도 없습니다. 주어가 he·she·it이어도 can에는 -s를 붙이지 않습니다: She can drive. 유닛 1의 "-s는 한 문장에 한 번"이 여기서도 그대로입니다. 부정은 붙여 쓴 can''t 한 단어이고 뒤는 역시 원형입니다: I can''t open this box.'),
+(9057, 'Can you ~? / Can I ~?', '부탁과 허락은 같은 단어로 한다', '학교에서는 can을 "능력"으로만 배웠습니다. 그래서 부탁할 말이 없어 말문이 막힙니다. 실제로 같은 can이 상대를 주어로 하면 부탁(Can you help me?)이 되고, 나를 주어로 하면 허락 구하기(Can I use this printer?)가 됩니다. 능력을 확인하는 말이 아니라 일상에서 가장 많이 쓰는 부탁의 말입니다. 대답은 유닛 3처럼 물어본 대로 되받습니다: Sure, you can. / Of course.'),
+(9058, 'Could you ~? 는 과거가 아니다', '더 조심스러운 지금의 부탁', '학교에서는 could를 can의 과거형으로 외웠습니다. 그래서 Could you check this?를 "확인하실 수 있었나요?"로 읽습니다. 실제로 부탁에 쓰는 could는 지금 이야기입니다 — 모양만 과거처럼 생겼을 뿐, 지금 부탁하면서 한 걸음 물러선 것뿐입니다. can보다 조심스러워서 처음 보는 사람이나 윗사람에게 씁니다. 뒤는 can과 똑같이 원형입니다. 여기서 과거는 다루지 않습니다 — 지금의 부탁 한 가지만 가져가면 됩니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9166, 9056, 1, 'I can read English well.', NULL, '저는 영어를 잘 읽어요.'),
+(9167, 9056, 2, 'She can drive a car.', NULL, '그분은 운전할 수 있어요.'),
+(9168, 9056, 3, 'I can''t open this box.', NULL, '저는 이 상자를 못 열어요.'),
+(9169, 9057, 1, 'Can you help me for a minute?', NULL, '잠깐 도와주실 수 있어요?'),
+(9170, 9057, 2, 'Can I use this printer?', NULL, '이 프린터 써도 될까요?'),
+(9171, 9057, 3, 'Can you send the file again? - Sure, no problem.', NULL, '파일 다시 보내 주실 수 있어요? - 그럼요, 문제없어요.'),
+(9172, 9058, 1, 'Could you check this page?', NULL, '이 페이지 좀 확인해 주시겠어요?'),
+(9173, 9058, 2, 'Could you say that again, please?', NULL, '다시 한번 말씀해 주시겠어요?'),
+(9174, 9058, 3, 'Could I ask you a favor?', NULL, '부탁 하나 드려도 될까요?');
+
+INSERT INTO dialog (id, title) VALUES
+(9012, '잠깐 도와주실 수 있어요?');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9129, 9012, 1, 'Mina', 'Ben, can you help me for a minute?', NULL, '벤, 잠깐 도와주실 수 있어요?'),
+(9130, 9012, 2, 'Ben', 'Sure. What''s the problem?', NULL, '그럼요. 뭐가 문제예요?'),
+(9131, 9012, 3, 'Mina', 'I can''t print this file. The machine is new to me.', NULL, '이 파일이 출력이 안 돼요. 저는 이 기계가 낯설어서요.'),
+(9132, 9012, 4, 'Ben', 'Can I check your screen?', NULL, '화면 좀 봐도 될까요?'),
+(9133, 9012, 5, 'Mina', 'Of course, go ahead. Could you print two copies for me?', NULL, '그럼요, 보세요. 두 부만 출력해 주실 수 있어요?'),
+(9134, 9012, 6, 'Ben', 'No problem. You can pick them up at the printer over there.', NULL, '문제없어요. 저쪽 프린터에서 가져가시면 돼요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9111, 'no problem', '문제없어요 · 그럼요', '부탁을 받고 답하는 한 마디입니다. 유닛 1의 no big deal은 고맙다는 말·사과를 받아넘기는 쪽이고, no problem은 부탁을 받아들이는 쪽입니다.', '/noʊ ˈprɑːbləm/', '노우 프라-블럼'),
+(9112, 'hold on', '잠깐만요', '전화와 대면 양쪽에서 씁니다. wait보다 짧게 붙잡아 두는 느낌이고, 전화에서는 "끊지 말고 기다려 주세요"라는 뜻이 됩니다.', '/hoʊld ɑːn/', '호울드 온'),
+(9113, 'never mind', '신경 쓰지 마세요 · 됐어요', '부탁을 스스로 거두는 말입니다. 상대가 못 해 줄 때 "괜찮아요"로도 씁니다. never가 들어 있지만 강한 부정이 아니라 가볍게 접는 말입니다.', '/ˈnevər maɪnd/', '네버 마인드'),
+(9114, 'go ahead', '그렇게 하세요 · 먼저 하세요', 'Can I ~? 로 허락을 구한 사람에게 주는 대답입니다. 앞으로 가라는 뜻이 아니라 "해도 된다"는 허락입니다.', '/ɡoʊ əˈhed/', '고우 어헤드'),
+(9115, 'give a hand', '거들어 주다 · 손을 보태다', '실제로는 give me a hand처럼 사이에 사람이 들어갑니다. help보다 가볍고, 잠깐 거드는 일에 씁니다: Can you give me a hand?', '/ɡɪv ə hænd/', '기브 어 핸드'),
+(9116, 'turn on', '(기계·불을) 켜다', '반대는 turn off입니다. 사이에 목적어가 들어갈 수 있습니다: turn the printer on. open은 문이나 상자를 여는 것이라 기계를 켜는 데 쓰지 않습니다.', '/tɜːrn ɑːn/', '턴- 온'),
+(9117, 'fill out', '(서류를) 작성하다', '빈칸을 채워 넣는다는 뜻입니다. write는 글을 쓰는 것이고, 정해진 칸이 있는 서류에는 fill out을 씁니다.', '/fɪl aʊt/', '필 아웃');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9111, 9111, 1, 'No problem. I have time now.', '문제없어요. 지금 시간 있어요.'),
+(9112, 9112, 1, 'Hold on, I''m on the phone.', '잠깐만요, 통화 중이에요.'),
+(9113, 9113, 1, 'Never mind. It''s not important.', '신경 쓰지 마세요. 중요한 거 아니에요.'),
+(9114, 9114, 1, 'Go ahead, I can wait.', '먼저 하세요, 저는 기다려도 돼요.'),
+(9115, 9115, 1, 'Can you give me a hand with these boxes?', '이 상자들 좀 거들어 주실 수 있어요?'),
+(9116, 9116, 1, 'She turns on the machine every morning.', '그분은 매일 아침 기계를 켜요.'),
+(9117, 9117, 1, 'I fill out this form every month.', '저는 매달 이 서류를 작성해요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9211, 'file', NULL, '파일 · 서류', 'NOUN', '/faɪl/', '파일'),
+(9212, 'copy', NULL, '사본 · 한 부', 'NOUN', '/ˈkɑːpi/', '카-피'),
+(9213, 'machine', NULL, '기계', 'NOUN', '/məˈʃiːn/', '머신-'),
+(9214, 'screen', NULL, '화면', 'NOUN', '/skriːn/', '스크린-'),
+(9215, 'favor', NULL, '부탁 · 호의', 'NOUN', '/ˈfeɪvər/', '페이버'),
+(9216, 'help', NULL, '돕다', 'VERB', '/help/', '헬프'),
+(9217, 'check', NULL, '확인하다', 'VERB', '/tʃek/', '체크'),
+(9218, 'print', NULL, '출력하다', 'VERB', '/prɪnt/', '프린트'),
+(9219, 'carry', NULL, '나르다 · 들고 가다', 'VERB', '/ˈkæri/', '캐리'),
+(9220, 'open', NULL, '열다', 'VERB', '/ˈoʊpən/', '오우픈'),
+(9221, 'answer', NULL, '대답하다 · (전화를) 받다', 'VERB', '/ˈænsər/', '앤서'),
+(9222, 'easy', NULL, '쉬운', 'ADJECTIVE', '/ˈiːzi/', '이-지'),
+(9223, 'difficult', NULL, '어려운', 'ADJECTIVE', '/ˈdɪfɪkəlt/', '디피컬트'),
+(9224, 'again', NULL, '다시', 'ADVERB', '/əˈɡen/', '어겐'),
+(9225, 'maybe', NULL, '아마도', 'ADVERB', '/ˈmeɪbi/', '메이비'),
+(9226, 'please', NULL, '부디 · ~해 주세요', 'ADVERB', '/pliːz/', '플리-즈');
+
+-- ─────────────────────────────────────────────────────────────
+-- 유닛 13 「동사를 두 개 쓰고 싶을 때」 — want/need to + 원형 · like/enjoy + -ing · have to
+-- 문법 9061~9063 / 예문 9181~9189 / 회화 9013(대사 9141~9146) / 표현 9121~9127 / 어휘 9231~9246
+-- ★ 이 유닛의 설명은 학교 용어(to부정사 명사적 용법 · 동명사를 목적어로 취하는 동사)를 호명만 하고 곧바로 버린다.
+-- ─────────────────────────────────────────────────────────────
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9061, 'want to / need to + 동사원형', '동사를 두 개 이어 쓰는 요령', '학교에서는 "to부정사의 명사적 용법"이라는 용어부터 배웠습니다. 그 용어는 여기서 버려도 됩니다. 실제 요령은 한 줄입니다 — 동사를 두 개 이어 쓰고 싶으면 사이에 to를 넣습니다. I want go home.이 안 되는 이유가 이걸로 끝납니다: I want to go home. to 뒤는 유닛 12의 can 뒤와 똑같이 원형이라 He wants to goes가 아니라 He wants to go입니다. -s는 앞 동사 wants가 이미 가져갔습니다.'),
+(9062, 'like / enjoy 뒤에는 -ing', '목록을 외우지 않고 몇 개만 기억한다', '학교에서는 "동명사를 목적어로 취하는 동사" 목록을 외웠습니다. 목록도 그 이름도 버립니다. 실제로 -ing가 오는 것은 자주 쓰는 몇 개뿐입니다 — enjoy, finish, keep, mind. I enjoy to cook이 아니라 I enjoy cooking이고, 나머지 동사는 대개 to 쪽입니다. like는 둘 다 되지만 말할 때는 -ing가 흔합니다. 이 -ing는 "지금 하고 있다"는 뜻이 아니라 enjoy 뒤에 오는 모양일 뿐입니다.'),
+(9063, 'have to / has to', '해야 해요', '학교에서는 "must = ~해야 한다"를 먼저 외웠습니다. 실제 일상에서 압도적으로 많이 쓰는 것은 have to입니다. 주어가 he·she·it이면 has to로 바뀌고 뒤는 원형입니다: He has to leave early. 유닛 1의 -s 규칙이 여기서도 그대로입니다. 부정은 조심해야 합니다 — don''t have to는 "하면 안 된다"가 아니라 "안 해도 된다"입니다. You don''t have to answer every email.은 금지가 아니라 허락에 가깝습니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9181, 9061, 1, 'I want to finish this today.', NULL, '이건 오늘 끝내고 싶어요.'),
+(9182, 9061, 2, 'She wants to learn Spanish.', NULL, '그분은 스페인어를 배우고 싶어 해요.'),
+(9183, 9061, 3, 'We need to send the report before five.', NULL, '우리는 5시 전에 보고서를 보내야 해요.'),
+(9184, 9062, 1, 'I enjoy cooking on weekends.', NULL, '저는 주말에 요리하는 걸 즐겨요.'),
+(9185, 9062, 2, 'She finishes writing the report at five.', NULL, '그분은 5시에 보고서 쓰는 걸 끝내요.'),
+(9186, 9062, 3, 'Do you like working from home?', NULL, '재택근무하는 거 좋아하세요?'),
+(9187, 9063, 1, 'I have to finish this report today.', NULL, '이 보고서를 오늘 끝내야 해요.'),
+(9188, 9063, 2, 'He has to leave early on Friday.', NULL, '그는 금요일에는 일찍 나가야 해요.'),
+(9189, 9063, 3, 'You don''t have to answer every email.', NULL, '모든 이메일에 답할 필요는 없어요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9013, '오늘 꼭 끝내야 해요');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9141, 9013, 1, 'Ben', 'Do you want to have lunch at one?', NULL, '1시에 점심 드실래요?'),
+(9142, 9013, 2, 'Mina', 'I want to, but I have to finish this report today.', NULL, '그러고 싶은데, 오늘 이 보고서를 끝내야 해요.'),
+(9143, 9013, 3, 'Ben', 'Is the deadline today?', NULL, '마감이 오늘이에요?'),
+(9144, 9013, 4, 'Mina', 'Yes. I need to check the numbers again, and then I''m done.', NULL, '네. 숫자만 다시 확인하면 끝이에요.'),
+(9145, 9013, 5, 'Ben', 'Can I help? I enjoy working with numbers.', NULL, '제가 도울까요? 저는 숫자 다루는 일을 좋아해요.'),
+(9146, 9013, 6, 'Mina', 'That helps a lot. Then we can have a late lunch together.', NULL, '큰 도움이 되죠. 그럼 늦은 점심을 같이 먹을 수 있어요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9121, 'work on', '(무엇을) 붙들고 작업하다', '유닛 3의 work for(~에서 일하다)와 갈리는 자리입니다. work on 뒤에는 회사가 아니라 지금 손대고 있는 일이 옵니다: work on the report.', '/wɜːrk ɑːn/', '워-크 온'),
+(9122, 'go over', '처음부터 끝까지 훑어보다 · 검토하다', '유닛 4의 take a look(한번 보다)보다 꼼꼼합니다. 숫자·서류를 빠짐없이 짚어 보는 쪽이라 마감 전에 가장 많이 하는 일입니다.', '/ɡoʊ ˈoʊvər/', '고우 오우버'),
+(9123, 'be done with', '~을 끝내다 · ~에서 손을 떼다', 'finish가 일에 초점을 둔다면 be done with는 사람 쪽에 초점이 있습니다: I am done with my part. 내 몫이 끝났다는 선언입니다.', '/bi dʌn wɪð/', '비 던 위드'),
+(9124, 'catch up', '밀린 것을 따라잡다', '뒤처진 것을 메운다는 뜻입니다. 무엇을 메우는지는 on으로 붙입니다: catch up on email. 사람과 쓰면 "밀린 근황을 나누다"가 됩니다.', '/kætʃ ʌp/', '캐치 업'),
+(9125, 'figure out', '알아내다 · 방법을 찾아내다', 'know는 이미 아는 것이고 figure out은 따져서 알아내는 것입니다. 유닛 1의 come up with(아이디어를 떠올리다)와 달리 답이 이미 있는 문제를 푸는 쪽입니다.', '/ˈfɪɡjər aʊt/', '피겨 아웃'),
+(9126, 'hand in', '제출하다', '손에서 넘긴다는 그림 그대로입니다. 서류·과제를 정해진 곳에 내는 일에 씁니다. send는 보내는 것이고 hand in은 내는 것입니다.', '/hænd ɪn/', '핸드 인'),
+(9127, 'stay late', '늦게까지 남다', '회사에 남아 일하는 것입니다. 유닛 5의 head home(집으로 향하다)의 반대편에 놓입니다. late가 -ly 없이 그대로 쓰이는 자리이기도 합니다(유닛 11).', '/steɪ leɪt/', '스테이 레이트');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9121, 9121, 1, 'I work on the report every morning.', '저는 매일 아침 그 보고서를 붙들고 있어요.'),
+(9122, 9122, 1, 'I go over the numbers before the meeting.', '저는 회의 전에 숫자를 쭉 훑어봐요.'),
+(9123, 9123, 1, 'She''s done with her part.', '그분은 자기 몫을 끝냈어요.'),
+(9124, 9124, 1, 'I need to catch up on my email.', '밀린 이메일을 따라잡아야 해요.'),
+(9125, 9125, 1, 'We have to figure out the reason together.', '우리가 같이 이유를 알아내야 해요.'),
+(9126, 9126, 1, 'You have to hand in the form before Friday.', '금요일 전에 서류를 제출하셔야 해요.'),
+(9127, 9127, 1, 'He stays late on Thursday.', '그는 목요일에는 늦게까지 남아요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9231, 'report', NULL, '보고서', 'NOUN', '/rɪˈpɔːrt/', '리포-트'),
+(9232, 'deadline', NULL, '마감', 'NOUN', '/ˈdedlaɪn/', '데드라인'),
+(9233, 'project', NULL, '프로젝트', 'NOUN', '/ˈprɑːdʒekt/', '프라-젝트'),
+(9234, 'task', NULL, '할 일 · 업무', 'NOUN', '/tæsk/', '태스크'),
+(9235, 'email', NULL, '이메일', 'NOUN', '/ˈiːmeɪl/', '이-메일'),
+(9236, 'finish', NULL, '끝내다', 'VERB', '/ˈfɪnɪʃ/', '피니시'),
+(9237, 'continue', NULL, '계속하다', 'VERB', '/kənˈtɪnjuː/', '컨티뉴-'),
+(9238, 'decide', NULL, '정하다 · 결정하다', 'VERB', '/dɪˈsaɪd/', '디사이드'),
+(9239, 'hope', NULL, '바라다', 'VERB', '/hoʊp/', '호웁'),
+(9240, 'forget', NULL, '잊다', 'VERB', '/fərˈɡet/', '퍼겟'),
+(9241, 'urgent', NULL, '급한', 'ADJECTIVE', '/ˈɜːrdʒənt/', '어-전트'),
+(9242, 'hard', NULL, '어려운 · 힘든', 'ADJECTIVE', '/hɑːrd/', '하-드'),
+(9243, 'later', NULL, '나중에', 'ADVERB', '/ˈleɪtər/', '레이터'),
+(9244, 'almost', NULL, '거의', 'ADVERB', '/ˈɔːlmoʊst/', '올-모우스트'),
+(9245, 'so', NULL, '그래서', 'CONJUNCTION', '/soʊ/', '소우'),
+(9246, 'before', NULL, '~ 전에', 'PREPOSITION', '/bɪˈfɔːr/', '비포-');
+
+-- ─────────────────────────────────────────────────────────────
+-- 유닛 14 「시키는 말이 무례한 건 아니다」 — 명령문 · Let us 계열(Let 로 시작하는 두 갈래) · 제안하는 의문문
+-- 문법 9066~9068 / 예문 9196~9204 / 회화 9014(대사 9153~9158) / 표현 9131~9137 / 어휘 9251~9266
+-- ★ 제안이 처음으로 회화의 주인공이 되는 자리다(기획 §3-4 ③).
+--   how about 은 유닛 4 표현이라 표현 스텝에 다시 올리지 않았다 — 문법 9068 안에서만 다룬다(코스 내부 중복 금지).
+-- ─────────────────────────────────────────────────────────────
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9066, '명령문 — 주어를 빼고 동사로 시작한다', '이렇게 하세요', '학교에서는 명령문을 "명령"이라고 배워서 무례한 말처럼 느낍니다. 실제로 이 모양은 길 안내와 사용 설명에서 가장 많이 씁니다: Take the elevator. Turn left at the corner. 무례한 말이 아니라 상대가 할 일만 남긴 말입니다. 주어를 빼고 동사원형으로 시작하며, 유닛 5의 "주어 없는 문장은 없다"에서 유일하게 주어를 빼는 자리입니다. 부정은 앞에 Don''t를 세웁니다: Don''t press this button. please는 붙이면 부드러워지지만 없다고 실례가 되지는 않습니다.'),
+(9067, 'Let''s ~ / Let me ~', '같이 해요 · 제가 할게요', '학교에서는 "Let''s = ~하자" 하나로 외웠습니다. 실제로는 두 방향입니다 — Let''s check는 같이 하자는 말이고, Let me check는 제가 해 보겠다는 말입니다. 회의에서 더 자주 나오는 쪽은 오히려 Let me입니다. 뒤는 언제나 원형이라 Let me to check도 Let''s checking도 없습니다(유닛 12의 can과 같은 규칙). 하지 말자고 할 때는 not을 뒤에 넣습니다: Let''s not change the plan today.'),
+(9068, 'Why don''t we ~? / How about ~?', '묻는 모양을 한 제안', '학교에서는 Why don''t we ~? 를 글자 그대로 "왜 우리는 ~하지 않나요?"라는 이유 질문으로 읽었습니다. 실제로는 이유를 묻는 말이 아니라 제안입니다: Why don''t we ask Ben? 은 벤에게 물어보자는 말이고, 뒤에는 원형이 옵니다. How about은 뒤에 명사를 놓거나(How about two o''clock?) 동사를 놓을 때 -ing로 바꿉니다(How about printing two copies?) — 유닛 13에서 본 -ing가 여기서 다시 쓰입니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9196, 9066, 1, 'Take the elevator to the third floor.', NULL, '엘리베이터를 타고 3층으로 가세요.'),
+(9197, 9066, 2, 'Turn left at the corner.', NULL, '모퉁이에서 왼쪽으로 도세요.'),
+(9198, 9066, 3, 'Don''t press this button.', NULL, '이 버튼은 누르지 마세요.'),
+(9199, 9067, 1, 'Let''s start with the first page.', NULL, '첫 페이지부터 시작하죠.'),
+(9200, 9067, 2, 'Let me check the schedule.', NULL, '제가 일정을 확인해 볼게요.'),
+(9201, 9067, 3, 'Let''s not change the plan today.', NULL, '오늘은 계획을 바꾸지 맙시다.'),
+(9202, 9068, 1, 'Why don''t we ask Ben?', NULL, '벤에게 물어보는 게 어때요?'),
+(9203, 9068, 2, 'Why don''t we take a break now?', NULL, '지금 좀 쉬는 게 어때요?'),
+(9204, 9068, 3, 'How about printing two copies?', NULL, '두 부 출력하는 건 어때요?');
+
+INSERT INTO dialog (id, title) VALUES
+(9014, '그럼 이렇게 해 볼까요?');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9153, 9014, 1, 'Mina', 'The meeting room is full at two. What do we do?', NULL, '2시에 회의실이 다 찼어요. 어떻게 하죠?'),
+(9154, 9014, 2, 'Ben', 'Let me check the other rooms first.', NULL, '제가 다른 방들을 먼저 확인해 볼게요.'),
+(9155, 9014, 3, 'Mina', 'Thanks. How about the small room next to the kitchen?', NULL, '고마워요. 주방 옆 작은 방은 어때요?'),
+(9156, 9014, 4, 'Ben', 'It''s free at two. Let''s move the meeting there.', NULL, '거기는 2시에 비어 있어요. 회의를 거기로 옮기죠.'),
+(9157, 9014, 5, 'Mina', 'Why don''t we tell the team now?', NULL, '지금 팀에 알리는 게 어때요?'),
+(9158, 9014, 6, 'Ben', 'Sounds good. Send a short message, and let me move the chairs.', NULL, '좋아요. 짧게 메시지 보내 주세요. 의자는 제가 옮길게요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9131, 'sounds good', '좋아요 · 그렇게 하죠', '제안을 받아들이는 한 마디입니다. 주어 That이 생략된 채로 굳었습니다. 소리가 좋다는 뜻이 아니라 그 안이 괜찮다는 판단입니다.', '/saʊndz ɡʊd/', '사운즈 굿'),
+(9132, 'why not', '그러죠 뭐 · 안 될 거 없죠', '글자만 보면 이유를 묻는 말이지만 실제로는 가볍게 수락하는 대답입니다. 문법 스텝의 Why don''t we ~? 와 같은 뒤집힘입니다.', '/waɪ nɑːt/', '와이 낫'),
+(9133, 'that works', '그거면 되겠네요', '일정·방법이 나에게 맞는다는 뜻입니다. 기계가 작동한다는 뜻이 아닙니다. 뒤에 for me를 붙여 누구에게 맞는지를 밝힙니다.', '/ðæt wɜːrks/', '댓 웍-스'),
+(9134, 'go for it', '한번 해 보세요', '망설이는 상대의 등을 밀어 주는 말입니다. 무엇을 가지러 가라는 뜻이 아니라 "그대로 밀고 가라"는 응원입니다.', '/ɡoʊ fɔːr ɪt/', '고우 포- 잇'),
+(9135, 'up to you', '당신이 정하세요', '결정을 상대에게 넘기는 덩어리입니다. 앞에 It is를 붙여 쓰기도 합니다: It is up to you. 무관심이 아니라 어느 쪽이든 괜찮다는 뜻입니다.', '/ʌp tuː juː/', '업 투- 유-'),
+(9136, 'come along', '같이 가다 · 따라나서다', '이미 가는 사람이 있고 거기에 붙는 그림입니다. come과 go의 갈림 때문에 한국어로는 "가다"지만 영어는 come을 씁니다.', '/kʌm əˈlɔːŋ/', '컴 어롱-'),
+(9137, 'let''s say', '이를테면 · ~라고 치고', '제안의 값을 잠정으로 던질 때 씁니다: Let''s say three o''clock. 말하자는 뜻이 아니라 일단 그렇게 정해 두자는 뜻입니다.', '/lets seɪ/', '레츠 세이');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9131, 9131, 1, 'Ten o''clock sounds good to me.', '저는 10시 좋아요.'),
+(9132, 9132, 1, 'Why not? That is a good idea.', '그러죠 뭐. 좋은 생각이에요.'),
+(9133, 9133, 1, 'That works for me.', '저는 그거면 돼요.'),
+(9134, 9134, 1, 'The plan is ready, so go for it.', '계획은 준비됐으니 한번 해 보세요.'),
+(9135, 9135, 1, 'The time is up to you.', '시간은 그쪽이 정하시면 돼요.'),
+(9136, 9136, 1, 'You can come along with us.', '같이 가셔도 돼요.'),
+(9137, 9137, 1, 'Let''s say three o''clock, then.', '그럼 3시라고 해 두죠.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9251, 'button', NULL, '버튼', 'NOUN', '/ˈbʌtn/', '버튼'),
+(9252, 'entrance', NULL, '입구', 'NOUN', '/ˈentrəns/', '엔트런스'),
+(9253, 'stairs', NULL, '계단', 'NOUN', '/sterz/', '스테어즈'),
+(9254, 'map', NULL, '지도', 'NOUN', '/mæp/', '맵'),
+(9255, 'turn', NULL, '돌다 · 방향을 바꾸다', 'VERB', '/tɜːrn/', '턴-'),
+(9256, 'follow', NULL, '따라가다', 'VERB', '/ˈfɑːloʊ/', '팔-로우'),
+(9257, 'push', NULL, '밀다', 'VERB', '/pʊʃ/', '푸시'),
+(9258, 'pull', NULL, '당기다', 'VERB', '/pʊl/', '풀'),
+(9259, 'press', NULL, '누르다', 'VERB', '/pres/', '프레스'),
+(9260, 'move', NULL, '옮기다 · 이동하다', 'VERB', '/muːv/', '무-브'),
+(9261, 'straight', NULL, '곧장 · 똑바로', 'ADVERB', '/streɪt/', '스트레이트'),
+(9262, 'first', NULL, '먼저 · 우선', 'ADVERB', '/fɜːrst/', '퍼-스트'),
+(9263, 'then', NULL, '그다음에', 'ADVERB', '/ðen/', '덴'),
+(9264, 'twice', NULL, '두 번', 'ADVERB', '/twaɪs/', '트와이스'),
+(9265, 'back', NULL, '되돌아 · 뒤로', 'ADVERB', '/bæk/', '백'),
+(9266, 'through', NULL, '~을 통과해', 'PREPOSITION', '/θruː/', '쓰루-');
+
+-- ─────────────────────────────────────────────────────────────
+-- 유닛 15 「하고 싶은 말을 한 문장으로 끝낸다」 ★복습(11~15) — I think / I don not think · It is ~ to 동사
+-- 문법 9071~9072 / 예문 9211~9216 / 회화 9015(대사 9165~9170) / 표현 9141~9147 / 어휘 9271~9286
+-- 문법이 2개인 이유: 기획 §3-3 — 마지막 유닛은 정리 스텝에 11~15 복습 블록이 함께 붙는다(계약은 2~3).
+-- 정리 스텝에 11~15 복습 블록이 붙는다(unitNo % 5 == 0) — 유닛 11~14가 모두 있는 상태로만 배포한다.
+-- ★ 이 유닛의 문법은 앞 14유닛에서 만든 문장을 그대로 목적어 자리에 넣는 틀이다 — 앞을 불러오는 것이 이 유닛의 본질이다.
+-- ─────────────────────────────────────────────────────────────
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9071, 'I think ~ / I don''t think ~', '앞에서 만든 문장을 통째로 넣는다', '학교에서는 "that은 생략할 수 있다"를 규칙으로 배웠습니다. 실제로 말할 때는 that을 거의 붙이지 않습니다. 더 중요한 것은 부정의 자리입니다 — 한국어는 "좋지 않은 것 같아요"처럼 뒤에서 부정하지만 영어는 앞에서 합니다. I think it is not good.보다 I don''t think it is good.이 자연스럽습니다. I think 뒤에는 지금까지 만든 문장을 그대로 넣기만 하면 됩니다: There is a problem. → I think there is a problem.'),
+(9072, 'It''s ~ to 동사', '긴 말은 뒤로 미룬다', '학교에서는 "가주어 it, 진주어 to부정사"라는 용어로 배웠습니다. 그 용어는 몰라도 됩니다. 실제로는 하고 싶은 말이 길어질 때 일단 It''s로 시작해 두고 뒤에 이어 붙이는 요령입니다: It''s hard to explain this in English. 유닛 5에서 본 "주어 없는 문장은 없다"의 it이 여기서 자리를 채우고, to 뒤는 유닛 13처럼 원형입니다. 문장 전체를 다 만들어 두고 입을 열 필요가 없어집니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9211, 9071, 1, 'I think this plan is better.', NULL, '저는 이 계획이 낫다고 봐요.'),
+(9212, 9071, 2, 'I don''t think it''s a big problem.', NULL, '저는 그게 큰 문제는 아니라고 봐요.'),
+(9213, 9071, 3, 'I think there''s enough time.', NULL, '시간은 충분한 것 같아요.'),
+(9214, 9072, 1, 'It''s hard to explain in English.', NULL, '영어로 설명하기는 어려워요.'),
+(9215, 9072, 2, 'It''s easy to use this machine.', NULL, '이 기계는 쓰기 쉬워요.'),
+(9216, 9072, 3, 'It''s important to ask first.', NULL, '먼저 물어보는 게 중요해요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9015, '저는 이게 낫다고 봐요');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9165, 9015, 1, 'Ben', 'There are two plans for the report. What do you think?', NULL, '보고서 계획이 두 가지예요. 어떻게 생각하세요?'),
+(9166, 9015, 2, 'Mina', 'I think the first plan is better. It''s easy to explain to the team.', NULL, '저는 첫 번째 계획이 낫다고 봐요. 팀에 설명하기 쉬워요.'),
+(9167, 9015, 3, 'Ben', 'I don''t think the second plan is wrong. It''s just long.', NULL, '두 번째 계획이 틀렸다고 생각하진 않아요. 그냥 길 뿐이죠.'),
+(9168, 9015, 4, 'Mina', 'That''s true. But it''s hard to explain a long plan in ten minutes.', NULL, '맞는 말이에요. 그런데 긴 계획을 10분 안에 설명하기는 어려워요.'),
+(9169, 9015, 5, 'Ben', 'I agree. Let''s go with the first one, then.', NULL, '동의해요. 그럼 첫 번째로 가죠.'),
+(9170, 9015, 6, 'Mina', 'In my opinion, that''s the right choice for today.', NULL, '제 생각엔 오늘로서는 그게 맞는 선택이에요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9141, 'in my opinion', '제 생각에는', '문장 맨 앞에 놓고 쉼표로 끊습니다. I think보다 조금 격식 있는 자리에 쓰고, 한 대화에서 여러 번 반복하면 무거워집니다.', '/ɪn maɪ əˈpɪnjən/', '인 마이 어피니언'),
+(9142, 'to be honest', '솔직히 말하면', '듣기에 조심스러운 말을 꺼내기 전에 깔아 두는 덩어리입니다. 앞말이 거짓이었다는 뜻이 아니라 한 겹 더 솔직해지겠다는 신호입니다.', '/tuː bi ˈɑːnɪst/', '투- 비 아-니스트'),
+(9143, 'either way', '어느 쪽이든', '두 안을 두고 어느 쪽으로 정해져도 괜찮다고 말할 때 씁니다. either는 둘 중 하나를 가리키므로 셋 이상에는 쓰지 않습니다.', '/ˈiːðər weɪ/', '이-더 웨이'),
+(9144, 'make sense', '말이 되다 · 이해가 되다', '사람이 아니라 말·계획이 주어입니다: Your idea makes sense. I don''t make sense라고 하면 내가 이상한 사람이 됩니다 — 그때는 I am not clear라고 합니다.', '/meɪk sens/', '메이크 센스'),
+(9145, 'in other words', '다시 말해', '앞말을 더 쉬운 말로 바꿔 말할 때 씁니다. 새 내용을 더하는 자리가 아니라 같은 내용을 한 번 더 정리하는 자리입니다.', '/ɪn ˈʌðər wɜːrdz/', '인 아더 워-즈'),
+(9146, 'for example', '예를 들면', '주장 뒤에 사례를 붙일 때 씁니다. 문장 앞·중간·끝 어디에나 놓을 수 있고, 쉼표로 끊어 줍니다.', '/fɔːr ɪɡˈzæmpl/', '포- 이그잼플'),
+(9147, 'on the other hand', '반면에', '앞에서 말한 것과 다른 면을 덧붙일 때 씁니다. 반대 의견을 꺾는 말이 아니라 같은 것의 다른 쪽을 보여 주는 말입니다.', '/ɑːn ði ˈʌðər hænd/', '온 디 아더 핸드');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9141, 9141, 1, 'In my opinion, the first plan is better.', '제 생각에는 첫 번째 계획이 나아요.'),
+(9142, 9142, 1, 'To be honest, I''m not sure about the date.', '솔직히 말하면 날짜가 확실치 않아요.'),
+(9143, 9143, 1, 'Either way, we can finish before five.', '어느 쪽이든 5시 전에 끝낼 수 있어요.'),
+(9144, 9144, 1, 'Your idea makes sense to me.', '당신 생각은 저한테 말이 돼요.'),
+(9145, 9145, 1, 'In other words, we need one more day.', '다시 말해 하루가 더 필요해요.'),
+(9146, 9146, 1, 'For example, this report is urgent.', '예를 들면 이 보고서가 급해요.'),
+(9147, 9147, 1, 'The room is small. On the other hand, it''s quiet.', '그 방은 작아요. 반면에 조용하죠.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9271, 'idea', NULL, '생각 · 아이디어', 'NOUN', '/aɪˈdiːə/', '아이디-어'),
+(9272, 'opinion', NULL, '의견', 'NOUN', '/əˈpɪnjən/', '어피니언'),
+(9273, 'reason', NULL, '이유', 'NOUN', '/ˈriːzn/', '리-즌'),
+(9274, 'problem', NULL, '문제', 'NOUN', '/ˈprɑːbləm/', '프라-블럼'),
+(9275, 'choice', NULL, '선택', 'NOUN', '/tʃɔɪs/', '초이스'),
+(9276, 'point', NULL, '요점 · 핵심', 'NOUN', '/pɔɪnt/', '포인트'),
+(9277, 'think', NULL, '생각하다', 'VERB', '/θɪŋk/', '씽크'),
+(9278, 'agree', NULL, '동의하다', 'VERB', '/əˈɡriː/', '어그리-'),
+(9279, 'mean', NULL, '의미하다', 'VERB', '/miːn/', '민-'),
+(9280, 'explain', NULL, '설명하다', 'VERB', '/ɪkˈspleɪn/', '익스플레인'),
+(9281, 'prefer', NULL, '더 좋아하다', 'VERB', '/prɪˈfɜːr/', '프리퍼-'),
+(9282, 'important', NULL, '중요한', 'ADJECTIVE', '/ɪmˈpɔːrtnt/', '임포-턴트'),
+(9283, 'better', NULL, '더 나은', 'ADJECTIVE', '/ˈbetər/', '베터'),
+(9284, 'wrong', NULL, '틀린 · 잘못된', 'ADJECTIVE', '/rɔːŋ/', '롱-'),
+(9285, 'clear', NULL, '분명한', 'ADJECTIVE', '/klɪr/', '클리어'),
+(9286, 'probably', NULL, '아마도 (꽤 확실하게)', 'ADVERB', '/ˈprɑːbəbli/', '프라-버블리');

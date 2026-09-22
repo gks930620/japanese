@@ -36,8 +36,13 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      * (지금 열린 유닛 수·집계)이고, 계획 수는 <b>아직 만들지 않은 것에 대한 편집 계획</b>이라 성질이 다르다.
      * 한 줄에 섞으면 {@code unitCount}를 순회 범위로 쓰는 전수 검증이 <b>없는 유닛까지 돌아 전부 404</b>가 되는 길이 열린다.
      *
-     * <p>E1은 15에서 끝난다(기획 §3-3 · 설계/06 §11-12 ① — 공개 경계는 5의 배수). 열린 수가 15에 닿는 날
-     * {@code totalUnits >= coursePlannedUnits}가 되어 <b>사람이 플래그를 내리지 않아도</b> 완주가 된다(설계/04 §2-3-A).
+     * <p>E1은 15에서 끝난다(기획 §3-3 · 설계/06 §11-12 ① — 공개 경계는 5의 배수).
+     * <b>2026-09-22 그 날이 왔다</b>: 열린 수가 15에 닿아 {@code totalUnits >= coursePlannedUnits}가 되었고,
+     * <b>사람이 플래그를 내리지 않아도</b> 완주가 됐다(설계/04 §2-3-A가 개수를 boolean 대신 쓴 이유).
+     *
+     * <p>⚠️ <b>이 상수가 15가 아니게 되는 날 읽을 것</b>: 계획이 늘어난다는 것은 E1이 <b>다시 부분 공개</b>가 된다는 뜻이고,
+     * 그 순간 아래 {@link #the_last_unit_is_a_finished_course_because_the_plan_is_met}가 전제부터 실패한다.
+     * 그것이 곧 <b>"열린 데까지의 끝" 백엔드 커버리지를 복구하라</b>는 신호다(설계/08 C-30).
      */
     private static final int E1_PLANNED_UNITS = 15;
 
@@ -193,28 +198,45 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.summary.unitCount").value(0));
     }
 
-    // ── 부분 공개 코스 — coursePlannedUnits (설계/04 §2-3-A · 08 C-29) ──────────
+    // ── 부분 공개 코스 — coursePlannedUnits (설계/04 §2-3-A · 08 C-29·C-30) ─────
     //
-    // "다음 유닛이 없다"와 "이 코스를 끝냈다"는 다른 상태다. E1은 15유닛 계획 중 10유닛만 열려 있어
-    // 열린 마지막 유닛도 nextUnitNo: null이고, 그것을 완주로 읽어 "🎉 끝까지 봤어요"라는 거짓 안내가 나갔다
+    // "다음 유닛이 없다"와 "이 코스를 끝냈다"는 다른 상태다. E1은 한때 15유닛 계획 중 10유닛만 열려 있어
+    // 열린 마지막 유닛도 nextUnitNo: null이었고, 그것을 완주로 읽어 "🎉 끝까지 봤어요"라는 거짓 안내가 나갔다
     // (2026-09-21 검수 결함 2 · 기획 예외 E-4). 서버가 두 상태를 가를 값을 내려주지 않으면 화면은 지어낼 수밖에 없다.
     //
     //   moreUnitsComing = coursePlannedUnits != null && totalUnits < coursePlannedUnits
     //   completedCourse = nextUnitNo == null && !moreUnitsComing
     //
     // 프론트는 유닛 응답 하나로 판정한다(호출 한 번 계약, 08 B-7) — 코스 상세를 따로 부르지 않는다.
+    //
+    // ★ 2026-09-22 — 여기서 무엇이 사라졌는지 적어 둔다 (senior-dev 판정, 설계/08 C-30).
+    //   E1이 15/15가 되면서 `totalUnits < coursePlannedUnits`인 **실데이터가 저장소에서 사라졌다.**
+    //   즉 "열린 데까지의 끝"(상태 2)을 실제 응답으로 태우는 백엔드 테스트는 지금 **없다.**
+    //   그래도 이 필드의 계약은 다음 셋으로 **전부** 고정된다 — 서버가 하는 일은 컬럼을 그대로 싣는 것뿐이기 때문이다:
+    //     ① 값이 실린다(비-null) ......... 아래 the_last_unit_is_a_finished_course_because_the_plan_is_met
+    //     ② 마지막 유닛 전용이 아니다 ..... 아래 a_mid_course_english_unit_carries_the_same_planned_unit_count
+    //     ③ totalUnits에서 파생하지 않는다 . CourseApiIntegrationTest.unit_study_last_unit_has_no_next_unit
+    //        (일본어는 totalUnits=20인데 coursePlannedUnits=null이다 — 파생 구현이면 여기 20이 실린다.
+    //         E1은 이제 15 == 15라 **영어 쪽에서는 둘을 구분할 수 없다**. 판별자는 저 파일에만 있다 — C-11.)
+    //   비교식(moreUnitsComing) 자체는 화면의 것이고 `UnitStudyPage.partialCourse.test.jsx`가 픽스처로 고정한다.
+    //   ★ 복구 절차: 영어 코스를 계획보다 적게 여는 날(= CourseCatalog.ENGLISH에 unitCount < 계획 수를 적는 날)
+    //     이 블록에 상태 2 테스트를 되살린다. 그 지시는 CourseCatalog.ENGLISH 주석에도 적혀 있다.
 
     /**
-     * 열린 마지막 유닛(지금은 10)은 <b>완주가 아니다</b> — 계획 수가 응답에 실려 그 둘을 가른다.
+     * 마지막 유닛(15)이 <b>완주로 읽히는 이유는 계획을 채웠기 때문</b>이다 — {@code nextUnitNo == null}이어서가 아니다.
      *
-     * <p>유닛 번호를 박지 않고 {@code CourseCatalog.ENGLISH}의 {@code unitCount}로 부르는 이유: 그 자리는
-     * 콘텐츠가 자랄 때마다 옮겨 다닌다(유닛 2 → 5 → 10). 숫자를 박으면 증설 때마다 <b>이 테스트가 먼저 거짓</b>이 된다.
+     * <p>2026-09-22 이 테스트는 방향이 뒤집혔다. 전신은
+     * {@code the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course}였고
+     * <b>{@code totalUnits < coursePlannedUnits}</b>를 단언했다 — E1이 15/15가 되며 그 전제가 거짓이 됐다.
+     * 숫자만 고쳐 살려 두지 않고 <b>지금 참인 것</b>을 단언하도록 다시 썼다: 계약이 약속한
+     * "개수를 쓰면 계획을 채우는 순간 <b>사람 손 없이</b> 완주가 된다"(설계/04 §2-3-A · 08 C-29)는
+     * 여태 <b>한 번도 테스트된 적이 없는</b> 절반이었고, 이번에 실제로 일어난 일이 정확히 그것이다.
      *
-     * <p>세 가지를 함께 본다. ① 키가 실린다 ② 값이 15다 ③ {@code totalUnits}와 <b>다르다</b> —
-     * ③이 없으면 서버가 계획 수를 DB 집계에서 파생해도(= 언제나 완주) 테스트가 통과한다.
+     * <p>유닛 번호를 박지 않고 {@code CourseCatalog.ENGLISH}의 {@code unitCount}로 부르는 이유는 그대로다 —
+     * 그 자리는 콘텐츠가 자랄 때마다 옮겨 다닌다(유닛 2 → 5 → 10 → 15).
      */
     @Test
-    void the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course() throws Exception {
+    void the_last_unit_is_a_finished_course_because_the_plan_is_met() throws Exception {
         CourseCatalog.Course english1 = CourseCatalog.englishById(EN_COURSE_1);
 
         MvcResult result = mockMvc
@@ -222,7 +244,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.unitNo").value(english1.unitCount))
                 .andExpect(jsonPath("$.data.totalUnits").value(english1.unitCount))
-                .andExpect(jsonPath("$.data.nextUnitNo").value(nullValue())) // 열린 데까지의 끝
+                .andExpect(jsonPath("$.data.nextUnitNo").value(nullValue())) // 코스의 마지막 유닛
                 .andReturn();
 
         JsonNode data = objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
@@ -235,18 +257,50 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
                         E1_PLANNED_UNITS)
                 .isEqualTo(E1_PLANNED_UNITS);
         assertThat(data.path("totalUnits").asInt())
-                .as("열린 유닛(%s)이 계획(%s)에 못 미쳐야 '열린 데까지의 끝'이다 — 계획 수를 totalUnits에서 "
-                                + "파생하면 두 값이 언제나 같아져 이 상태가 영영 만들어지지 않는다",
+                .as("열린 유닛(%s)이 계획(%s)에 닿아야 완주다(moreUnitsComing = false). 여기서 열린 수가 계획에 "
+                                + "못 미치면 E1은 다시 '열린 데까지의 끝'이고, 그때는 그 상태를 직접 태우는 테스트를 "
+                                + "이 블록에 되살려야 한다(설계/08 C-30)",
                         data.path("totalUnits").asInt(), E1_PLANNED_UNITS)
-                .isLessThan(E1_PLANNED_UNITS);
+                .isGreaterThanOrEqualTo(E1_PLANNED_UNITS);
+    }
+
+    /**
+     * 계획을 채운 코스는 <b>"채우는 중" 안내를 남기지 않는다</b> (설계/06 §11-12 ③ R4 · 기획 AC-16).
+     *
+     * <p>C-29가 개수를 boolean 대신 쓴 덕에 <b>완주 판정은 자동</b>이 됐지만, 코스 카드·상세의 안내 문구를 지우는 것은
+     * <b>사람 일로 남겨 두었다.</b> 사람 일로 남은 것은 잊힌다 — 그리고 잊히면 학습자는 <b>다시 두 화면에서 모순된 말</b>을
+     * 듣는다(유닛 끝은 "끝까지 봤어요", 코스 상세는 "채우는 중"). 결함 2와 방향만 반대이고 증상은 같다.
+     *
+     * <p>전제({@code unitCount >= 계획})를 <b>함께 단언</b>하는 이유: 계획이 늘어 E1이 다시 부분 공개가 되면
+     * notice는 <b>있어야 맞다</b>. 전제를 적지 않으면 그날 이 테스트가 <b>맞는 데이터를 결함이라고</b> 우긴다.
+     *
+     * <p>일본어 N5는 20/20인데도 notice를 갖고 있지만 규칙 위반이 아니다 — {@code planned_unit_count}가 NULL,
+     * 즉 <b>애초에 계획을 선언한 적이 없는</b> 코스이고, 그 notice는 "채우는 중"이 아니라 일반 안내다(C-29).
+     * 그래서 이 검사는 계획을 가진 코스에만 적용한다.
+     */
+    @Test
+    void a_course_that_met_its_plan_carries_no_leftover_notice() throws Exception {
+        CourseCatalog.Course english1 = CourseCatalog.englishById(EN_COURSE_1);
+
+        assertThat(english1.unitCount)
+                .as("이 테스트의 전제는 'E1이 계획(%s)을 채웠다'는 것이다. 계획이 늘어 다시 부분 공개가 되면 "
+                                + "notice는 있어야 맞으므로, 그때는 이 테스트가 아니라 이 전제를 먼저 고친다",
+                        E1_PLANNED_UNITS)
+                .isGreaterThanOrEqualTo(E1_PLANNED_UNITS);
+
+        mockMvc.perform(get("/api/en/courses/{courseId}", EN_COURSE_1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("AVAILABLE"))
+                .andExpect(jsonPath("$.data.notice").value(nullValue()));
     }
 
     /**
      * 계획 수는 <b>마지막 유닛에서만 실리는 값이 아니다</b> — 중간 유닛도 같은 값을 갖는다.
      * ({@code nextCourse}·{@code review}처럼 특정 유닛에서만 값이 생기는 필드와 다르다.)
      *
-     * <p>동시에 이 테스트는 <b>10유닛 증설을 고정</b>한다: 유닛 5는 이제 마지막이 아니라 {@code nextUnitNo: 6}이다.
-     * 유닛 5가 다시 끝으로 보이면 유닛 6~10이 응답에서 사라졌다는 뜻이다.
+     * <p>동시에 이 테스트는 <b>증설을 고정</b>한다: 유닛 5는 이제 마지막이 아니라 {@code nextUnitNo: 6}이다.
+     * 유닛 5가 다시 끝으로 보이면 유닛 6 이후가 응답에서 사라졌다는 뜻이다.
+     * (마지막 유닛이 <b>어디인지</b>는 위 테스트가 {@code CourseCatalog.ENGLISH}에서 받아 본다 — 여기서는 중간 유닛만 본다.)
      */
     @Test
     void a_mid_course_english_unit_carries_the_same_planned_unit_count() throws Exception {

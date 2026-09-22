@@ -50,7 +50,19 @@ const LIBRARY_FALLBACK = "그동안은 자료실에서 지금까지 배운 것�
 /** 열린 끝의 진행 버튼 — 참인 행선지는 그 코스의 유닛 목록뿐이다(다음 코스로 내보내면 "끝났다"는 말이 된다) */
 const OPEN_END_LINK_LABEL = "유닛 목록으로 ›";
 
-/** 지금의 E1 — 15유닛 계획 중 10유닛까지 열렸고, 그 마지막 유닛에 서 있다 */
+/**
+ * 부분 공개 코스의 **열린 끝** — 15유닛 계획 중 10유닛까지 열린 코스의 마지막 유닛에 서 있다.
+ *
+ * ⚠️ **2026-09-22: 이것은 더 이상 E1의 현재 모습이 아니다.** E1이 15/15로 계획을 채워
+ * (`coursePlannedUnits === totalUnits`) 이 상태의 **실데이터가 저장소에서 사라졌다**(설계/08 C-30).
+ * 그래도 이 픽스처를 고치지 않는다 — 픽스처의 기준은 **실제 응답의 shape**이지 그 시점의 데이터 사본이 아니고
+ * (08 C-9), 판정 규칙(`coursePlannedUnits != null && totalUnits < coursePlannedUnits`)은 **언어·코스와 무관한
+ * 일반 규칙**이라 다음 부분 공개(E2 등)에서 그대로 다시 쓰인다. 여기서 id 101을 쓰는 것은
+ * 실제 응답의 배선(코스 id ↔ 라우트 ↔ nextCourse)을 그대로 두기 위해서다.
+ *
+ * ★ 이 화면 규칙을 **실데이터로** 태우는 백엔드 테스트는 지금 없다 — 그 자리와 복구 조건은
+ *   `EnglishCourseApiIntegrationTest`의 "부분 공개 코스" 주석 블록에 적혀 있다.
+ */
 function partialEndPayload(overrides = {}) {
   return enUnitStudyPayload({
     unitNo: 10,
@@ -120,6 +132,8 @@ describe("열린 데까지의 끝 — coursePlannedUnits (기획 §5-5 · 예외
     expect(document.querySelector(".more-units-coming")).toBeNull();
   });
 
+  // 2026-09-22: E1이 실제로 여기 도달했다(15/15). 이 케이스만 실데이터와 같은 상태이고,
+  // 위의 "열린 데까지의 끝"은 이제 가상의 상태다 — 규칙은 그대로이므로 둘 다 남긴다.
   it("계획 수를 채우면 그때 완주 축하가 뜬다", async () => {
     const user = userEvent.setup();
     renderEn(
@@ -180,7 +194,7 @@ describe("열린 데까지의 끝 — coursePlannedUnits (기획 §5-5 · 예외
  * 고쳐 쓰면 문구 변경이 아니라 계약 변경이 된다).
  */
 describe("완주했지만 다음 코스가 준비중일 때 (상태 3)", () => {
-  /** 계획 15유닛을 다 채운 E1 — 이때는 완주가 맞다. 다만 E2가 아직 준비중이다 */
+  /** 계획 15유닛을 다 채운 E1 — 이때는 완주가 맞다. 다만 E2가 아직 준비중이다. (2026-09-22부터 실제 상태다) */
   const finishedPayload = () =>
     partialEndPayload({
       unitNo: 15,
