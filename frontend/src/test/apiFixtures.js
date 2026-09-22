@@ -83,6 +83,9 @@ export function enCourseDetailFixture(overrides = {}) {
  * GET /api/en/courses/{id}/units/{n} — EnUnitStudyDTO (설계/04 §8-1).
  * **`kanjis` 필드가 없다**(빈 배열이 아니라 부재) — 입문의 `kanjis: []`와 구별되는 지점이다.
  * 문장 필드 이름은 일본어와 같은 `jp`다(계약상 "원문"으로 재정의 — 기술 부채로 남긴 이름).
+ *
+ * `coursePlannedUnits`(2026-09-21 계약 추가, 설계/04 §2-3): 그 코스가 **최종적으로 갖게 될 유닛 수**.
+ * null = 계획값 없음 = 지금 있는 유닛이 전부. 부분 공개 중인 코스만 값을 갖는다(E1 = 15).
  */
 export function enUnitStudyPayload(overrides = {}) {
   return {
@@ -91,6 +94,7 @@ export function enUnitStudyPayload(overrides = {}) {
     unitNo: 1,
     title: "첫 문장 다시 세우기",
     totalUnits: 2,
+    coursePlannedUnits: null,
     prevUnitNo: null,
     nextUnitNo: 2,
     nextCourse: null,

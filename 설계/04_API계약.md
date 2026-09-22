@@ -242,6 +242,7 @@ data: {
 ```
 data: {
   courseId, courseTitle, levelCode, unitNo, title, totalUnits,
+  coursePlannedUnits,               // 계획 유닛 수. null = 지금 있는 유닛이 전부 (§2-3-A)
   prevUnitNo, nextUnitNo,          // 첫/마지막 유닛이면 각각 null
   nextCourse,                       // 마지막 유닛에서만 값, 그 외 null
   grammars: [ {
@@ -269,11 +270,37 @@ data: {
 | `partOfSpeech` | enum 코드 문자열 7종. **한국어 라벨은 서버가 내려주지 않는다** → 프론트 `constants/partOfSpeech.js`가 단일 출처 |
 | `nextCourse` | `{ id, courseNo, levelLabel, title, status }`. 다음 코스가 **준비중이어도 내려주고** 프론트가 `status`로 분기한다 |
 | `review` | `unitNo % 5 == 0`일 때만. 구간은 자기 포함 직전 5유닛(`fromUnitNo = unitNo - 4`). 별도 시드 없이 `unit_grammar` 매핑 + `grammar_point.name`으로 구성(단일 출처) |
+| `coursePlannedUnits` | 그 코스가 **최종적으로 갖게 될 유닛 수**(편집 계획값, `course.planned_unit_count`). `null`이면 계획값 없음 = **지금 있는 유닛이 전부**. `totalUnits`(DB 집계)에서 파생하지 않는다 — 서버가 가진 값을 그대로 싣는다. **null이어도 키는 항상 직렬화한다**(`nextCourse`·`review`와 같은 규칙) |
 
 에러:
 
 - 준비중 코스의 유닛 → **404 + `COURSE_PREPARING`** (없는 유닛의 `NOT_FOUND`와 구분)
 - 없는 코스/유닛 → 404 `NOT_FOUND`
+
+#### 2-3-A. 부분 공개 코스 — "완주"와 "열린 데까지의 끝"은 다른 상태다 (2026-09-21)
+
+`nextUnitNo == null`은 **"이 코스의 마지막 유닛"** 일 뿐 완주가 아니다. 유닛을 앞에서부터 채워 나가는
+코스(E1: 15유닛 계획 중 **10유닛** 공개)에서는 **열린 마지막 유닛**도 `nextUnitNo: null`이라 두 상태가 겹친다.
+겹친 채로 두면 화면이 "🎉 끝까지 봤어요"라고 거짓을 말한다(2026-09-21 영어 콘텐츠 검수 결함 2 — 기획 예외 E-4).
+`coursePlannedUnits`가 그 둘을 가르는 **유일한 근거**다.
+
+```
+moreUnitsComing = coursePlannedUnits != null && totalUnits < coursePlannedUnits
+completedCourse = nextUnitNo == null && !moreUnitsComing
+```
+
+- **언어와 무관한 일반 규칙이다.** 영어 전용 분기로 두지 않는다 — 일본어 코스도 부분 공개할 수 있고,
+  그때 같은 결함을 두 번 고치지 않기 위해서다. 일본어 코스는 전부 `coursePlannedUnits: null`이라 동작이 한 줄도 바뀌지 않는다.
+- **`notice`를 신호로 쓰지 않는다.** 일본어 N5(코스 2)는 20유닛이 다 차 있는데도 카드 안내 문구를 갖고 있다 —
+  "notice가 있으면 부분 공개"는 곧바로 거짓이 된다. `notice`는 **사람이 쓴 문구**이고 `planned_unit_count`는 **상태**다(설계/08 C-29).
+- **계획 수를 채우면 자동으로 완주가 된다**(`totalUnits >= coursePlannedUnits`). 사람이 플래그를 내리는 것을
+  잊어 유닛 15에서 결함이 재발하는 경로를 만들지 않는다. (코스 상세의 `notice` 문구를 지우는 것은 여전히 사람 일이다 — AC-16)
+- 프론트는 **유닛 학습 응답 하나로** 판단한다(호출 한 번 계약, 08 B-7). 코스 상세를 추가로 부르지 않는다.
+- 고정 테스트: `frontend/src/pages/UnitStudyPage.partialCourse.test.jsx`(화면) ·
+  `EnglishCourseApiIntegrationTest`(영어 응답의 값 15 · 중간 유닛도 같은 값) ·
+  `CourseApiIntegrationTest.unit_study_last_unit_has_no_next_unit`(일본어는 **키가 있고 값만 null**).
+  마지막 것이 값이 아니라 **키의 존재**를 보는 이유: 필드가 통째로 빠져도 프론트 판정은 false가 되어 지금과 똑같이
+  동작하므로, 일본어를 부분 공개하는 날 **조용히** 거짓 완주 안내로 되돌아간다.
 
 ---
 
@@ -748,6 +775,7 @@ units:   [ { unitNo, title, grammarCount, expressionCount, vocabCount } ]
 // 유닛 학습
 data: {
   courseId, courseTitle, levelCode, unitNo, title, totalUnits,
+  coursePlannedUnits,                      // §2-3-A — E1은 15, 나머지는 null
   prevUnitNo, nextUnitNo, nextCourse,
   grammars: [ ... ],                       // 일본어와 같은 GrammarDTO
   dialog:   { id, title, lines: [ ... ] }, // 일본어와 같은 DialogDTO
@@ -765,6 +793,11 @@ data: {
 - `partOfSpeech`는 **영어 7종**(`NOUN`·`VERB`·`ADJECTIVE`·`ADVERB`·`PREPOSITION`·`CONJUNCTION`·`PHRASE`)이다.
   일본어 7종과 코드 집합이 다르다 — 허용 밖 값은 400.
 - 준비중 코스(E2~E5)는 일본어와 같다: 상세 200(빈 units), 유닛 404 `COURSE_PREPARING`.
+- `coursePlannedUnits`는 **일본어와 완전히 같은 필드·같은 규칙**이다(§2-3-A). E1은 15유닛 계획 중 10유닛이 열려 있어
+  **지금은 유닛 10**이 "열린 데까지의 끝"이고(유닛 5는 이제 `nextUnitNo: 6`이다), 15유닛이 다 차면 그때 완주가 된다.
+  그 자리는 공개 범위를 넓힐 때마다 옮겨 다니므로 **유닛 번호를 계약에 박지 않는다** — 판정식은 언제나
+  `totalUnits < coursePlannedUnits`다. 고정 테스트도 같은 방식이다
+  (`EnglishCourseApiIntegrationTest.the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course`).
 
 ### 8-2. 영어 자료실
 

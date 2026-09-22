@@ -45,13 +45,14 @@ export function GrammarBody({ grammar, caption, titleRight, latin = false }) {
               {grammar.rules.map((rule, i) => (
                 <tr key={i}>
                   <td className="g">{rule.groupLabel}</td>
-                  <td className="p jp">{rule.pattern}</td>
+                  {/* 자형은 고정값 "jp"로 적지 않는다 — 영어 문법도 규칙표를 갖는다(설계/05 §16-4) */}
+                  <td className={`p ${latin ? "latin" : "jp"}`}>{rule.pattern}</td>
                   <td className="e">
-                    <span className="jp">{rule.exampleBefore}</span>
+                    <span className={latin ? "latin" : "jp"}>{rule.exampleBefore}</span>
                     <span aria-hidden="true" className="arrow">
                       {" → "}
                     </span>
-                    <span className="jp">{rule.exampleAfter}</span>
+                    <span className={latin ? "latin" : "jp"}>{rule.exampleAfter}</span>
                   </td>
                 </tr>
               ))}

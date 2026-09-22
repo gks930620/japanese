@@ -1,8 +1,11 @@
 package com.test.test.integration;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
@@ -25,6 +28,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
 
     private static final long EN_COURSE_1 = 101L; // 영어 대역(설계/03 §5-2 시드 대역)
+
+    /**
+     * E1의 <b>계획</b> 유닛 수 — 시드 {@code data-course-en-content.sql}의 course 101 행({@code planned_unit_count = 15}).
+     *
+     * <p>{@link CourseCatalog#ENGLISH}에 두지 않은 이유: 그 표가 들고 있는 것은 <b>시드가 만든 콘텐츠 사실</b>
+     * (지금 열린 유닛 수·집계)이고, 계획 수는 <b>아직 만들지 않은 것에 대한 편집 계획</b>이라 성질이 다르다.
+     * 한 줄에 섞으면 {@code unitCount}를 순회 범위로 쓰는 전수 검증이 <b>없는 유닛까지 돌아 전부 404</b>가 되는 길이 열린다.
+     *
+     * <p>E1은 15에서 끝난다(기획 §3-3 · 설계/06 §11-12 ① — 공개 경계는 5의 배수). 열린 수가 15에 닿는 날
+     * {@code totalUnits >= coursePlannedUnits}가 되어 <b>사람이 플래그를 내리지 않아도</b> 완주가 된다(설계/04 §2-3-A).
+     */
+    private static final int E1_PLANNED_UNITS = 15;
 
     @Test
     void english_courses_are_public_and_five() throws Exception {
@@ -176,6 +191,70 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.status").value("PREPARING"))
                 .andExpect(jsonPath("$.data.units", hasSize(0)))
                 .andExpect(jsonPath("$.data.summary.unitCount").value(0));
+    }
+
+    // ── 부분 공개 코스 — coursePlannedUnits (설계/04 §2-3-A · 08 C-29) ──────────
+    //
+    // "다음 유닛이 없다"와 "이 코스를 끝냈다"는 다른 상태다. E1은 15유닛 계획 중 10유닛만 열려 있어
+    // 열린 마지막 유닛도 nextUnitNo: null이고, 그것을 완주로 읽어 "🎉 끝까지 봤어요"라는 거짓 안내가 나갔다
+    // (2026-09-21 검수 결함 2 · 기획 예외 E-4). 서버가 두 상태를 가를 값을 내려주지 않으면 화면은 지어낼 수밖에 없다.
+    //
+    //   moreUnitsComing = coursePlannedUnits != null && totalUnits < coursePlannedUnits
+    //   completedCourse = nextUnitNo == null && !moreUnitsComing
+    //
+    // 프론트는 유닛 응답 하나로 판정한다(호출 한 번 계약, 08 B-7) — 코스 상세를 따로 부르지 않는다.
+
+    /**
+     * 열린 마지막 유닛(지금은 10)은 <b>완주가 아니다</b> — 계획 수가 응답에 실려 그 둘을 가른다.
+     *
+     * <p>유닛 번호를 박지 않고 {@code CourseCatalog.ENGLISH}의 {@code unitCount}로 부르는 이유: 그 자리는
+     * 콘텐츠가 자랄 때마다 옮겨 다닌다(유닛 2 → 5 → 10). 숫자를 박으면 증설 때마다 <b>이 테스트가 먼저 거짓</b>이 된다.
+     *
+     * <p>세 가지를 함께 본다. ① 키가 실린다 ② 값이 15다 ③ {@code totalUnits}와 <b>다르다</b> —
+     * ③이 없으면 서버가 계획 수를 DB 집계에서 파생해도(= 언제나 완주) 테스트가 통과한다.
+     */
+    @Test
+    void the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course() throws Exception {
+        CourseCatalog.Course english1 = CourseCatalog.englishById(EN_COURSE_1);
+
+        MvcResult result = mockMvc
+                .perform(get("/api/en/courses/{courseId}/units/{unitNo}", EN_COURSE_1, english1.unitCount))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.unitNo").value(english1.unitCount))
+                .andExpect(jsonPath("$.data.totalUnits").value(english1.unitCount))
+                .andExpect(jsonPath("$.data.nextUnitNo").value(nullValue())) // 열린 데까지의 끝
+                .andReturn();
+
+        JsonNode data = objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
+        assertThat(data.has("coursePlannedUnits"))
+                .as("coursePlannedUnits 키가 응답에 없다(설계/04 §8 · §2-3-A) — 값 없음(null)과 필드 없음을 "
+                        + "구분하지 않아도 되는 것이 계약이라, 필드가 빠지면 화면은 조용히 '완주'로 되돌아간다")
+                .isTrue();
+        assertThat(data.path("coursePlannedUnits").asInt())
+                .as("E1의 계획 유닛 수는 %s다(시드 course.planned_unit_count) — 서버가 가진 값을 그대로 싣는다",
+                        E1_PLANNED_UNITS)
+                .isEqualTo(E1_PLANNED_UNITS);
+        assertThat(data.path("totalUnits").asInt())
+                .as("열린 유닛(%s)이 계획(%s)에 못 미쳐야 '열린 데까지의 끝'이다 — 계획 수를 totalUnits에서 "
+                                + "파생하면 두 값이 언제나 같아져 이 상태가 영영 만들어지지 않는다",
+                        data.path("totalUnits").asInt(), E1_PLANNED_UNITS)
+                .isLessThan(E1_PLANNED_UNITS);
+    }
+
+    /**
+     * 계획 수는 <b>마지막 유닛에서만 실리는 값이 아니다</b> — 중간 유닛도 같은 값을 갖는다.
+     * ({@code nextCourse}·{@code review}처럼 특정 유닛에서만 값이 생기는 필드와 다르다.)
+     *
+     * <p>동시에 이 테스트는 <b>10유닛 증설을 고정</b>한다: 유닛 5는 이제 마지막이 아니라 {@code nextUnitNo: 6}이다.
+     * 유닛 5가 다시 끝으로 보이면 유닛 6~10이 응답에서 사라졌다는 뜻이다.
+     */
+    @Test
+    void a_mid_course_english_unit_carries_the_same_planned_unit_count() throws Exception {
+        mockMvc.perform(get("/api/en/courses/{courseId}/units/{unitNo}", EN_COURSE_1, 5))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.prevUnitNo").value(4))
+                .andExpect(jsonPath("$.data.nextUnitNo").value(6))
+                .andExpect(jsonPath("$.data.coursePlannedUnits").value(E1_PLANNED_UNITS));
     }
 
     /** 준비중 코스의 유닛 주소 직접 접근 → 404 + 전용 코드로 "없음"과 구분한다(B-4) */

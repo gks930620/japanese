@@ -2979,7 +2979,9 @@ a.course-card:hover {
 .jp-sentence.latin .mean-line,
 .vocab-table.latin .w,
 .vocab-ref-table.latin .w,
-.vocab-ref-table.latin .r {
+.vocab-ref-table.latin .r,
+/* 화자 배지 — 이름의 첫 글자 한 자만 찍히는 자리라 자형이 티 나게 튄다(§16-4) */
+.speaker-badge.latin {
   font-family: inherit;
 }
 

@@ -117,9 +117,11 @@ function DialogStep({ dialog, onEdited, latin = false }) {
           const speakerIndex = Math.min(speakers.indexOf(line.speaker), 2);
           return (
             <div key={i} className={`dialog-line${playingLine === i ? " playing" : ""}`}>
-              {/* 같은 화자 연속이면 배지 생략(들여쓰기 유지) — 설계/05 §8 */}
+              {/* 같은 화자 연속이면 배지 생략(들여쓰기 유지) — 설계/05 §8.
+                  배지에 CSS가 --font-jp를 직접 박아 두어 영어 화자 이름(Mina·Ben)의 첫 글자까지
+                  일본어 자형으로 찍힌다 → latin으로 되돌린다(설계/05 §16-4) */}
               <span
-                className={`speaker-badge sp-${speakerIndex}${sameAsPrev ? " hide" : ""}`}
+                className={`speaker-badge sp-${speakerIndex}${latin ? " latin" : ""}${sameAsPrev ? " hide" : ""}`}
                 title={sameAsPrev ? undefined : line.speaker}
               >
                 {sameAsPrev ? "" : Array.from(line.speaker)[0]}
@@ -307,9 +309,27 @@ function VocabStep({ vocabularies, bookmark, onEdited, latin = false }) {
   );
 }
 
-/** 정리 스텝 — 요약 → 복습 → 완료 토글 → 완주 축하 → (비로그인) 로그인 유도 (설계/05 §8) */
+/**
+ * 부분 공개 코스 판정 (설계/04 §2-3-A · 08 C-29) — **"다음이 없다"는 "끝냈다"가 아니다.**
+ * 유닛을 앞에서부터 채워 나가는 코스는 열린 마지막 유닛도 `nextUnitNo: null`이라 두 상태가 겹친다.
+ * 가르는 유일한 근거는 응답의 `coursePlannedUnits`다 — 화면이 지어내지 않는다.
+ * 언어와 무관한 일반 규칙이다(일본어 코스도 부분 공개할 수 있다).
+ * `coursePlannedUnits`가 null이면 계획값 없음 = 지금 있는 유닛이 전부 → 동작이 한 줄도 바뀌지 않는다.
+ */
+function isMoreUnitsComing(data) {
+  return data.coursePlannedUnits != null && data.totalUnits < data.coursePlannedUnits;
+}
+
+/** 지금 열린 데까지의 끝 — 완주 축하가 서던 자리에 중립 안내가 선다(설계/05 §8 "끝은 두 종류다") */
+function isOpenEnd(data) {
+  return data.nextUnitNo == null && isMoreUnitsComing(data);
+}
+
+/** 정리 스텝 — 요약 → 복습 → 완료 토글 → 완주 축하 / 열린 끝 안내 → (비로그인) 로그인 유도 (설계/05 §8) */
 function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHint, onDismissHint, latin = false, loginFrom = "/" }) {
-  const completedCourse = data.nextUnitNo == null; // 마지막 유닛 → 코스 완료 분기 (인수 18)
+  // 마지막 유닛 → 코스 완료 분기 (인수 18). 단, 계획 유닛이 아직 다 열리지 않았으면 완주가 아니다(§2-3-A)
+  const completedCourse = data.nextUnitNo == null && !isMoreUnitsComing(data);
+  const openEnd = isOpenEnd(data); // 둘은 동시에 뜨지 않는다
   const nextCourse = data.nextCourse ?? null;
 
   return (
@@ -359,7 +379,7 @@ function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHin
           </div>
           <div className="k-flex chip-row">
             {data.review.grammarNames.map((name, i) => (
-              <span key={i} className="k-chip chip-static jp">
+              <span key={i} className={`k-chip chip-static ${latin ? "latin" : "jp"}`}>
                 {name}
               </span>
             ))}
@@ -390,8 +410,23 @@ function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHin
           {/* 영어는 레벨 괄호 없이 코스명만 — 코스명이 곧 단계 이름이다(§3-4) */}
           {nextCourse?.status === "AVAILABLE" &&
             `다음 코스 ${withJosa(courseLabelOf(nextCourse, latin), "로/으로")} 바로 이어갈 수 있어요.`}
+          {/* 앞 문장은 글자 그대로 유지한다 — EnUnitStudy·UnitStudyPage 테스트가 정규식으로 고정한다.
+              실망("아직 없어요")이 아니라 **지금 할 수 있는 것**을 주는 것이 규칙이라(05 §12) 한 문장만 덧붙인다. */}
           {nextCourse?.status === "PREPARING" &&
-            `다음 코스 ${withJosa(courseLabelOf(nextCourse, latin), "은/는")} 지금 준비하고 있어요.`}
+            `다음 코스 ${withJosa(courseLabelOf(nextCourse, latin), "은/는")} 지금 준비하고 있어요. ` +
+              "그동안은 자료실에서 지금까지 배운 것을 다시 볼 수 있어요."}
+        </Alert>
+      )}
+
+      {/* 열린 데까지의 끝 — 축하가 서던 자리에 중립 톤으로 선다(tone 없음). 코스 상세의 notice와 같은 말이어야 한다 */}
+      {openEnd && (
+        // 코스 상세의 notice와 **같은 동사·같은 시제**("채우는 중이에요")를 일부러 재사용한다.
+        // 이 결함의 본체가 "두 화면이 다른 말을 한다"였으므로, 새 문구를 지어내면 모순이 형태만 바꿔 살아남는다.
+        // "배운 것"이라고만 쓰는 이유: 이 계약은 언어 중립이라 같은 문장이 일본어 코스에도 쓰인다 —
+        // "표현과 어휘"라고 쓰면 일본어(한자·문법)에서 거짓이 된다. (기획 §5-5 · 06 §11-12 ④)
+        <Alert className="more-units-coming">
+          여기까지가 지금 열려 있는 마지막 유닛이에요. 다음 유닛은 앞 유닛부터 순서대로 채우는 중이에요 — 그동안은
+          자료실에서 지금까지 배운 것을 다시 볼 수 있어요.
         </Alert>
       )}
 
@@ -426,6 +461,17 @@ function AdvanceLink({ data, className, pathBase = "/courses", latin = false }) 
     return (
       <Link className={className} to={`${pathBase}/${data.courseId}/units/${data.nextUnitNo}`}>
         다음 유닛 ›
+      </Link>
+    );
+  }
+  // 열린 데까지의 끝이면 **다음 코스보다 먼저** 판정한다 — 부분 공개 코스에서 다음 코스로 내보내면
+  // "이 코스는 끝났다"고 말하는 것과 같다. 참인 행선지는 그 코스의 유닛 목록뿐이다(설계/05 §8)
+  if (isOpenEnd(data)) {
+    return (
+      // 열린 끝에서 유일하게 참인 행선지는 **그 코스 안**이다 — 다음 코스로 내보내면 이 코스가
+      // 끝났다고 말하는 셈이라 위 안내와 어긋난다(기획 §5-5).
+      <Link className={className} to={`${pathBase}/${data.courseId}`}>
+        유닛 목록으로 ›
       </Link>
     );
   }

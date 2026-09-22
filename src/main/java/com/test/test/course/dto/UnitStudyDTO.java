@@ -31,6 +31,16 @@ public class UnitStudyDTO {
     private Integer unitNo;
     private String title;
     private Integer totalUnits;
+    /**
+     * 계획 유닛 수(§2-3-A) — {@code course.planned_unit_count}를 <b>그대로</b> 싣는다.
+     * {@code null}이면 계획값 없음 = 지금 있는 유닛이 전부(일본어 코스는 전부 여기).
+     *
+     * <p>★ {@code totalUnits}에서 파생하지 않고, {@code null}이어도 <b>키는 항상 직렬화한다</b>
+     * ({@code @JsonInclude(NON_NULL)} 금지 — nextCourse·review와 같은 규칙). 필드가 통째로 빠지면
+     * 화면 판정({@code coursePlannedUnits != null && totalUnits < coursePlannedUnits})이 조용히 false가 되어
+     * 부분 공개 코스에서 "완주" 거짓 안내로 되돌아간다.
+     */
+    private Integer coursePlannedUnits;
     private Integer prevUnitNo;
     private Integer nextUnitNo;
     private NextCourseDTO nextCourse;
@@ -52,6 +62,7 @@ public class UnitStudyDTO {
                 .unitNo(unitNo)
                 .title(unit.getTitle())
                 .totalUnits(totalUnits)
+                .coursePlannedUnits(course.getPlannedUnitCount())
                 .prevUnitNo(unitNo > 1 ? unitNo - 1 : null)
                 .nextUnitNo(unitNo < totalUnits ? unitNo + 1 : null)
                 .nextCourse(nextCourse)

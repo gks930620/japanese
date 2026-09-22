@@ -40,6 +40,15 @@ public class EnUnitStudyDTO {
     private Integer unitNo;
     private String title;
     private Integer totalUnits;
+    /**
+     * 계획 유닛 수(설계/04 §2-3-A) — <b>일본어와 완전히 같은 필드·같은 규칙</b>이다(언어 전용 분기가 아니다).
+     * E1은 15유닛 계획 중 열린 만큼만 {@code totalUnits}에 잡히므로 열린 마지막 유닛은 <b>완주가 아니다</b>.
+     *
+     * <p>★ {@code totalUnits}에서 파생하지 않고, {@code null}이어도 키는 항상 직렬화한다
+     * ({@code @JsonInclude(NON_NULL)} 금지). 계획 수가 다 차면 {@code totalUnits >= coursePlannedUnits}가 되어
+     * 사람이 플래그를 내리지 않아도 자동으로 완주가 된다(08 C-29).
+     */
+    private Integer coursePlannedUnits;
     private Integer prevUnitNo;
     private Integer nextUnitNo;
     private NextCourseDTO nextCourse;
@@ -61,6 +70,7 @@ public class EnUnitStudyDTO {
                 .unitNo(unitNo)
                 .title(unit.getTitle())
                 .totalUnits(totalUnits)
+                .coursePlannedUnits(course.getPlannedUnitCount())
                 .prevUnitNo(unitNo > 1 ? unitNo - 1 : null)
                 .nextUnitNo(unitNo < totalUnits ? unitNo + 1 : null)
                 .nextCourse(nextCourse)

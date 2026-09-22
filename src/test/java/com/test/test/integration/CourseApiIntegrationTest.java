@@ -231,15 +231,35 @@ class CourseApiIntegrationTest extends ApiIntegrationTestSupport {
         }
     }
 
+    /**
+     * 마지막 유닛(20): {@code nextUnitNo=null} → 프론트 "코스 완료" 분기 (인수 18).
+     *
+     * <p><b>2026-09-21 보강</b> — {@code coursePlannedUnits}(설계/04 §2-3-A)는 일본어에서도 <b>키가 있고 값만 null</b>이다.
+     * 값이 아니라 <b>키의 존재</b>를 고정하는 이유: 필드가 통째로 빠져도 프론트의 판정
+     * ({@code coursePlannedUnits != null && totalUnits < coursePlannedUnits})은 false가 되어 <b>지금과 똑같이 동작한다</b> —
+     * 즉 빠진 것을 화면이 알려주지 않는다. 나중에 일본어 코스를 부분 공개해 값을 넣는 날
+     * 직렬화에서 빠지는 구조라면 <b>조용히 옛 동작(거짓 완주 안내)으로 되돌아간다.</b>
+     * kana·nextCourse·review와 같은 규칙이다(04 §1-3 "필드 없음과 값 null을 구분하지 않아도 된다").
+     */
     @Test
     void unit_study_last_unit_has_no_next_unit() throws Exception {
-        // 마지막 유닛(20): nextUnitNo=null → 프론트 "코스 완료" 분기 (인수 18)
-        mockMvc.perform(get("/api/courses/{courseId}/units/{unitNo}", N5_COURSE_ID, 20))
+        MvcResult result = mockMvc.perform(get("/api/courses/{courseId}/units/{unitNo}", N5_COURSE_ID, 20))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.unitNo").value(20))
                 .andExpect(jsonPath("$.data.title").value("N5 총정리"))
                 .andExpect(jsonPath("$.data.prevUnitNo").value(19))
-                .andExpect(jsonPath("$.data.nextUnitNo").value(nullValue()));
+                .andExpect(jsonPath("$.data.nextUnitNo").value(nullValue()))
+                .andReturn();
+
+        JsonNode data = objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
+        assertThat(data.has("coursePlannedUnits"))
+                .as("coursePlannedUnits는 계획값이 없어도 키가 실려야 한다(설계/04 §2-3-A). "
+                        + "지금 빠져 있으면 일본어를 부분 공개하는 날 이 결함이 조용히 재발한다")
+                .isTrue();
+        assertThat(data.path("coursePlannedUnits").isNull())
+                .as("일본어 코스는 계획값이 없다 — totalUnits(%s)에서 파생하면 여기에 값이 생긴다",
+                        data.path("totalUnits").asInt())
+                .isTrue();
     }
 
     @Test
