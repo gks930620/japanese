@@ -45,7 +45,7 @@ export function CoursesPage() {
       {/* 상단 안내 띠는 한 번에 하나 (설계/05 §8 + 학습도구 판정 B — 진단 배너 병합) */}
       {!loading && !error && !hasProgress && entryLabel && (
         <Alert className="row-alert courses-start-notice">
-          <span>✎ 처음이면 {entryLabel}부터 시작하세요 — 내 실력이 애매하다면 3분만에 확인해 보세요</span>
+          <span>✎ 처음이면 {entryLabel}부터 시작하세요 — 배운 적 있다면 아는 레벨로 바로 확인해 보세요</span>
           <span className="k-flex notice-actions">
             <Link className={btnClass({ variant: "secondary", size: "sm" })} to="/diagnosis">
               내 시작점 찾기
@@ -55,7 +55,7 @@ export function CoursesPage() {
       )}
       {!loading && !error && hasProgress && hasHighlight && (
         <Alert className="row-alert courses-start-notice">
-          <span>어디서 시작할지 고민되나요? 3분이면 알 수 있어요</span>
+          <span>지금 코스가 너무 쉽거나 어렵나요? 내 레벨을 다시 확인해 보세요</span>
           <span className="k-flex notice-actions">
             <Link className={btnClass({ variant: "secondary", size: "sm" })} to="/diagnosis">
               내 시작점 찾기

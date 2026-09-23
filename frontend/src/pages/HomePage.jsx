@@ -100,7 +100,7 @@ export function HomePage() {
 
       {/* 진단 배너 (화면정의서 판정 B) — 히어로 바로 아래, 항상 노출 */}
       <Alert className="row-alert">
-        <span>어디서 시작할지 모르겠나요? 3분이면 알 수 있어요</span>
+        <span>어디서 시작할지 모르겠어도, 이미 아는 레벨이 있어도 — 레벨을 골라 확인해 보세요</span>
         <span className="k-flex notice-actions">
           <Link className={btnClass({ variant: "secondary", size: "sm" })} to="/diagnosis">
             내 시작점 찾기

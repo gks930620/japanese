@@ -120,7 +120,7 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 (9311, 'terrible', NULL, '형편없는 · 끔찍한', 'ADJECTIVE', '/ˈterəbl/', '테러블'),
 (9312, 'last', NULL, '지난 · 바로 전의', 'ADJECTIVE', '/læst/', '라스트'),
 (9313, 'yesterday', NULL, '어제', 'ADVERB', '/ˈjestərdeɪ/', '예스터데이'),
-(9314, 'tonight', NULL, '오늘 밤에', 'ADVERB', '/təˈnaɪt/', '터나이트'),
+(9314, 'sore', NULL, '(근육이) 뻐근한', 'ADJECTIVE', '/sɔːr/', '소-'),
 (9315, 'ago', NULL, '~ 전에', 'ADVERB', '/əˈɡoʊ/', '어고우');
 
 
@@ -150,10 +150,10 @@ INSERT INTO dialog (id, title) VALUES
 (9102, '자리를 비운 사이에 있었던 일');
 
 INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
-(9220, 9102, 1, 'Mina', 'You missed a lot yesterday, Ben.', NULL, '벤, 어제 일이 많았어요.'),
+(9220, 9102, 1, 'Mina', 'You missed a lot yesterday, Ben.', NULL, '벤, 어제 많은 걸 놓쳤어요.'),
 (9221, 9102, 2, 'Ben', 'Really? What happened?', NULL, '정말요? 무슨 일 있었어요?'),
 (9222, 9102, 3, 'Mina', 'Guess what? The new manager came in the morning and said hello to everyone.', NULL, '있잖아요, 새 팀장님이 아침에 오셔서 모두에게 인사했어요.'),
-(9223, 9102, 4, 'Ben', 'Oh no. And I took the day off.', NULL, '이런. 하필 저는 휴가였네요.'),
+(9223, 9102, 4, 'Ben', 'Oh no. And I took the day off.', NULL, '이런. 하필 저는 그날 휴가를 냈어요.'),
 (9224, 9102, 5, 'Mina', 'He left a note on your desk. I put it in your drawer.', NULL, '그분이 당신 책상에 쪽지를 남기셨어요. 제가 서랍에 넣어 뒀어요.'),
 (9225, 9102, 6, 'Ben', 'Thanks. I read the team message this morning, and it said nothing about him.', NULL, '고마워요. 오늘 아침에 팀 메시지를 읽었는데 그분 이야기는 없었어요.');
 
@@ -201,7 +201,7 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 -- ═══════════════════════════════════════════════════════════════════
 INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
 (9110, 'Did you ~?', '과거는 앞에서 한 번만 말한다', '학교에서는 "과거 의문문은 did를 쓴다"로 외웠습니다. 실제로는 E1에서 본 does와 똑같은 일이 벌어집니다 — did가 과거를 통째로 가져가므로 뒤의 동사는 원래 모양으로 돌아갑니다: Did you went?이 아니라 Did you go? 한 문장에 과거 표시는 한 번뿐입니다. 유닛 2에서 힘들게 외운 went를 여기서는 쓸 일이 없다는 뜻이기도 합니다. 주어가 he·she여도 does 같은 짝 없이 did 하나입니다.'),
-(9111, 'didn''t', '과거 표시가 didn''t로 옮겨 간다', '학교에서는 부정문 만드는 법을 문장 종류마다 따로 외웠습니다. 실제로 I didn''t went이 안 되는 이유는 바로 앞 항목과 같습니다 — didn''t가 이미 과거를 가져갔으므로 뒤는 원형입니다: I didn''t go. 그리고 현재형에서 don''t와 doesn''t로 갈리던 것이 과거에는 didn''t 하나뿐입니다. 주어가 he·she·it이어도 갈리지 않습니다. 여기서도 고를 일이 줄어듭니다.'),
+(9111, 'didn''t', '현재형에서 둘로 갈리던 것이 하나로 합쳐진다', '학교에서는 부정문 만드는 법을 문장 종류마다 따로 외웠습니다. 실제로 I didn''t went이 안 되는 이유는 바로 앞 항목과 같습니다 — didn''t가 이미 과거를 가져갔으므로 뒤는 원형입니다: I didn''t go. 그리고 현재형에서 don''t와 doesn''t로 갈리던 것이 과거에는 didn''t 하나뿐입니다. 주어가 he·she·it이어도 갈리지 않습니다. 여기서도 고를 일이 줄어듭니다.'),
 (9112, 'be동사 과거의 의문·부정 (Were you ~? / wasn''t)', '갈림은 여전히 be동사인가 아닌가다', '학교에서는 was·were의 의문문과 부정문을 또 다른 규칙으로 따로 배웠습니다. 실제로는 E1에서 세운 것이 그대로 옵니다 — be동사는 혼자 앞으로 나가고, 부정은 뒤에 not만 붙입니다: Were you at the meeting? / I wasn''t there. Did you were busy? 같은 문장은 없습니다. 갈리는 지점은 시제가 아니라 be동사인가 아닌가 하나뿐이고, 그 하나는 현재에서 과거로 와도 바뀌지 않습니다.');
 
 INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
@@ -233,7 +233,7 @@ INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
 (9423, 'get back to', '~에게 다시 연락하다', '지금 답을 못 주고 나중에 답을 준다는 뜻이라 뒤에는 사람이 옵니다. 되돌아간다는 뜻의 go back과 달리 답장·회신 쪽입니다.', '/ɡet bæk tuː/', '겟 백 투-'),
 (9424, 'leave a message', '메시지를 남기다', '상대가 전화를 받지 않았을 때 남기는 말입니다. leave가 "떠나다"가 아니라 "남기다"로 쓰이는 대표 자리이고, 과거는 left a message입니다.', '/liːv ə ˈmesɪdʒ/', '리-브 어 메시지'),
 (9425, 'wrong number', '전화를 잘못 걸었음', 'You have the wrong number.처럼 씁니다. 번호가 어긋났다는 말이지 상대를 탓하는 말이 아니라서 사과할 일도 아닙니다.', '/rɔːŋ ˈnʌmbər/', '롱- 넘버'),
-(9426, 'at the last minute', '막판에', '일이 벌어지기 바로 직전을 말합니다. 실제로 1분이 아니라 "너무 늦게"라는 느낌이 핵심이고, 대개 예정이 바뀐 상황에 씁니다.', '/æt ðə læst ˈmɪnɪt/', '앳 더 라스트 미니트');
+(9426, 'mix up', '헷갈리다 · 잘못 알다', '두 가지를 서로 바꿔 알았다는 뜻이라 뒤에는 헷갈린 대상이 옵니다 — 시간·날짜·이름처럼 짝이 있는 것에 씁니다. 목적어가 it이면 mix it up처럼 사이에 넣고, 과거는 mixed up입니다.', '/mɪks ʌp/', '믹스 업');
 
 INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
 (9420, 9420, 1, 'My bad — I wrote the wrong date.', '제 잘못이에요, 날짜를 잘못 적었어요.'),
@@ -242,7 +242,7 @@ INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) V
 (9423, 9423, 1, 'He got back to me an hour later.', '그가 한 시간 뒤에 다시 연락해 줬어요.'),
 (9424, 9424, 1, 'I left a message at the front desk.', '안내데스크에 메시지를 남겼어요.'),
 (9425, 9425, 1, 'Sorry, I had the wrong number.', '죄송해요, 번호를 잘못 알았어요.'),
-(9426, 9426, 1, 'She canceled at the last minute.', '그녀가 막판에 취소했어요.');
+(9426, 9426, 1, 'I mixed up the time and missed your call.', '시간을 헷갈려서 전화를 못 받았어요.');
 
 INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
 (9340, 'voicemail', NULL, '음성 메시지', 'NOUN', '/ˈvɔɪsmeɪl/', '보이스메일'),
@@ -269,8 +269,8 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 -- ⚠️ 소감을 말하는 표현 일곱 개 어디에도 비교급을 쓰지 않았다 — better than 류는 E3다(기획 §2-1 · AC-17).
 -- ═══════════════════════════════════════════════════════════════════
 INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
-(9115, '과거의 의문사 의문문 (What / Where / When did you ~?)', 'did 앞에 한 단어를 더 세운다', '학교에서는 의문사마다 예문을 따로 외웠습니다. 실제로는 E1에서 한 조립과 완전히 같습니다 — 이미 만든 Did you go? 앞에 Where 한 단어를 세우면 끝이고 뒤는 하나도 바뀌지 않습니다: Where did you go? 새로 배울 것이 없다는 것이 이 항목의 요지입니다. 뒤의 동사가 원형으로 돌아가는 것도 그대로라 Where did you went?는 없습니다. 유닛 3을 만들 줄 알면 이 유닛의 절반은 이미 끝나 있습니다.'),
-(9116, 'Who가 주어면 did를 세우지 않는다 (Who called?)', '누가 했는지 물을 때', '학교에서는 "과거 의문문에는 did"만 배웠습니다. 그런데 의문사가 주어 자리에 있으면 did가 필요 없습니다 — Who called you?이지 Who did call you?가 아닙니다. 주어 자리를 그대로 물어보는 말이라 순서를 흔들 일이 없기 때문입니다. E1에서 현재형으로 세운 규칙(Who knows Mina?)이 과거에서 그대로 반복됩니다. What happened?도 같은 모양이라 did가 없습니다.'),
+(9115, '과거의 의문사 의문문 (What / Where / When did you ~?)', '앞에 한 단어만 세우고 뒤는 하나도 안 바뀐다', '학교에서는 의문사마다 예문을 따로 외웠습니다. 실제로는 E1에서 한 조립과 완전히 같습니다 — 이미 만든 Did you go? 앞에 Where 한 단어를 세우면 끝이고 뒤는 하나도 바뀌지 않습니다: Where did you go? 새로 배울 것이 없다는 것이 이 항목의 요지입니다. 뒤의 동사가 원형으로 돌아가는 것도 그대로라 Where did you went?는 없습니다. 유닛 3을 만들 줄 알면 이 유닛의 절반은 이미 끝나 있습니다.'),
+(9116, 'Who가 주어면 did를 세우지 않는다 (Who called?)', '묻는 말이 곧 주어면 순서를 흔들 일이 없다', '학교에서는 "과거 의문문에는 did"만 배웠습니다. 그런데 의문사가 주어 자리에 있으면 did가 필요 없습니다 — Who called you?이지 Who did call you?가 아닙니다. 주어 자리를 그대로 물어보는 말이라 순서를 흔들 일이 없기 때문입니다. E1에서 현재형으로 세운 규칙(Who knows Mina?)이 과거에서 그대로 반복됩니다. What happened?도 같은 모양이라 did가 없습니다.'),
 (9117, 'How was it? / What was it like?', '겪은 일의 소감을 묻는 두 마디', '학교에서는 이 둘을 How about ~?과 뒤섞어 배웠습니다. 실제로 다녀온 일의 소감을 묻는 말은 이 둘이 거의 전부입니다 — How was it?은 좋았는지를 묻고, What was it like?는 어떤 느낌이었는지를 묻습니다. 여기서 like는 "~ 같은"을 뜻하는 자리라 Did you like it?의 like(좋아하다)와 아예 다른 말입니다. 대답도 그래서 갈립니다: It was great. / It was like a small village.');
 
 INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
@@ -288,12 +288,12 @@ INSERT INTO dialog (id, title) VALUES
 (9104, '출장 다녀온 동료에게');
 
 INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
-(9260, 9104, 1, 'Mina', 'You were in Osaka last week. How was it?', NULL, '지난주에 오사카에 계셨죠. 어땠어요?'),
+(9260, 9104, 1, 'Mina', 'You were in Osaka last week. How was it?', NULL, '지난주에 오사카에 계셨어요. 어땠어요?'),
 (9261, 9104, 2, 'Ben', 'It was great. The office there was really quiet.', NULL, '좋았어요. 거기 사무실은 정말 조용했어요.'),
 (9262, 9104, 3, 'Mina', 'Who went with you?', NULL, '누가 같이 갔어요?'),
 (9263, 9104, 4, 'Ben', 'Jun did. We took the early flight on Monday.', NULL, '준이요. 월요일 이른 비행기를 탔어요.'),
 (9264, 9104, 5, 'Mina', 'Where did you stay?', NULL, '어디서 묵었어요?'),
-(9265, 9104, 6, 'Ben', 'A small hotel near the station. What was your week like?', NULL, '역 근처 작은 호텔에서요. 그쪽 한 주는 어땠어요?'),
+(9265, 9104, 6, 'Ben', 'A small hotel near the station. What was your week like?', NULL, '역 근처 작은 호텔에서요. 그쪽 한 주는 어떤 느낌이었어요?'),
 (9266, 9104, 7, 'Mina', 'Busy, but not bad.', NULL, '바빴지만 나쁘지 않았어요.');
 
 INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
@@ -342,7 +342,7 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 -- ═══════════════════════════════════════════════════════════════════
 INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
 (9120, 'used to + 동사원형', '지금은 안 그렇다는 말까지 들어 있다', '학교에서는 "used to = ~하곤 했다"로 뜻만 외웠습니다. 실제로 이 말의 핵심은 지금은 아니라는 것입니다 — I used to work near here. 한 마디에 "예전에 그랬고 지금은 아니다"가 다 들어갑니다. 같은 일을 과거형으로만 말하면(I worked near here.) 지금 어떤지는 한 마디도 안 한 것이 됩니다. 뒤는 언제나 원형이라 used to working이 없고(E1의 can 자리와 같습니다), 지금의 습관에는 쓰지 않습니다.'),
-(9121, 'There was / There were', '그때 무엇이 있었는지', '학교에서는 There is의 과거라고 한 줄만 보고 지나갔습니다. 실제로는 E1에서 세운 규칙이 그대로입니다 — 뒤에 오는 명사가 하나면 There was, 여럿이면 There were로 고릅니다: There was a bakery here. / There were two banks on this street. 예전 이야기를 꺼내면 가장 먼저 필요해지는 문형이고, "그 자리에 빵집이 있었다"를 The place had a bakery로 말하지 않는 이유도 그때와 같습니다.'),
+(9121, 'There was / There were', '뒤에 오는 명사의 수가 앞의 모양을 정한다', '학교에서는 There is의 과거라고 한 줄만 보고 지나갔습니다. 실제로는 E1에서 세운 규칙이 그대로입니다 — 뒤에 오는 명사가 하나면 There was, 여럿이면 There were로 고릅니다: There was a bakery here. / There were two banks on this street. 예전 이야기를 꺼내면 가장 먼저 필요해지는 문형이고, "그 자리에 빵집이 있었다"를 The place had a bakery로 말하지 않는 이유도 그때와 같습니다.'),
 (9122, '얼마나 전인지, 얼마나 오래였는지 (ago / for / all day)', '거꾸로 세는 말과 길이를 재는 말', '학교에서는 ago와 before를 같은 칸에 놓고 "~ 전에"로 함께 외웠습니다. 실제로 둘은 재는 것이 다릅니다 — ago는 지금에서 거꾸로 셉니다(two years ago = 지금부터 2년 전). 그래서 언제나 과거형과 함께 오고 숫자 뒤에 붙습니다. for는 얼마나 오래였는지 길이를 잽니다(for two years). 하루를 꽉 채웠다면 all day입니다. 무엇을 재는 말인지만 갈라 두면 셋이 섞이지 않습니다.');
 
 INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
