@@ -5,7 +5,7 @@ import { MergeBanner } from "../components/MergeBanner.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
 import { useUserData } from "../context/userDataStore.js";
 import { entryCourseNo } from "../lib/courses.js";
-import { completedCount, courseBadges } from "../lib/progressView.js";
+import { completedCount, courseBadges, hasProgressIn } from "../lib/progressView.js";
 import { isEntryBadge } from "../lib/badgeView.js";
 import { Alert } from "../components/ui/Alert.jsx";
 import { btnClass } from "../components/ui/kitClass.js";
@@ -18,7 +18,9 @@ export function CoursesPage() {
   const badges = courseBadges(list, progress);
   const entryNo = entryCourseNo(list);
   const hasHighlight = Object.values(badges).some(isEntryBadge);
-  const hasProgress = progress.completedUnits.length > 0 || progress.lastPosition != null;
+  // 띠와 배지가 **같은 재료**(이 화면이 들고 있는 목록)를 본다 — 진도 문서 전체로 판정하면
+  // 영어만 공부한 사람이 일본어 목록에서 "진도 있음" 띠를 본다(작업자(AI)_문서/04 §6-1 · 08 C-33)
+  const hasProgress = hasProgressIn(progress, list);
   // 안내 띠의 코스명은 배지와 **같은 계산**에서 나온다 — 문구에 코스명을 적어 두면
   // 입문이 열려도 "왕초보부터"라고 말하는 자기모순이 생긴다(2026-09 판정 D-4).
   const entryCourse = list.find((course) => course.courseNo === entryNo) ?? null;

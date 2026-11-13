@@ -75,13 +75,17 @@ describe("UnitStudyPage — 자료실 나가는 링크 (작업자(AI)_문서/05 
     expect(link).toHaveAttribute("target", "_blank");
   });
 
-  it("어휘 스텝: 단어 셀이 자료실 검색(q=단어)으로 열린다", async () => {
+  // 2026-11-14 갱신 — 이 자리에 있던 "단어 셀이 자료실 검색(q=단어)으로 열린다"는 **거짓이 됐다**:
+  // 동철이음어를 별개 행으로 가른 뒤(04 §8-2) q로 열면 다른 표제어까지 끌려온다.
+  // 계약은 `04 §6-1`(ids 기반)로 바뀌었고 **링크 자체는 senior-dev의 `UnitStudyPage.entryLink.test.jsx`가 고정**한다.
+  // 여기서는 이 파일이 원래 보던 것(새 탭 · 안내 문구)만 남긴다 — 같은 사실을 두 곳에서 고정하지 않는다(08 C-11).
+  it("어휘 스텝: 단어 셀이 자료실을 새 탭으로 연다", async () => {
     const user = userEvent.setup();
     renderUnit(unitStudyPayload());
     await goToStep(user, "어휘");
 
     const link = screen.getByRole("link", { name: /学生/ });
-    expect(link).toHaveAttribute("href", `/library/vocabulary?q=${encodeURIComponent("学生")}`);
+    expect(link.getAttribute("href")).toMatch(/^\/library\/vocabulary\?ids=\d+$/);
     expect(link).toHaveAttribute("target", "_blank");
     expect(screen.getByText(/단어를 누르면 자료실에서 열려요/)).toBeInTheDocument();
   });

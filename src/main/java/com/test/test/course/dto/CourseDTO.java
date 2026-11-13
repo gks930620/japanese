@@ -32,6 +32,18 @@ public class CourseDTO {
     private String notice;
     private String status;
     private Integer unitCount;
+    /**
+     * 계획 유닛 수(작업자(AI)_문서/04 §2-3-B) — {@code course.planned_unit_count}를 <b>그대로</b> 싣는다.
+     *
+     * <p>{@code unitCount}(열린 수)에서 <b>파생하지 않는다</b>. 파생하면 두 값이 영영 같아져
+     * "완주"와 "열린 데까지의 끝"을 가르는 근거가 사라진다 — 부분 공개 코스(E2)가 5/5 = 100%로 보이고
+     * 코스 카드·홈·마이페이지가 거짓 완주를 말한다(2026-11-14 qa 결함 1·2).
+     *
+     * <p>{@code null}이면 계획값 없음 = 지금 있는 유닛이 전부(일본어 전 코스). <b>null이어도 키는 항상
+     * 직렬화한다</b> — {@code @JsonInclude(NON_NULL)} 금지(§1-3 · {@code coursePlannedUnits}와 같은 규칙).
+     * 키가 통째로 빠지면 "계획 없음"과 구별할 수 없어 같은 결함이 조용히 재발한다.
+     */
+    private Integer plannedUnitCount;
 
     public static CourseDTO from(CourseEntity entity, int unitCount) {
         return CourseDTO.builder()
@@ -45,6 +57,7 @@ public class CourseDTO {
                 .notice(entity.getNotice())
                 .status(entity.getStatus().name())
                 .unitCount(unitCount)
+                .plannedUnitCount(entity.getPlannedUnitCount())
                 .build();
     }
 }

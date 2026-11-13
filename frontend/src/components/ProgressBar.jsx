@@ -9,7 +9,8 @@ import { Bar } from "./ui/Bar.jsx";
  * 킷 `.k-bar`가 표현을 맡고, 도메인 이름(`progress-bar`/`progress-fill`)은 배치용으로 병기한다.
  *
  * @param {number} completed 완료 유닛 수
- * @param {number} total 총 유닛 수(course.unitCount — 하드코딩 금지)
+ * @param {number} total 총 유닛 수 = `courseUnitTotal(course)`(= `plannedUnitCount ?? unitCount` — 하드코딩 금지).
+ *        열린 수를 분모로 쓰면 부분 공개 코스가 5/5 = 100%가 되어 막대가 "완주"를 대신 말한다(작업자(AI)_문서/04 §6-1)
  * @param {string} [suffix] 라벨 꼬리. 코스 카드 "유닛" / 코스 상세 "유닛 완료"
  */
 export function ProgressBar({ completed, total, suffix = "유닛", className = "" }) {

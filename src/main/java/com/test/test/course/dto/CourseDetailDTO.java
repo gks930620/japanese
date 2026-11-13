@@ -29,6 +29,17 @@ public class CourseDetailDTO {
     private String notice;
     private String description;
     private String status;
+    /**
+     * 계획 유닛 수(작업자(AI)_문서/04 §2-2·§2-3-B) — {@code course.planned_unit_count} 그대로.
+     *
+     * <p><b>{@code summary} 안이 아니라 루트다.</b> summary의 네 칸은 전부 "유닛별 집계의 합"(하드코딩 금지 계약)인데
+     * 계획 수는 아직 만들지 않은 것에 대한 편집 계획이라 집계가 아니다. 같은 봉투에 넣으면 언젠가 집계로 채워져
+     * {@code summary.unitCount}와 영영 같아진다.
+     *
+     * <p>{@code null} = 계획값 없음(일본어 전 코스). null이어도 키는 항상 직렬화한다 —
+     * {@code @JsonInclude(NON_NULL)} 금지(§1-3).
+     */
+    private Integer plannedUnitCount;
     private SummaryDTO summary;
     private List<UnitSummaryDTO> units;
 
@@ -44,6 +55,7 @@ public class CourseDetailDTO {
                 .notice(entity.getNotice())
                 .description(entity.getDescription())
                 .status(entity.getStatus().name())
+                .plannedUnitCount(entity.getPlannedUnitCount())
                 .summary(summary)
                 .units(units)
                 .build();

@@ -4,7 +4,13 @@ import { ProgressBar } from "../components/ProgressBar.jsx";
 import { MergeBanner } from "../components/MergeBanner.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
 import { useUserData } from "../context/userDataStore.js";
-import { completedCount, isUnitCompleted, nextUnitNo } from "../lib/progressView.js";
+import {
+  completedCount,
+  courseUnitTotal,
+  isUnitCompleted,
+  moreUnitsComing,
+  nextUnitNo,
+} from "../lib/progressView.js";
 import { Alert } from "../components/ui/Alert.jsx";
 import { btnClass, cardClass } from "../components/ui/kitClass.js";
 
@@ -30,13 +36,29 @@ function LoadingSkeleton() {
 }
 
 /**
- * 주 버튼 3분기 (작업자(AI)_문서/05 §8) — 어떤 분기에서도 primary는 1개다.
+ * 주 버튼 분기 (작업자(AI)_문서/05 §8) — 어떤 분기에서도 primary는 1개다.
  *
  * 코스 상세는 **지도**다. 가리키는 곳은 "안 한 곳"(미완료 최전선)이고 그 말은 **"다음 유닛"**이지
  * "이어서"가 아니다 — "이어서"는 마지막 위치를 뜻하는 홈·마이페이지의 말이다(2026-09 결정 D-2 · 작업자(AI)_문서/01 §7-8).
+ *
+ * **끝은 두 종류다**(작업자(AI)_문서/04 §2-3-B · 08 C-33): 아직 채우는 중인 코스에서 열린 유닛을 다 본 것은
+ * 완주가 아니다 — 완주 축하도, [처음부터 다시 보기]도 내지 않는다. ✎ 안내(notice)와 같은 말을 해야 한다.
+ * ⚠️ 열린 끝의 **문구는 임시다** — planner·designer 확정 대기(고정 테스트는 "완주를 주장하지 않는다"만 본다).
+ *
+ * @param {number} done 완료 유닛 수
+ * @param {number|null} next 미완료 최전선 유닛 번호(없으면 null)
+ * @param {{openUnits:number, moreComing:boolean}} course 열린 유닛 수 · 아직 채우는 중인가(moreUnitsComing)
  */
-function ctaState(done, next) {
+function ctaState(done, next, { openUnits, moreComing }) {
   if (done === 0) return { label: "유닛 1부터 시작하기", unitNo: 1, note: null };
+  if (next == null && moreComing) {
+    const lastOpen = Math.max(1, openUnits ?? 1);
+    return {
+      label: `유닛 ${lastOpen} 다시 보기`,
+      unitNo: lastOpen,
+      note: "✎ 열려 있는 유닛은 여기까지예요",
+    };
+  }
   if (next == null) return { label: "처음부터 다시 보기", unitNo: 1, note: "✓ 이 코스를 완주했어요" };
   return { label: `유닛 ${next} 학습하기`, unitNo: next, note: null };
 }
@@ -106,10 +128,14 @@ export function CourseDetailPage({ lang = "ja" }) {
       .filter(Boolean)
       .join(" · ");
   const done = completedCount(progress.completedUnits, data.id);
+  // ⚠️ 다음 유닛은 **열린 수**로만 찾는다 — 없는 유닛으로 보낼 수 없다(분모만 계획 수다).
   const next = nextUnitNo(progress.completedUnits, data.id, summary.unitCount);
+  // 상세 응답은 유닛 수가 summary 안에 있다(§2-2) — 공용 판정식에는 코스 목록과 **같은 모양**으로 넘긴다
+  const courseCounts = { unitCount: summary.unitCount, plannedUnitCount: data.plannedUnitCount };
+  const moreComing = moreUnitsComing(summary.unitCount, data.plannedUnitCount);
   // 이 코스에서 마지막으로 보던 유닛 — 다른 코스의 마지막 위치는 이 화면에 표시하지 않는다
   const lastSeenUnitNo = progress.lastPosition?.courseId === data.id ? progress.lastPosition.unitNo : null;
-  const cta = ctaState(done, next);
+  const cta = ctaState(done, next, { openUnits: summary.unitCount, moreComing });
 
   return (
     <section>
@@ -150,7 +176,7 @@ export function CourseDetailPage({ lang = "ja" }) {
           className="statusbar-progress"
           completed={done}
           suffix="유닛 완료"
-          total={summary.unitCount}
+          total={courseUnitTotal(courseCounts)}
         />
       </div>
 

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ProgressBar } from "./ProgressBar.jsx";
 import { badgeView, isEntryBadge } from "../lib/badgeView.js";
+import { courseUnitTotal } from "../lib/progressView.js";
 import { Skeleton } from "./ui/Skeleton.jsx";
 import { cardClass } from "./ui/kitClass.js";
 
@@ -62,7 +63,7 @@ export function CourseCard({
       </div>
       {/* 진도 막대 — AVAILABLE + 완료 1개 이상일 때만. PREPARING에는 절대 없다(AC-P-21) */}
       {available && (
-        <ProgressBar className="course-progress" completed={completedCount} total={course.unitCount} />
+        <ProgressBar className="course-progress" completed={completedCount} total={courseUnitTotal(course)} />
       )}
       <div className="course-foot">
         {/* 킷 배지 위에 도메인 톤 클래스를 병기한다 — 코드→클래스 매핑은 lib/badgeView가 쥐고 있다 */}

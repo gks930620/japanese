@@ -28,12 +28,12 @@ export const KANJI_LEVEL_CODES = ["N5", "N4", "N3", "N2", "N1"];
  */
 export function coursesFixture() {
   return [
-    { id: 1, courseNo: 0, levelCode: "INTRO", levelLabel: "문자", title: "입문", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 10 },
-    { id: 2, courseNo: 1, levelCode: "N5", levelLabel: "JLPT N5", title: "왕초보", targetAudience: "", goal: "", notice: "히라가나를 몰라도 시작할 수 있어요", status: "AVAILABLE", unitCount: 20 },
-    { id: 3, courseNo: 2, levelCode: "N4", levelLabel: "JLPT N4", title: "초급", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 20 },
-    { id: 4, courseNo: 3, levelCode: "N3", levelLabel: "JLPT N3", title: "중급", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 25 },
-    { id: 5, courseNo: 4, levelCode: "N2", levelLabel: "JLPT N2", title: "중상급", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 25 },
-    { id: 6, courseNo: 5, levelCode: "N1", levelLabel: "JLPT N1", title: "고급", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 25 },
+    { id: 1, courseNo: 0, levelCode: "INTRO", levelLabel: "문자", title: "입문", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 10, plannedUnitCount: null },
+    { id: 2, courseNo: 1, levelCode: "N5", levelLabel: "JLPT N5", title: "왕초보", targetAudience: "", goal: "", notice: "히라가나를 몰라도 시작할 수 있어요", status: "AVAILABLE", unitCount: 20, plannedUnitCount: null },
+    { id: 3, courseNo: 2, levelCode: "N4", levelLabel: "JLPT N4", title: "초급", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 20, plannedUnitCount: null },
+    { id: 4, courseNo: 3, levelCode: "N3", levelLabel: "JLPT N3", title: "중급", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 25, plannedUnitCount: null },
+    { id: 5, courseNo: 4, levelCode: "N2", levelLabel: "JLPT N2", title: "중상급", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 25, plannedUnitCount: null },
+    { id: 6, courseNo: 5, levelCode: "N1", levelLabel: "JLPT N1", title: "고급", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 25, plannedUnitCount: null },
   ];
 }
 
@@ -44,11 +44,11 @@ export function coursesFixture() {
  */
 export function enCoursesFixture() {
   return [
-    { id: 101, courseNo: 1, levelCode: "E1", levelLabel: "E1", title: "다시 세우기", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 2 },
-    { id: 102, courseNo: 2, levelCode: "E2", levelLabel: "E2", title: "일상 말하기", targetAudience: "", goal: "", notice: null, status: "PREPARING", unitCount: 0 },
-    { id: 103, courseNo: 3, levelCode: "E3", levelLabel: "E3", title: "이어 말하기", targetAudience: "", goal: "", notice: null, status: "PREPARING", unitCount: 0 },
-    { id: 104, courseNo: 4, levelCode: "E4", levelLabel: "E4", title: "뉘앙스", targetAudience: "", goal: "", notice: null, status: "PREPARING", unitCount: 0 },
-    { id: 105, courseNo: 5, levelCode: "E5", levelLabel: "E5", title: "실전과 격식", targetAudience: "", goal: "", notice: null, status: "PREPARING", unitCount: 0 },
+    { id: 101, courseNo: 1, levelCode: "E1", levelLabel: "E1", title: "다시 세우기", targetAudience: "", goal: "", notice: null, status: "AVAILABLE", unitCount: 2, plannedUnitCount: null },
+    { id: 102, courseNo: 2, levelCode: "E2", levelLabel: "E2", title: "일상 말하기", targetAudience: "", goal: "", notice: null, status: "PREPARING", unitCount: 0, plannedUnitCount: null },
+    { id: 103, courseNo: 3, levelCode: "E3", levelLabel: "E3", title: "이어 말하기", targetAudience: "", goal: "", notice: null, status: "PREPARING", unitCount: 0, plannedUnitCount: null },
+    { id: 104, courseNo: 4, levelCode: "E4", levelLabel: "E4", title: "뉘앙스", targetAudience: "", goal: "", notice: null, status: "PREPARING", unitCount: 0, plannedUnitCount: null },
+    { id: 105, courseNo: 5, levelCode: "E5", levelLabel: "E5", title: "실전과 격식", targetAudience: "", goal: "", notice: null, status: "PREPARING", unitCount: 0, plannedUnitCount: null },
   ];
 }
 
@@ -70,6 +70,10 @@ export function enCourseDetailFixture(overrides = {}) {
     notice: "앞 유닛부터 순서대로 채우는 중이에요 — 열려 있는 유닛까지는 지금 그대로 학습하면 됩니다",
     description: "학교에서 배운 조각들을 문장 만드는 규칙으로 다시 세웁니다",
     status: "AVAILABLE",
+    // 계획 유닛 수(작업자(AI)_문서/04 §2-3-B, 2026-11-14 계약 추가). null = 계획값 없음 = 지금 있는 유닛이 전부.
+    // 이 픽스처는 **2유닛짜리 축소본**이라 실제 E1의 15를 적지 않는다 — 적으면 모델하지 않는 상태(부분 공개)를
+    // 모든 사용처에 떠넘기게 된다. 부분 공개를 보는 테스트는 자기 페이로드에서 값을 세운다.
+    plannedUnitCount: null,
     summary: { unitCount: 2, grammarCount: 5, expressionCount: 14, vocabCount: 32 },
     units: [
       { unitNo: 1, title: "첫 문장 다시 세우기", grammarCount: 3, expressionCount: 7, vocabCount: 16 },

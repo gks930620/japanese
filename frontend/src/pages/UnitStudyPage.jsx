@@ -13,7 +13,7 @@ import { InlineAlert } from "../components/InlineAlert.jsx";
 import { ApiErrorCard, CoursePreparingCard, NotFoundCard, PreparingCard } from "../components/StateCards.jsx";
 import { useApiQuery } from "../hooks/useApiQuery.js";
 import { useUserData } from "../context/userDataStore.js";
-import { isUnitCompleted, resolveStepIndex } from "../lib/progressView.js";
+import { isUnitCompleted, moreUnitsComing, resolveStepIndex } from "../lib/progressView.js";
 import { buildUnitQuizSet } from "../lib/quiz.js";
 import { dismissLoginHint, isLoginHintDismissed } from "../lib/guestStore.js";
 import { Alert } from "../components/ui/Alert.jsx";
@@ -247,11 +247,13 @@ function VocabStep({ vocabularies, bookmark, onEdited, latin = false }) {
               return (
                 <tr key={vocab.id}>
                   <td className="w">
-                    {/* 어휘는 상세 화면이 없으므로 검색 상태로 연다 (인수 31) */}
+                    {/* 어휘는 상세 화면이 없으므로 자료실 목록을 **그 표제어 하나로 좁혀** 연다.
+                        검색어(q)로 열면 표기가 같은 다른 표제어까지 끌려온다 — close(/kloʊz/ 닫다)를 눌러도
+                        close(/kloʊs/ 가까운)가 함께 뜬다(작업자(AI)_문서/04 §6-1, qa 결함 4) */}
                     <a
                       aria-label={`${vocab.word} 자료실에서 보기 (새 탭에서 열림)`}
                       className="vocab-word-link"
-                      href={`${latin ? "/en" : ""}/library/vocabulary?q=${encodeURIComponent(vocab.word)}`}
+                      href={`${latin ? "/en" : ""}/library/vocabulary?ids=${entryId}`}
                       rel="noopener noreferrer"
                       target="_blank"
                     >
@@ -310,14 +312,16 @@ function VocabStep({ vocabularies, bookmark, onEdited, latin = false }) {
 }
 
 /**
- * 부분 공개 코스 판정 (작업자(AI)_문서/04 §2-3-A · 08 C-29) — **"다음이 없다"는 "끝냈다"가 아니다.**
+ * 부분 공개 코스 판정 (작업자(AI)_문서/04 §2-3-A·§2-3-B · 08 C-29·C-33) — **"다음이 없다"는 "끝냈다"가 아니다.**
  * 유닛을 앞에서부터 채워 나가는 코스는 열린 마지막 유닛도 `nextUnitNo: null`이라 두 상태가 겹친다.
  * 가르는 유일한 근거는 응답의 `coursePlannedUnits`다 — 화면이 지어내지 않는다.
- * 언어와 무관한 일반 규칙이다(일본어 코스도 부분 공개할 수 있다).
- * `coursePlannedUnits`가 null이면 계획값 없음 = 지금 있는 유닛이 전부 → 동작이 한 줄도 바뀌지 않는다.
+ *
+ * ⚠️ 판정식은 이 화면이 갖지 않는다 — `lib/progressView.js`의 `moreUnitsComing` **한 곳**이다.
+ * 유닛 응답은 (`totalUnits`, `coursePlannedUnits`), 코스 응답은 (`unitCount`, `plannedUnitCount`)로
+ * 이름이 다르고, 두 이름은 그 함수의 **인자 자리에서만** 만난다. 이 결함의 뿌리가 "규칙이 한 화면에만 있었다"다.
  */
 function isMoreUnitsComing(data) {
-  return data.coursePlannedUnits != null && data.totalUnits < data.coursePlannedUnits;
+  return moreUnitsComing(data.totalUnits, data.coursePlannedUnits);
 }
 
 /** 지금 열린 데까지의 끝 — 완주 축하가 서던 자리에 중립 안내가 선다(작업자(AI)_문서/05 §8 "끝은 두 종류다") */

@@ -403,3 +403,399 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 (9393, 'disappear', NULL, '사라지다', 'VERB', '/ˌdɪsəˈpɪr/', '디서피어'),
 (9394, 'old', NULL, '오래된 · 예전의', 'ADJECTIVE', '/oʊld/', '오울드'),
 (9395, 'new', NULL, '새로 생긴 · 새로운', 'ADJECTIVE', '/nuː/', '누-');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 6~10(덩어리 ② 그 시점에 벌어지는 일) 작성 기록 — 2026-11-14 backend-dev
+--   * 유닛당 실제 사용: 문법 3 · 문법당 예문 3 · 회화 1편(8~9줄) · 표현 7 · 표현 예문 7 · 어휘 16 · 한자 0.
+--   * **앞일을 말하지 않았다**(기획 §3-4 ②·④). 다섯 장면 어디에서도 두 사람이 앞일을 새로 정하지 않는다 —
+--     전화로 서로 지금 뭐 하는 중인지 / 이미 나온 점심을 먹으며 / 어제 전화를 왜 못 받았는지 / 어제 있었던 소동 /
+--     엇갈린 기억 맞추기. will·be going to·진행형의 미래·have p.p.가 한 줄도 없다.
+--   * `call back`은 **과거로만** 썼다(I called you back twice.) — "다시 걸게요"는 유닛 11이다(기획 §3-3).
+--   * 진행형의 미래(유닛 13의 주제)를 쓰지 않았다 — 유닛 7의 see는 these days가 붙는
+--     「요즘 만나는 사이」 쪽 하나뿐이다.
+--   * **was/were 뒤에는 명사·형용사·장소구·-ing만** 놓았다(§8-3 25). blocked를 피하려고 어휘를 slow로 둔 기획
+--     지정값을 그대로 따랐다(Traffic was slow.). stuck in traffic · tied up의 stuck·tied는 형용사처럼
+--     굳은 말이라 usage_note가 그 사실을 적는다.
+--   * when·while·if 절 · 비교급 · 관계절 · could/would/should/might · 수동태를 쓰지 않았다.
+--     earlier는 than 없이 시간 부사로만 썼다(기획 §4-2가 유닛 1부터 허용한 표기다).
+--   * **표를 다시 그리지 않았다**(§8-3 21). 학교의 표 → E2가 주는 판정 기준 한 줄:
+--       진행형 공식표         → "be동사를 빠뜨리면 문장이 서지 않는다"        (유닛 6 문법 1)
+--       진행형 불가 동사 목록 → "내 마음대로 멈출 수 있는 일인가"            (유닛 7 문법 1)
+--       과거진행 공식표       → "앞의 be동사만 갈아 끼운다"                   (유닛 8 문법 1)
+--       시제 일치 규칙        → "문장마다 새로 고른다"                        (유닛 9 문법 3)
+--       부가의문문 규칙표     → "규칙표를 못 외워도 한 마디면 통한다"         (유닛 10 문법 3)
+--   * E1과 겹친 표제어는 일곱이고 전부 기획 §3-3이 근거를 적어 둔 자리다 —
+--     wait·drive(그 유닛 문법 없이는 설명이 안 되는 쓰임) · busy(바쁜 → 통화 중인) · order(주문하다 → 순서) ·
+--     later(나중에 → 그 얼마 뒤에) · sure·actually(유닛 10의 되묻기 그 자체).
+--     ⚠️ 어휘 병합 키는 (word, ipa)이므로 **E1과 같은 발음·같은 한글 근사를 그대로 썼다** — 자료실에서 한 행으로
+--     묶이고 뜻만 senses로 쌓이는 것이 정상이다(§11-3 상자 · leave 전례).
+-- ═══════════════════════════════════════════════════════════════════
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 6 「지금 하는 중인 일은 be와 -ing가 함께 말한다」 — 현재진행 · 진행의 의문·부정 · 지금인가 원래인가
+-- 문법 9125~9127 / 예문 9375~9383 / 회화 9106(대사 9300~9307) / 표현 9450~9456 / 어휘 9400~9415
+-- 장면: 전화로 서로 지금 뭐 하는 중인지 확인한다 — **만나려고 거는 전화가 아니다**(기획 §3-3 가드).
+--       "이따 봐요"로 끝맺지 않고, 각자 무엇을 하는 중인지 주고받고 끝난다.
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9125, '현재진행 (am / is / are + -ing)', 'be동사를 세우지 않으면 문장이 서지 않는다', '학교에서는 현재진행형을 "be동사 + -ing"라는 공식으로 외웠습니다. 공식을 외웠는데도 말할 때 틀리는 이유는 따로 있습니다 — 앞의 be동사를 빠뜨리기 때문입니다. I working now.가 가장 흔한 실수인데, 한국어 "일하는 중이에요"에는 be에 해당하는 말이 아예 없어서 생기는 일입니다. 뒤의 -ing는 혼자 서지 못합니다. 주어에 맞춰 am·is·are를 먼저 세우고 그다음에 -ing를 붙입니다: I am working. / She is cooking. / They are waiting.'),
+(9126, '진행의 의문·부정 (Are you ~ing? / I''m not ~ing)', 'be동사 규칙이 그대로 간다', '학교에서는 진행형의 의문문·부정문을 또 다른 공식으로 따로 외웠습니다. 실제로는 새로 배울 규칙이 하나도 없습니다 — E1에서 세운 be동사 규칙이 그대로 갑니다. 의문은 be동사가 주어 앞으로 나가고(Are you working?), 부정은 뒤에 not만 붙습니다(I''m not working.). do·does·did를 데려오지 않습니다. Do you working? 같은 문장이 없는 이유가 그것입니다 — 앞에 이미 be동사가 서 있으니 일꾼을 하나 더 부를 필요가 없습니다.'),
+(9127, '지금인가, 원래 그런가', '요즘·임시도 진행형이다', '학교에서는 진행형을 "지금 하고 있는 중"이라고만 배웠습니다. 실제로 갈리는 자리는 지금·요즘·임시인가, 원래 늘 그런가입니다. I live with my parents.는 원래 그렇다는 말이고, I''m living with my parents.는 요즘 잠깐 그렇다는 말입니다. 한국어로는 둘 다 "살아요"라서 표시가 안 되는 자리입니다. 그래서 지금 이 순간 하는 중이 아니어도, 요즘 임시로 그런 일에는 진행형을 씁니다: I''m studying Japanese these days.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9375, 9125, 1, 'I am working right now.', NULL, '지금 일하는 중이에요.'),
+(9376, 9125, 2, 'She is washing the dishes in the kitchen.', NULL, '그녀는 부엌에서 설거지를 하는 중이에요.'),
+(9377, 9125, 3, 'They are waiting at the station.', NULL, '그 사람들은 역에서 기다리는 중이에요.'),
+(9378, 9126, 1, 'Are you listening to me?', NULL, '제 말 듣고 있어요?'),
+(9379, 9126, 2, 'I''m not sleeping. I''m awake.', NULL, '자는 중 아니에요. 깨어 있어요.'),
+(9380, 9126, 3, 'Is Mina studying now? No, she isn''t.', NULL, '미나는 지금 공부하는 중이에요? 아뇨, 아니에요.'),
+(9381, 9127, 1, 'I live with my parents.', NULL, '저는 부모님과 함께 살아요. (원래 그렇습니다)'),
+(9382, 9127, 2, 'I''m living alone these days.', NULL, '요즘은 혼자 지내요. (잠깐 그렇습니다)'),
+(9383, 9127, 3, 'She''s studying French this month.', NULL, '그녀는 이번 달에 프랑스어를 배우는 중이에요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9106, '통화 중, 서로 지금 뭐 하는 중인지');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9300, 9106, 1, 'Mina', 'Hi, Ben. Are you busy right now?', NULL, '안녕하세요, 벤. 지금 바빠요?'),
+(9301, 9106, 2, 'Ben', 'Not at all. I''m doing the laundry. What are you doing?', NULL, '전혀요. 빨래하는 중이에요. 미나 씨는 뭐 하는 중이에요?'),
+(9302, 9106, 3, 'Mina', 'I''m waiting at the station. My sister is still in the shop.', NULL, '저는 역에서 기다리는 중이에요. 언니가 아직 가게 안에 있어요.'),
+(9303, 9106, 4, 'Ben', 'Your voice is breaking up. Is there a lot of noise there?', NULL, '목소리가 뭉개져서 들려요. 거기 소리가 많이 나요?'),
+(9304, 9106, 5, 'Mina', 'Yes, a train is coming in. Can you hear me now?', NULL, '네, 기차가 들어오는 중이에요. 지금은 들려요?'),
+(9305, 9106, 6, 'Ben', 'Yes, I can hear you fine now.', NULL, '네, 이제 잘 들려요.'),
+(9306, 9106, 7, 'Mina', 'Good. Are you still doing the laundry?', NULL, '다행이네요. 아직 빨래하는 중이에요?'),
+(9307, 9106, 8, 'Ben', 'No, I''m not. I''m washing the dishes now. I''m cooking a lot these days.', NULL, '아뇨. 지금은 설거지하는 중이에요. 요즘 요리를 많이 하거든요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9450, 'running late', '예정보다 늦어지고 있다', 'be late(이미 늦었다)와 다릅니다 — 아직 가는 중인데 시간이 밀리고 있다는 말입니다. I run late가 아니라 I''m running late처럼 진행형으로만 씁니다.', '/ˈrʌnɪŋ leɪt/', '러닝 레이트'),
+(9451, 'tied up', '(일에) 붙잡혀 손을 못 떼는', 'busy보다 좁습니다 — 지금 하는 일 하나에 묶여 있다는 말입니다. 여기 tied는 형용사처럼 굳은 말이라 be동사와 붙어 I''m tied up 꼴로 씁니다.', '/taɪd ʌp/', '타이드 업'),
+(9452, 'almost there', '거의 다 왔다', '길 위에서 쓰는 말이라 장소를 가리킵니다. there가 가리키는 것은 상대가 있는 자리입니다 — 일이 거의 끝나 간다는 뜻으로는 쓰지 않습니다.', '/ˈɔːlmoʊst ðer/', '올-모우스트 데어'),
+(9453, 'break up', '(통화 소리가) 뭉개져 들리다', '사람 사이가 끝난다는 뜻으로도 쓰이지만, 전화에서는 신호가 끊겨 소리가 조각난다는 말입니다. You''re breaking up.처럼 진행형으로 씁니다.', '/breɪk ʌp/', '브레이크 업'),
+(9454, 'at work', '직장에서 · 일하는 중인', '건물이 아니라 "일하는 상태"를 가리킵니다. 앞에 the를 붙이지 않습니다 — at the work가 아닙니다.', '/æt wɜːrk/', '앳 워-크'),
+(9455, 'at home', '집에 (있는)', '역시 the를 붙이지 않습니다. in the house가 건물 안을 가리킨다면 at home은 "집에 있는 상태"를 가리킵니다.', '/æt hoʊm/', '앳 호움'),
+(9456, 'right now', '바로 지금', 'E1의 right away(즉시)와 재는 것이 다릅니다 — right now는 시점(바로 이 순간)을, right away는 지체 없음(뜸 들이지 않고)을 가리킵니다. 진행형과 가장 자주 붙습니다.', '/raɪt naʊ/', '라이트 나우');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9450, 9450, 1, 'I''m running late this morning.', '오늘 아침에 좀 늦어지고 있어요.'),
+(9451, 9451, 1, 'I''m tied up with work right now.', '지금은 일에 붙잡혀 있어요.'),
+(9452, 9452, 1, 'I''m almost there. I can see the building.', '거의 다 왔어요. 건물이 보여요.'),
+(9453, 9453, 1, 'You''re breaking up. The line isn''t good here.', '소리가 뭉개져서 들려요. 여기는 연결 상태가 안 좋네요.'),
+(9454, 9454, 1, 'I''m at work right now. I can''t speak.', '저는 지금 직장이에요. 통화하기 어려워요.'),
+(9455, 9455, 1, 'He''s working at home today.', '그는 오늘 집에서 일하는 중이에요.'),
+(9456, 9456, 1, 'What are you doing right now?', '지금 뭐 하는 중이에요?');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9400, 'line', NULL, '(전화) 연결 상태', 'NOUN', '/laɪn/', '라인'),
+(9401, 'voice', NULL, '목소리', 'NOUN', '/vɔɪs/', '보이스'),
+(9402, 'noise', NULL, '소음 · 잡음', 'NOUN', '/nɔɪz/', '노이즈'),
+(9403, 'laundry', NULL, '빨래', 'NOUN', '/ˈlɔːndri/', '론-드리'),
+(9404, 'dish', NULL, '접시 · 요리', 'NOUN', '/dɪʃ/', '디시'),
+(9405, 'shower', NULL, '샤워', 'NOUN', '/ˈʃaʊər/', '샤워'),
+(9406, 'kitchen', NULL, '부엌', 'NOUN', '/ˈkɪtʃən/', '키친'),
+(9407, 'wait', NULL, '(그 자리에서) 기다리다', 'VERB', '/weɪt/', '웨이트'),
+(9408, 'connect', NULL, '연결하다 · (전화를) 이어 주다', 'VERB', '/kəˈnekt/', '커넥트'),
+(9409, 'speak', NULL, '말하다 · 통화하다', 'VERB', '/spiːk/', '스피-크'),
+(9410, 'study', NULL, '공부하다', 'VERB', '/ˈstʌdi/', '스터디'),
+(9411, 'listen', NULL, '귀 기울여 듣다', 'VERB', '/ˈlɪsn/', '리슨'),
+(9412, 'alone', NULL, '혼자 있는', 'ADJECTIVE', '/əˈloʊn/', '얼로운'),
+(9413, 'awake', NULL, '깨어 있는', 'ADJECTIVE', '/əˈweɪk/', '어웨이크'),
+(9414, 'nearby', NULL, '근처에', 'ADVERB', '/ˈnɪrbaɪ/', '니어바이'),
+(9415, 'busy', NULL, '(전화가) 통화 중인', 'ADJECTIVE', '/ˈbɪzi/', '비지');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 7 「-ing를 붙이지 않는 동사가 있다」 — 머릿속 일의 동사 · have의 두 얼굴 · see와 think
+-- 문법 9130~9132 / 예문 9390~9398 / 회화 9107(대사 9320~9327) / 표현 9460~9466 / 어휘 9420~9435
+-- 장면: **이미 음식이 나온 뒤** 같이 점심을 먹으며 취향과 상태를 주고받는다 — 주문하는 자리가 아니다(기획 §3-3 가드).
+--       주문 장면이 되는 순간 I''m having the soup.의 한국어가 「수프로 할게요」(즉석 결정)가 되고, 그건 유닛 11이다.
+--       여기서는 「지금 수프를 먹는 중이에요」다.
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9130, '-ing를 붙이지 않는 동사 (know / want / need / like)', '내 마음대로 멈출 수 없는 일', '학교에서는 "상태동사는 진행형 불가"라는 용어로 외웠고, 어느 동사가 거기 드는지는 목록으로 받았습니다. 실제로는 목록을 외울 일이 아닙니다 — 내가 마음대로 시작하고 멈출 수 있는 일인가만 보면 됩니다. 걷는 것은 멈출 수 있지만 아는 것은 멈출 수 없습니다. 그래서 I''m knowing이 없습니다. know·want·need·like가 전부 그 무리라, 지금 그렇다는 말인데도 현재형으로 적습니다: I know him. / I want some water.'),
+(9131, 'have는 뜻에 따라 갈린다', '가진 것인가, 하는 일인가', '학교에서는 "have는 진행형 불가"로 외웠다가 I''m having lunch.를 보고 무너집니다. 갈림은 뜻 하나입니다 — 가지고 있다는 뜻일 때만 진행형이 없습니다(I have a car. / She has two sisters.). 먹다·열다처럼 하는 일을 가리킬 때는 진행형이 됩니다(I''m having lunch. / We''re having a meeting.). 같은 글자가 두 가지 일을 하는 셈이고, 멈출 수 있는 일인가만 물으면 그대로 갈립니다.'),
+(9132, 'see와 think도 두 얼굴이다', '진행형이 되느냐가 곧 뜻의 신호다', '학교에서는 한 단어에 뜻 하나를 붙여 외웠습니다. 실제로는 -ing가 붙느냐가 어느 뜻인지를 알려 줍니다. I see.는 "알겠다"이고 They''re seeing each other these days.는 "요즘 만나는 사이다"입니다. I think so.는 "그렇게 본다"는 의견이고 I''m thinking about it.은 "고민하는 중이다"입니다. 멈출 수 없는 쪽이 현재형, 내가 하고 있는 쪽이 진행형입니다 — 형태가 뜻을 가리키는 표지입니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9390, 9130, 1, 'I know Ben well.', NULL, '벤을 잘 알아요.'),
+(9391, 9130, 2, 'She wants a cup of coffee now.', NULL, '그녀는 지금 커피를 한 잔 마시고 싶어 해요.'),
+(9392, 9130, 3, 'I don''t like spicy food that much.', NULL, '저는 매운 음식을 그렇게 좋아하지는 않아요.'),
+(9393, 9131, 1, 'I have two sisters.', NULL, '저는 언니가 둘 있어요.'),
+(9394, 9131, 2, 'I''m having lunch right now.', NULL, '지금 점심을 먹는 중이에요.'),
+(9395, 9131, 3, 'They''re having dinner at home.', NULL, '그들은 집에서 저녁을 먹는 중이에요.'),
+(9396, 9132, 1, 'I see. That makes sense.', NULL, '알겠어요. 말이 되네요.'),
+(9397, 9132, 2, 'They''re seeing each other these days.', NULL, '그 둘은 요즘 만나는 사이예요.'),
+(9398, 9132, 3, 'I''m thinking about it.', NULL, '그건 고민하는 중이에요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9107, '점심을 먹으면서, 입맛 이야기');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9320, 9107, 1, 'Ben', 'That smells really good. What is it?', NULL, '그거 냄새 정말 좋네요. 뭐예요?'),
+(9321, 9107, 2, 'Mina', 'I''m having the soup. It''s a little salty, but I like it.', NULL, '저는 수프를 먹는 중이에요. 좀 짠데 그래도 맛있어요.'),
+(9322, 9107, 3, 'Ben', 'Mine tastes sweet. I think it has sugar in it.', NULL, '제 건 달아요. 설탕이 들어간 것 같아요.'),
+(9323, 9107, 4, 'Mina', 'Do you want some? Have a bite.', NULL, '좀 드실래요? 한 입 먹어 봐요.'),
+(9324, 9107, 5, 'Ben', 'No, thanks. I''m not a fan of sour food. And I''m full.', NULL, '괜찮아요. 신 음식은 별로 안 좋아해서요. 그리고 배불러요.'),
+(9325, 9107, 6, 'Mina', 'Really? You aren''t eating much today.', NULL, '그래요? 오늘은 많이 안 드시네요.'),
+(9326, 9107, 7, 'Ben', 'I know. I''m not feeling great. I think I need some water.', NULL, '그러게요. 컨디션이 별로예요. 물이 좀 필요한 것 같아요.'),
+(9327, 9107, 8, 'Mina', 'I see. Then have some tea. It goes well with dessert.', NULL, '그렇군요. 그럼 차를 좀 드세요. 디저트랑 잘 어울려요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9460, 'feel like', '(왠지) ~이 당기다', '뒤에 명사나 -ing가 옵니다(I feel like pizza. / I feel like eating out.). want to만큼 단단한 의지가 아니라 지금 그쪽으로 마음이 기운다는 말입니다.', '/fiːl laɪk/', '피-일 라이크'),
+(9461, 'taste like', '~ 맛이 나다', '뒤에 명사가 옵니다. 맛의 성질을 말할 때는 like 없이 형용사를 바로 붙입니다 — taste sweet는 맞고 taste like sweet는 틀립니다.', '/teɪst laɪk/', '테이스트 라이크'),
+(9462, 'can''t stand', '도저히 못 참겠다', 'don''t like보다 훨씬 셉니다. 여기 stand는 "서다"가 아니라 "견디다"이고, 거의 언제나 부정으로만 씁니다.', '/kænt stænd/', '캔트 스탠드'),
+(9463, 'go well with', '~과 잘 어울리다', '음식·옷처럼 두 가지를 함께 놓았을 때 어울린다는 말입니다. 사람과 잘 지낸다는 뜻으로는 쓰지 않습니다.', '/ɡoʊ wel wɪð/', '고우 웰 위드'),
+(9464, 'not a fan of', '~을 별로 좋아하지 않다', '싫다고 딱 잘라 말하지 않으면서 선을 긋는 말입니다. 운동 팬이라는 뜻의 fan에서 왔지만 음식·날씨 등 아무것에나 씁니다.', '/nɑːt ə fæn ʌv/', '낫 어 팬 어브'),
+(9465, 'have a bite', '한 입 먹다', '여기 have는 "가지다"가 아니라 "먹다"라서 진행형도 됩니다(I''m having a bite.). 맛보라고 권할 때 Have a bite.로 그대로 씁니다.', '/hæv ə baɪt/', '해브 어 바이트'),
+(9466, 'dig in', '어서 먹다 · 마음껏 먹다', '음식 앞에서 "자, 드세요"에 해당하는 말입니다. 땅을 판다는 dig에서 왔지만 식탁에서는 숟가락을 든다는 뜻이고, 친한 사이에서 씁니다.', '/dɪɡ ɪn/', '디그 인');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9460, 9460, 1, 'I feel like something sweet.', '뭔가 단 게 당기네요.'),
+(9461, 9461, 1, 'This soup tastes like lemon.', '이 수프는 레몬 맛이 나요.'),
+(9462, 9462, 1, 'I can''t stand the smell of this.', '이건 냄새를 도저히 못 참겠어요.'),
+(9463, 9463, 1, 'This dessert goes well with tea.', '이 디저트는 차와 잘 어울려요.'),
+(9464, 9464, 1, 'I''m not a fan of spicy food.', '매운 음식은 별로 안 좋아해요.'),
+(9465, 9465, 1, 'Have a bite. It''s really good.', '한 입 먹어 봐요. 정말 맛있어요.'),
+(9466, 9466, 1, 'Everything is ready. Dig in!', '다 준비됐어요. 어서 드세요!');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9420, 'taste', NULL, '맛이 나다 · 맛보다', 'VERB', '/teɪst/', '테이스트'),
+(9421, 'smell', NULL, '냄새가 나다 · 냄새를 맡다', 'VERB', '/smel/', '스멜'),
+(9422, 'soup', NULL, '수프', 'NOUN', '/suːp/', '수-프'),
+(9423, 'salad', NULL, '샐러드', 'NOUN', '/ˈsæləd/', '샐러드'),
+(9424, 'dessert', NULL, '후식 · 디저트', 'NOUN', '/dɪˈzɜːrt/', '디저-트'),
+(9425, 'spicy', NULL, '매운', 'ADJECTIVE', '/ˈspaɪsi/', '스파이시'),
+(9426, 'sweet', NULL, '단 · 달콤한', 'ADJECTIVE', '/swiːt/', '스위-트'),
+(9427, 'salty', NULL, '짠', 'ADJECTIVE', '/ˈsɔːlti/', '솔-티'),
+(9428, 'sour', NULL, '신 · 시큼한', 'ADJECTIVE', '/ˈsaʊər/', '사워'),
+(9429, 'bitter', NULL, '쓴', 'ADJECTIVE', '/ˈbɪtər/', '비터'),
+(9430, 'favorite', NULL, '가장 좋아하는', 'ADJECTIVE', '/ˈfeɪvərɪt/', '페이버리트'),
+(9431, 'delicious', NULL, '아주 맛있는', 'ADJECTIVE', '/dɪˈlɪʃəs/', '딜리셔스'),
+(9432, 'choose', NULL, '고르다', 'VERB', '/tʃuːz/', '추-즈'),
+(9433, 'mind', NULL, '꺼리다 · 신경 쓰다', 'VERB', '/maɪnd/', '마인드'),
+(9434, 'hate', NULL, '몹시 싫어하다', 'VERB', '/heɪt/', '헤이트'),
+(9435, 'full', NULL, '배부른', 'ADJECTIVE', '/fʊl/', '풀');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 8 「그때 하고 있던 중이었다」 — 과거진행 · 그 시각에 뭘 하고 있었는지 · 배경인가 사건인가
+-- 문법 9135~9137 / 예문 9405~9413 / 회화 9108(대사 9340~9347) / 표현 9470~9476 / 어휘 9440~9455
+-- 장면: 어제 전화를 왜 못 받았는지 설명한다 — **왜 못 받았는지까지만 말하고 끝낸다**(기획 §3-3 가드).
+--       "다음엔 받을게요" · "이따 다시 걸게요"로 넘어가면 그 줄이 유닛 11이 된다.
+-- ⚠️ call back은 과거로만 쓴다 — I called you back twice. ⭕ / 다시 걸겠다는 말 ❌(유닛 11).
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9135, '과거진행 (was / were + -ing)', '앞의 be동사만 과거로 갈아 끼운다', '학교에서는 "과거진행형 = was/were + -ing"라는 또 하나의 공식으로 외웠습니다. 실제로는 새 공식이 아니라 부품 하나 교체입니다 — 유닛 6에서 만든 I''m working의 앞부분만 과거로 바꾸면 I was working이 됩니다. -ing 쪽은 손대지 않습니다. 주어를 보고 was·were를 고르는 것도 유닛 1에서 하던 그대로입니다: I was driving. / They were waiting. 외울 것이 하나도 늘지 않는 자리입니다.'),
+(9136, '그 시각에 뭘 하고 있었는지 묻기 (What were you doing at eight?)', '시각을 함께 말해야 뜻이 산다', '학교에서는 예문 한둘을 외우고 넘어갔습니다. 실제로 과거진행은 언제인지를 말해 주지 않으면 붕 뜹니다 — "그때 하고 있던 일"이라는 말인데 정작 "그때"가 없기 때문입니다. at eight·then·at that time을 함께 놓는 것이 이 문형의 절반입니다. 유닛 1의 "과거 문장은 시간을 달고 다닌다"가 여기서도 그대로입니다: What were you doing at eight? / I was driving at that time.'),
+(9137, '배경인가, 일어난 일인가', '두 문장을 나란히 놓으면 장면이 그려진다', '학교에서는 과거진행과 과거형을 따로 배우고 어느 쪽을 쓸지는 배우지 않았습니다. 실제로 갈림은 하나입니다 — 그때의 상황(배경)은 과거진행, 그때 일어난 일(사건)은 과거형입니다. I was driving.(그래서 못 받았다) / I called you twice.(그 일이 일어났다). 둘을 하나로 묶지 않고 나란히 놓기만 해도 장면이 그려집니다. 길게 잇는 것은 다음 단계의 일이고, 지금은 끊어 놓는 편이 오히려 또렷합니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9405, 9135, 1, 'I was driving at seven.', NULL, '일곱 시에 운전하는 중이었어요.'),
+(9406, 9135, 2, 'We were sitting at the back of the bus.', NULL, '우리는 버스 뒤쪽에 앉아 있었어요.'),
+(9407, 9135, 3, 'She wasn''t sleeping. She was reading.', NULL, '그녀는 자는 중이 아니었어요. 책을 읽는 중이었어요.'),
+(9408, 9136, 1, 'What were you doing at eight?', NULL, '여덟 시에 뭐 하고 있었어요?'),
+(9409, 9136, 2, 'I was driving home at that time.', NULL, '그때는 차로 집에 가는 중이었어요.'),
+(9410, 9136, 3, 'Were you sleeping then?', NULL, '그때 자고 있었어요?'),
+(9411, 9137, 1, 'I was driving. I didn''t hear the phone.', NULL, '운전하는 중이었어요. 전화 소리를 못 들었어요.'),
+(9412, 9137, 2, 'The bus was moving slowly. Then it stopped.', NULL, '버스가 느리게 가고 있었어요. 그러다 멈췄어요.'),
+(9413, 9137, 3, 'We were in the tunnel. My phone lost the signal.', NULL, '우리는 터널 안이었어요. 전화 신호가 끊겼어요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9108, '어제 전화를 왜 못 받았는지');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9340, 9108, 1, 'Mina', 'I called you twice last night. Were you asleep?', NULL, '어젯밤에 두 번 전화했어요. 자고 있었어요?'),
+(9341, 9108, 2, 'Ben', 'No, I wasn''t. I was driving home at that time.', NULL, '아뇨. 그때 차로 집에 가는 중이었어요.'),
+(9342, 9108, 3, 'Mina', 'I called you back at nine, too.', NULL, '아홉 시에도 다시 걸었어요.'),
+(9343, 9108, 4, 'Ben', 'The traffic was slow, and I was in a tunnel. I had no signal there.', NULL, '차가 느리게 가고 있었고 터널 안이었어요. 거기선 신호가 없었어요.'),
+(9344, 9108, 5, 'Mina', 'So you didn''t hear the phone at all.', NULL, '그래서 전화 소리를 아예 못 들었군요.'),
+(9345, 9108, 6, 'Ben', 'I noticed it later, but my battery was dead. The charger was at home.', NULL, '좀 뒤에 알아차리긴 했는데 배터리가 나가 있었어요. 충전기는 집에 있었고요.'),
+(9346, 9108, 7, 'Mina', 'That explains it. I was getting worried.', NULL, '그래서였군요. 걱정하던 참이었어요.'),
+(9347, 9108, 8, 'Ben', 'Sorry about that. I pulled over at a rest area, but the call didn''t get through.', NULL, '미안해요. 휴게소에 차를 세웠는데 전화가 연결되지 않더라고요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9470, 'hang up', '전화를 끊다', '수화기를 걸어 두던 시절에서 온 말이라 up이 붙습니다. 상대 말을 자르고 끊는 느낌은 hang up on 쪽이고, 그냥 통화를 마치는 것도 hang up입니다.', '/hæŋ ʌp/', '행 업'),
+(9471, 'call back', '다시 전화하다', '걸려 온 전화에 되걸어 준다는 말이라 back이 붙습니다. 처음 거는 전화에는 쓰지 않습니다.', '/kɔːl bæk/', '콜- 백'),
+(9472, 'get through', '(전화가) 연결되다', '막힌 것을 뚫고 닿는다는 말입니다. 선이 통했는지를 가리키므로 통화 내용이 아니라 연결 여부를 말합니다.', '/ɡet θruː/', '겟 스루-'),
+(9473, 'on the road', '(차로) 이동 중인', '길 위에 있다는 말 그대로 이동 중이라는 뜻입니다. 길 한가운데를 가리키는 in the road와 다릅니다.', '/ɑːn ðə roʊd/', '온- 더 로우드'),
+(9474, 'in a meeting', '회의 중인', 'the가 아니라 a를 씁니다 — 어느 회의인지는 중요하지 않고 회의 중이라는 상태만 말하기 때문입니다.', '/ɪn ə ˈmiːtɪŋ/', '인 어 미-팅'),
+(9475, 'stuck in traffic', '차가 막혀 꼼짝 못 하는', '차가 많은 상태는 heavy traffic이고, 그 안에 갇혀 못 움직이는 쪽이 stuck in traffic입니다. 여기 stuck은 형용사처럼 굳은 말이라 be동사와 붙어 다닙니다.', '/stʌk ɪn ˈtræfɪk/', '스턱 인 트래픽'),
+(9476, 'pull over', '(차를) 길가에 세우다', '달리던 차를 길 가장자리로 붙여 세우는 것입니다. 주차장에 대는 park와 다릅니다.', '/pʊl ˈoʊvər/', '풀 오우버');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9470, 9470, 1, 'I hung up and started the car.', '전화를 끊고 차에 시동을 걸었어요.'),
+(9471, 9471, 1, 'I called you back twice last night.', '어젯밤에 두 번 다시 걸었어요.'),
+(9472, 9472, 1, 'The call didn''t get through.', '전화가 연결되지 않았어요.'),
+(9473, 9473, 1, 'I was on the road all morning.', '아침 내내 차로 이동 중이었어요.'),
+(9474, 9474, 1, 'She was in a meeting at three.', '그녀는 세 시에 회의 중이었어요.'),
+(9475, 9475, 1, 'We were stuck in traffic for an hour.', '한 시간 동안 차가 막혀 꼼짝 못 했어요.'),
+(9476, 9476, 1, 'I pulled over and answered the phone.', '차를 길가에 세우고 전화를 받았어요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9440, 'traffic', NULL, '차량 통행 · 교통량', 'NOUN', '/ˈtræfɪk/', '트래픽'),
+(9441, 'road', NULL, '길 · 도로', 'NOUN', '/roʊd/', '로우드'),
+(9442, 'tunnel', NULL, '터널', 'NOUN', '/ˈtʌnl/', '터널'),
+(9443, 'highway', NULL, '고속도로', 'NOUN', '/ˈhaɪweɪ/', '하이웨이'),
+(9444, 'battery', NULL, '배터리', 'NOUN', '/ˈbætəri/', '배터리'),
+(9445, 'signal', NULL, '(전파) 신호', 'NOUN', '/ˈsɪɡnəl/', '시그널'),
+(9446, 'passenger', NULL, '승객 · 동승자', 'NOUN', '/ˈpæsɪndʒər/', '패신저'),
+(9447, 'sound', NULL, '소리', 'NOUN', '/saʊnd/', '사운드'),
+(9448, 'charge', NULL, '충전하다', 'VERB', '/tʃɑːrdʒ/', '차-지'),
+(9449, 'park', NULL, '주차하다', 'VERB', '/pɑːrk/', '파-크'),
+(9450, 'hurry', NULL, '서두르다', 'VERB', '/ˈhɜːri/', '허리'),
+(9451, 'notice', NULL, '알아차리다', 'VERB', '/ˈnoʊtɪs/', '노우티스'),
+(9452, 'drive', NULL, '차를 몰고 가다', 'VERB', '/draɪv/', '드라이브'),
+(9453, 'slow', NULL, '(차가) 느리게 가는', 'ADJECTIVE', '/sloʊ/', '슬로우'),
+(9454, 'asleep', NULL, '잠든', 'ADJECTIVE', '/əˈsliːp/', '어슬리-프'),
+(9455, 'dead', NULL, '(배터리가) 나간', 'ADJECTIVE', '/ded/', '데드');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 9 「지난 일을 순서대로 말한다」 — 순서의 이정표 · 배경과 사건을 번갈아 · 문장마다 시제를 고른다
+-- 문법 9140~9142 / 예문 9420~9428 / 회화 9109(대사 9360~9367) / 표현 9480~9486 / 어휘 9460~9475
+-- 장면: 어제 있었던 소동을 순서대로 전한다 — 전부 지나간 일이고 앞일을 새로 정하지 않는다.
+-- ⚠️ 두 문장을 when·while로 묶지 않는다(E3). 끊어 놓고 앞에 이정표만 붙인다 — 그것이 문법 1이 가르치는 기술이다.
+-- ⚠️ later의 뜻은 「(그) 얼마 뒤에」로 고정했다. 「나중에」(앞일)로 적으면 학습자가 만들고 싶어지는 문장이
+--    유닛 11의 것뿐이다(기획 §3-3 · tonight과 같은 함정).
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9140, '순서를 매기는 말 (at first / then / after that / finally)', '문장 앞에 놓는 이정표', '학교에서는 작문용 연결어 목록으로 외웠습니다. 실제로 이 말들은 문장을 잇는 것이 아니라 각 문장 앞에 놓는 이정표입니다. 문장은 그대로 두고 앞에 한 마디만 얹으면 이야기가 순서대로 섭니다: At first I didn''t know. Then I heard the alarm. Finally we went outside. 긴 문장을 만들 필요가 없습니다 — 짧게 끊고 앞에 표지만 달아 두면 듣는 사람이 순서를 그대로 따라옵니다.'),
+(9141, '배경과 사건을 번갈아 놓는다', '한 장면을 두 시제로 그린다', '학교에서는 이런 것을 거의 배운 적이 없습니다. 실제로 이야기는 과거진행(배경)과 과거형(사건)의 반복으로 굴러갑니다 — I was sitting at my desk. Then the alarm started. 배경은 그때 이미 펼쳐져 있던 상황이고, 사건은 그 위에 떨어진 일입니다. 유닛 8에서 나눠 둔 둘을 여기서 번갈아 씁니다. 두 문장을 하나로 묶을 필요는 없습니다 — 순서대로 늘어놓기만 해도 장면이 됩니다.'),
+(9142, '문장마다 시제를 새로 고른다', '이야기의 끝은 지금으로 돌아온다', '학교에서는 "시제 일치"를 배웠습니다 — 글 전체의 시제를 맞추라는 것이었습니다. 말할 때는 그렇지 않습니다. 문장마다 새로 고릅니다. 지난 일을 늘어놓다가 Now로 지금을 말하면 듣는 사람이 그대로 따라옵니다: I worked there for two years. Now I work here. 억지로 맞추면 오히려 틀립니다 — 지금도 사실인 것까지 과거형으로 밀면 그 일이 끝난 것처럼 들립니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9420, 9140, 1, 'At first I didn''t know. Then I heard the alarm.', NULL, '처음에는 몰랐어요. 그러다 경보 소리를 들었어요.'),
+(9421, 9140, 2, 'After that everyone ran down the stairs.', NULL, '그다음에 다들 계단으로 뛰어 내려갔어요.'),
+(9422, 9140, 3, 'Finally everyone escaped through the back door.', NULL, '마지막에는 모두 뒷문으로 빠져나갔어요.'),
+(9423, 9141, 1, 'I was sitting at my desk. Then the alarm started.', NULL, '저는 책상에 앉아 있었어요. 그러다 경보가 울렸어요.'),
+(9424, 9141, 2, 'Smoke was coming out of the kitchen. Someone shouted in the hall.', NULL, '부엌에서 연기가 나오고 있었어요. 누군가 복도에서 소리를 질렀어요.'),
+(9425, 9141, 3, 'We were standing outside. After that the fire team arrived.', NULL, '우리는 밖에 서 있었어요. 그다음에 소방팀이 도착했어요.'),
+(9426, 9142, 1, 'I worked there for two years. Now I work here.', NULL, '거기서 2년 일했어요. 지금은 여기서 일해요.'),
+(9427, 9142, 2, 'The alarm was loud. Now everyone is fine.', NULL, '경보 소리가 컸어요. 지금은 다들 괜찮아요.'),
+(9428, 9142, 3, 'I was upset earlier. Now I think it was lucky.', NULL, '아까는 속상했어요. 지금은 운이 좋았다고 생각해요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9109, '어제 사무실에서 있었던 소동');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9360, 9109, 1, 'Ben', 'What happened here yesterday? Tell me in order.', NULL, '어제 여기서 무슨 일이 있었어요? 순서대로 말해 줘요.'),
+(9361, 9109, 2, 'Mina', 'At first nobody knew. I was sitting at my desk, and the alarm started.', NULL, '처음엔 아무도 몰랐어요. 저는 책상에 앉아 있었는데 경보가 울렸어요.'),
+(9362, 9109, 3, 'Ben', 'Was there smoke?', NULL, '연기가 났어요?'),
+(9363, 9109, 4, 'Mina', 'No. But people panicked and ran to the stairs. It was a big crowd.', NULL, '아뇨. 그런데 사람들이 당황해서 계단으로 뛰었어요. 사람이 엄청 몰렸고요.'),
+(9364, 9109, 5, 'Ben', 'Was everyone okay?', NULL, '다들 괜찮았어요?'),
+(9365, 9109, 6, 'Mina', 'Yes, everyone was safe. Two minutes later, the fire team came in.', NULL, '네, 다들 무사했어요. 2분쯤 뒤에 소방팀이 들어왔어요.'),
+(9366, 9109, 7, 'Ben', 'And then?', NULL, '그러고는요?'),
+(9367, 9109, 8, 'Mina', 'It turned out to be a drill. Finally we all went back in. We were lucky.', NULL, '알고 보니 대피 훈련이었어요. 마지막엔 다들 다시 들어갔고요. 운이 좋았죠.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9480, 'all of a sudden', '갑자기', '예고 없이 벌어진 일을 들여올 때 씁니다. 문장 맨 앞에 놓는 일이 많고, 뒤에는 사건을 말하는 과거형이 옵니다.', '/ɔːl ʌv ə ˈsʌdn/', '올- 어브 어 서든'),
+(9481, 'end up', '결국 ~하게 되다', '뜻한 바와 다르게 도착한 자리를 말합니다. 뒤에 -ing나 장소가 옵니다(end up waiting / end up outside).', '/end ʌp/', '엔드 업'),
+(9482, 'turn out', '알고 보니 ~이다', '뚜껑을 열어 보니 그랬다는 말입니다. 뒤에 to be가 따라붙는 꼴이 가장 흔합니다. 불을 끄는 turn off와는 관계가 없습니다.', '/tɜːrn aʊt/', '터-은 아웃'),
+(9483, 'in the end', '결국에는', '여러 일이 지나간 끝을 가리킵니다. 맨 끝 자리를 가리키는 at the end of와 다릅니다 — 이쪽은 시간의 결말입니다.', '/ɪn ði end/', '인 디 엔드'),
+(9484, 'for a while', '한동안', '길이를 정하지 않고 "꽤 되는 동안"을 말합니다. a while ago가 시점이라면 이쪽은 길이입니다.', '/fɔːr ə waɪl/', '포- 어 와일'),
+(9485, 'one after another', '하나씩 차례로', '같은 일이 줄줄이 이어질 때 씁니다. 사람 둘을 가리킬 때는 one after the other 쪽이 자연스럽습니다.', '/wʌn ˈæftər əˈnʌðər/', '원 애프터 어나더'),
+(9486, 'the next thing', '그러고는 (바로)', '눈 깜짝할 새 다음 일이 벌어졌다는 말입니다. 사건과 사건 사이에 놓아 속도를 보여 줍니다.', '/ðə nekst θɪŋ/', '더 넥스트 싱');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9480, 9480, 1, 'All of a sudden the alarm started.', '갑자기 경보가 울리기 시작했어요.'),
+(9481, 9481, 1, 'We ended up waiting outside for an hour.', '결국 밖에서 한 시간을 기다리게 됐어요.'),
+(9482, 9482, 1, 'It turned out to be a drill.', '알고 보니 대피 훈련이었어요.'),
+(9483, 9483, 1, 'In the end everyone was fine.', '결국 다들 괜찮았어요.'),
+(9484, 9484, 1, 'We waited outside for a while.', '우리는 한동안 밖에서 기다렸어요.'),
+(9485, 9485, 1, 'The doors opened one after another.', '문이 하나씩 차례로 열렸어요.'),
+(9486, 9486, 1, 'The next thing, everyone was outside.', '그러고는 바로 다들 밖에 나와 있었어요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9460, 'alarm', NULL, '경보 · 경보음', 'NOUN', '/əˈlɑːrm/', '얼라-암'),
+(9461, 'fire', NULL, '불 · 화재', 'NOUN', '/ˈfaɪər/', '파이어'),
+(9462, 'smoke', NULL, '연기', 'NOUN', '/smoʊk/', '스모우크'),
+(9463, 'drill', NULL, '(대피·소방) 훈련', 'NOUN', '/drɪl/', '드릴'),
+(9464, 'crowd', NULL, '몰려든 사람들', 'NOUN', '/kraʊd/', '크라우드'),
+(9465, 'order', NULL, '순서', 'NOUN', '/ˈɔːrdər/', '오-더'),
+(9466, 'escape', NULL, '빠져나가다', 'VERB', '/ɪˈskeɪp/', '이스케이프'),
+(9467, 'shout', NULL, '소리를 지르다', 'VERB', '/ʃaʊt/', '샤우트'),
+(9468, 'run', NULL, '뛰다 · 달리다', 'VERB', '/rʌn/', '런'),
+(9469, 'panic', NULL, '당황해 어쩔 줄 모르다', 'VERB', '/ˈpænɪk/', '패닉'),
+(9470, 'safe', NULL, '무사한 · 안전한', 'ADJECTIVE', '/seɪf/', '세이프'),
+(9471, 'lucky', NULL, '운이 좋은', 'ADJECTIVE', '/ˈlʌki/', '러키'),
+(9472, 'upset', NULL, '속상한 · 마음이 상한', 'ADJECTIVE', '/ʌpˈset/', '업셋'),
+(9473, 'finally', NULL, '마지막에는 · 드디어', 'ADVERB', '/ˈfaɪnəli/', '파이널리'),
+(9474, 'earlier', NULL, '(그보다) 앞서 · 아까', 'ADVERB', '/ˈɜːrliər/', '어-리어'),
+(9475, 'later', NULL, '(그) 얼마 뒤에', 'ADVERB', '/ˈleɪtər/', '레이터');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 10 「아니라고 물어도 사실대로 답한다」 ★복습(6~10) — 부정의문 · Yes/No는 사실을 따른다 · ~, right?
+-- 문법 9145~9147 / 예문 9435~9443 / 회화 9110(대사 9380~9388) / 표현 9490~9496 / 어휘 9480~9495
+-- 장면: **이미 지나간 일**을 두고 엇갈린 기억을 맞춘다 — 앞으로 잡을 날짜를 맞추는 자리가 아니다(기획 §3-3 가드).
+--       Didn''t you say Friday? 의 금요일은 **지난** 금요일이다. 다가올 일정을 맞추는 장면이 되면 유닛 13의 몫이 된다.
+-- ⚠️ 기획 §3-4 ⑤ 요구: Didn''t you ~? 류에 No, I didn''t.(또는 Yes, I was.)로 답하는 줄이 있어야 문법 2가 증명된다 —
+--    한국어라면 "네"로 답할 자리다. 대사 2·4·7이 그 자리이고 meaning_ko가 한국어 쪽을 그대로 적는다.
+-- ⚠️ 이 유닛의 정리 스텝에 6~10 복습 블록이 붙는다(unitNo % 5 == 0) — 유닛 6~9의 unit_grammar 매핑이 전부 있어야 성립한다.
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9145, '부정으로 묻기 (Didn''t you ~? / Weren''t you ~? / Aren''t you ~ing?)', '맨 앞 한 단어만 바꾼다', '학교에서는 부정의문문을 또 하나의 단원으로 배웠습니다. 실제로는 새 규칙이 없습니다 — 유닛 1~9에서 만든 의문문의 맨 앞 한 단어를 줄임꼴 부정으로 바꾸면 끝입니다: Did you call? → Didn''t you call? / Were you there? → Weren''t you there? 뒤는 하나도 안 바뀝니다. 이 말은 대개 그런 줄 알았는데 아닌 것 같을 때 씁니다 — 따지는 말이 아니라 내 기억을 맞춰 보는 말입니다.'),
+(9146, 'Yes와 No는 질문이 아니라 사실을 따른다', '한국어와 정반대가 되는 자리', '학교에서는 "Yes는 네"로 외웠습니다. 실제로 한국어는 질문에 동의하느냐로 답하고("안 갔어요?" — "네, 안 갔어요"), 영어는 사실이 어떤가로 답합니다. Didn''t you go?에 안 갔으면 무조건 No, I didn''t.입니다 — 질문이 부정이든 긍정이든 상관없습니다. 한국어를 그대로 옮기면 정확히 반대로 말하게 되는 자리이고, 이 코스에서 가장 자주 틀리는 한 줄입니다.'),
+(9147, '~, right? / ~, didn''t you?', '규칙표를 못 외워도 한 마디면 통한다', '학교에서는 부가의문문 규칙표(긍정과 부정을 뒤집고 동사를 맞추는 것)를 외우다 지쳤습니다. 실제로 말할 때 압도적으로 쓰는 것은 right? 하나입니다 — 문장 끝에 붙이기만 하면 되고 앞 문장이 무엇이든 모양이 안 바뀝니다: You said Thursday, right? 앞에 쓴 동사를 그대로 되받는 형은 그다음이고, 그것도 E1에서 배운 "물어본 동사로 되받기"가 문장 끝으로 옮겨 온 것일 뿐입니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9435, 9145, 1, 'Didn''t you say Friday?', NULL, '금요일이라고 하지 않았어요?'),
+(9436, 9145, 2, 'Weren''t you at the meeting?', NULL, '회의에 있지 않았어요?'),
+(9437, 9145, 3, 'Aren''t you listening?', NULL, '안 듣고 있어요?'),
+(9438, 9146, 1, 'Didn''t you call me? No, I didn''t.', NULL, '저한테 전화 안 했어요? 네, 안 했어요. (안 했으면 영어는 No입니다)'),
+(9439, 9146, 2, 'Weren''t you there? Yes, I was.', NULL, '거기 없었어요? 아뇨, 있었어요. (있었으면 영어는 Yes입니다)'),
+(9440, 9146, 3, 'Aren''t you busy? No, I''m not.', NULL, '안 바빠요? 네, 안 바빠요. (안 바쁘면 영어는 No입니다)'),
+(9441, 9147, 1, 'You said Thursday, right?', NULL, '목요일이라고 했죠?'),
+(9442, 9147, 2, 'You were there, weren''t you?', NULL, '거기 있었잖아요, 그렇죠?'),
+(9443, 9147, 3, 'She didn''t call, did she?', NULL, '그녀는 전화 안 했죠, 그렇죠?');
+
+INSERT INTO dialog (id, title) VALUES
+(9110, '엇갈린 기억을 맞춰 보는 자리');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9380, 9110, 1, 'Mina', 'Didn''t you say Friday? The meeting was on Thursday.', NULL, '금요일이라고 하지 않았어요? 회의는 목요일이었잖아요.'),
+(9381, 9110, 2, 'Ben', 'No, I didn''t. I said Thursday. Check the message.', NULL, '네, 안 그랬어요. 목요일이라고 했어요. 메시지 확인해 봐요.'),
+(9382, 9110, 3, 'Mina', 'Hmm. Weren''t you in a meeting that morning?', NULL, '음. 그날 아침에 회의 중이지 않았어요?'),
+(9383, 9110, 4, 'Ben', 'Yes, I was. But I sent the message earlier, at eight.', NULL, '아뇨, 회의 중이었어요. 그런데 메시지는 그보다 앞서 여덟 시에 보냈어요.'),
+(9384, 9110, 5, 'Mina', 'You''re right. I got it wrong. I''m looking at the message now.', NULL, '맞네요. 제가 잘못 알고 있었어요. 지금 메시지를 보고 있어요.'),
+(9385, 9110, 6, 'Ben', 'It happens. You were driving all afternoon that day, weren''t you?', NULL, '그럴 수 있죠. 그날 오후 내내 운전 중이었잖아요, 그렇죠?'),
+(9386, 9110, 7, 'Mina', 'I was. So I didn''t notice your message at all.', NULL, '맞아요. 그래서 메시지를 아예 못 봤어요.'),
+(9387, 9110, 8, 'Ben', 'That explains it. We''re on the same page now, right?', NULL, '그래서였군요. 이제 서로 같은 걸 알고 있는 거죠?'),
+(9388, 9110, 9, 'Mina', 'We are. My memory isn''t perfect.', NULL, '그러네요. 제 기억이 완벽하진 않네요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9490, 'keep in mind', '잊지 않고 기억해 두다', 'remember가 떠올리는 것이라면 이쪽은 머릿속에 얹어 두는 것입니다. 사이에 목적어가 들어가기도 합니다(keep that in mind).', '/kiːp ɪn maɪnd/', '키-프 인 마인드'),
+(9491, 'make sure', '확실히 해 두다', '확인해서 틀림없게 만든다는 말입니다. 내 기분을 말하는 I''m sure(나는 확신한다)와 달리 행동을 가리킵니다.', '/meɪk ʃʊr/', '메이크 슈어'),
+(9492, 'check with', '~에게 확인해 보다', '사람에게 물어 맞는지 보는 것입니다. 물건·숫자를 들여다보는 check와 달리 뒤에 사람이 옵니다.', '/tʃek wɪð/', '체크 위드'),
+(9493, 'get it wrong', '잘못 알다', '틀린 답을 낸 것이 아니라 사실을 잘못 기억하고 있었다는 쪽입니다. 반대는 get it right입니다.', '/ɡet ɪt rɔːŋ/', '겟 잇 롱-'),
+(9494, 'the other way around', '반대로 · 거꾸로', '둘의 순서나 방향이 뒤바뀌었다는 말입니다. 내가 말한 것과 사실이 뒤집혀 있을 때 한마디로 바로잡습니다.', '/ði ˈʌðər weɪ əˈraʊnd/', '디 아더 웨이 어라운드'),
+(9495, 'ring a bell', '어디서 들어 본 것 같다', '머릿속에서 종이 울린다는 그림입니다. 또렷이 기억난다는 말이 아니라 희미하게 걸린다는 쪽이고, 부정으로도 자주 씁니다.', '/rɪŋ ə bel/', '링 어 벨'),
+(9496, 'on the same page', '서로 같은 것을 알고 있다', '같은 쪽을 펴 놓고 본다는 그림입니다. 의견이 같다는 뜻보다 알고 있는 내용이 어긋나지 않는다는 쪽에 가깝습니다.', '/ɑːn ðə seɪm peɪdʒ/', '온- 더 세임 페이지');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9490, 9490, 1, 'Keep that in mind.', '그건 기억해 두세요.'),
+(9491, 9491, 1, 'I made sure, and the date was Thursday.', '제가 확실히 확인했는데 날짜는 목요일이었어요.'),
+(9492, 9492, 1, 'I checked with Ben, and he said Thursday.', '벤에게 확인했는데 목요일이라고 했어요.'),
+(9493, 9493, 1, 'I got it wrong. The meeting was on Thursday.', '제가 잘못 알고 있었어요. 회의는 목요일이었어요.'),
+(9494, 9494, 1, 'It was the other way around.', '그게 아니라 반대였어요.'),
+(9495, 9495, 1, 'That name rings a bell.', '그 이름 어디서 들어 본 것 같아요.'),
+(9496, 9496, 1, 'We''re on the same page now.', '이제 서로 같은 걸 알고 있네요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9480, 'memory', NULL, '기억 · 기억력', 'NOUN', '/ˈmeməri/', '메머리'),
+(9481, 'detail', NULL, '세부 사항', 'NOUN', '/ˈdiːteɪl/', '디-테일'),
+(9482, 'fact', NULL, '사실', 'NOUN', '/fækt/', '팩트'),
+(9483, 'truth', NULL, '진실', 'NOUN', '/truːθ/', '트루-스'),
+(9484, 'confuse', NULL, '헷갈리게 하다', 'VERB', '/kənˈfjuːz/', '컨퓨-즈'),
+(9485, 'admit', NULL, '(사실임을) 인정하다', 'VERB', '/ədˈmɪt/', '어드미트'),
+(9486, 'swear', NULL, '분명하다고 단언하다', 'VERB', '/swer/', '스웨어'),
+(9487, 'sure', NULL, '(기억이) 확실한', 'ADJECTIVE', '/ʃʊr/', '슈어'),
+(9488, 'honest', NULL, '솔직한', 'ADJECTIVE', '/ˈɑːnɪst/', '아-니스트'),
+(9489, 'certain', NULL, '(사실이) 분명한', 'ADJECTIVE', '/ˈsɜːrtn/', '서-튼'),
+(9490, 'obvious', NULL, '누가 봐도 뻔한', 'ADJECTIVE', '/ˈɑːbviəs/', '아-비어스'),
+(9491, 'opposite', NULL, '정반대의', 'ADJECTIVE', '/ˈɑːpəzɪt/', '아-퍼지트'),
+(9492, 'exactly', NULL, '정확히 · 바로 그렇게', 'ADVERB', '/ɪɡˈzæktli/', '이그잭틀리'),
+(9493, 'actually', NULL, '(알고 보면) 실은', 'ADVERB', '/ˈæktʃuəli/', '액추얼리'),
+(9494, 'totally', NULL, '완전히', 'ADVERB', '/ˈtoʊtəli/', '토우털리'),
+(9495, 'possibly', NULL, '어쩌면', 'ADVERB', '/ˈpɑːsəbli/', '파-서블리');

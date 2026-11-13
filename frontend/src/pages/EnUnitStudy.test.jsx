@@ -155,14 +155,17 @@ describe("어휘 스텝 (§3-3)", () => {
     expect(screen.getByText("─")).toBeInTheDocument();
   });
 
-  it("단어 링크는 영어 자료실 검색이다", async () => {
+  // 2026-11-14 갱신 — "영어 자료실 **검색**(q=단어)으로 연다"는 거짓이 됐다: 동철이음어를 별개 행으로 가른 뒤
+  // q로 열면 close(/kloʊz/ 닫다)를 눌러도 close(/kloʊs/ 가까운)가 함께 뜬다(04 §6-1, qa 결함 4).
+  // 링크 규칙 자체는 senior-dev의 `UnitStudyPage.entryLink.test.jsx`가 고정한다 — 여기서는 **영어 경로**만 본다.
+  it("단어 링크는 영어 자료실의 그 표제어로 간다", async () => {
     renderUnit();
     const user = userEvent.setup();
 
     await user.click(await screen.findByRole("button", { name: "어휘" }));
 
     expect(screen.getByRole("link", { name: /apple/ }).getAttribute("href")).toBe(
-      "/en/library/vocabulary?q=apple",
+      "/en/library/vocabulary?ids=6300",
     );
   });
 });

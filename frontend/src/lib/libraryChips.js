@@ -11,6 +11,18 @@ import { levelText } from "./libraryQuery.js";
 export function appliedChips(params, setParams) {
   const chips = [];
 
+  // 유닛 어휘에서 "그 표제어 하나"로 좁혀 들어온 상태 (작업자(AI)_문서/04 §6-1).
+  // 조건이 보이지 않으면 사용자는 왜 한 줄만 나오는지 알 수 없고 돌아갈 길도 없다.
+  // ⚠️ **문구는 임시다** — designer 확정 대기(계약이 정하는 것은 "칩이 있다 · 해제하면 ids가 빠진다"까지다).
+  if (params.ids?.length) {
+    chips.push({
+      key: "ids",
+      label: "선택한 항목만",
+      plain: "선택한 항목만",
+      onRemove: () => setParams({ ids: [] }),
+    });
+  }
+
   if (params.q) {
     chips.push({
       key: "q",

@@ -13,6 +13,9 @@ describe("parseLibraryParams — 주소가 목록 상태의 단일 출처 (작�
   it("쿼리가 없으면 기본값", () => {
     expect(parseLibraryParams("")).toEqual({
       q: "",
+      // ids도 **기본값이 있는 칸**이다 — 없으면 빈 배열(04 §6-1·§6-7, 2026-11-14 추가).
+      // 계약 테스트는 `libraryQuery.ids.test.js`(senior-dev)이고, 여기서는 기본 모양만 맞춰 둔다.
+      ids: [],
       levels: [],
       pos: [],
       sort: "LEARNING",

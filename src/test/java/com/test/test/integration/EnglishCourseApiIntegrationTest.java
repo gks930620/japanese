@@ -43,8 +43,12 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      * <p>⚠️ <b>이 상수가 15가 아니게 되는 날 읽을 것</b>: 계획이 늘어난다는 것은 E1이 <b>다시 부분 공개</b>가 된다는 뜻이고,
      * 그 순간 아래 {@link #the_last_unit_is_a_finished_course_because_the_plan_is_met}가 전제부터 실패한다.
      * 그것이 곧 <b>"열린 데까지의 끝" 백엔드 커버리지를 복구하라</b>는 신호다(작업자(AI)_문서/08 C-30).
+     *
+     * <p><b>2026-11-14</b>: 숫자를 여기 적지 않고 {@link CourseCatalog#plannedUnitsOf(long)}에서 받아온다 —
+     * 코스 <b>목록·상세</b>에도 같은 값이 실리게 되어(작업자(AI)_문서/04 §2-3-B) 이 숫자를 읽는 테스트가 둘이 됐기 때문이다.
+     * <b>위 경고는 그대로 유효하다</b>: 값이 15가 아니게 되는 날 아래 테스트의 전제가 무너진다.
      */
-    private static final int E1_PLANNED_UNITS = 15;
+    private static final int E1_PLANNED_UNITS = CourseCatalog.plannedUnitsOf(EN_COURSE_1);
 
     /**
      * E2의 <b>계획</b> 유닛 수 — 시드 {@code data-course-en-content.sql}의 course 102 행({@code planned_unit_count = 20}).
@@ -57,8 +61,11 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      * <p>⚠️ <b>이 값과 열린 유닛 수가 같아지는 날(E2 20/20) 읽을 것</b>: 아래
      * {@link #the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course}의 전제가 다시 거짓이 된다.
      * 그때 할 일은 {@code CourseCatalog.ENGLISH} 주석에 적어 두었다(대상을 E3로 옮기거나, 공백을 계약 표에 명시한다).
+     *
+     * <p><b>2026-11-14</b>: {@link CourseCatalog#plannedUnitsOf(long)}에서 받아온다 — 같은 값을
+     * {@code CoursePlannedUnitsContractIntegrationTest}(코스 목록·상세의 {@code plannedUnitCount})도 읽기 때문이다.
      */
-    private static final int E2_PLANNED_UNITS = 20;
+    private static final int E2_PLANNED_UNITS = CourseCatalog.plannedUnitsOf(EN_COURSE_2);
 
     /**
      * 부분 공개 코스의 안내 문구 — <b>E1이 쓰던 것과 글자 그대로 같다</b>(작업자(AI)_문서/06 §11-12 ③ R6 · 기획 E2 AC-25).

@@ -160,6 +160,31 @@ final class CourseCatalog {
             english(104L, 4, "E4", "뉘앙스", false, 0, 0, 0, 0),
             english(105L, 5, "E5", "실전과 격식", false, 0, 0, 0, 0));
 
+    /**
+     * 코스별 <b>계획</b> 유닛 수 — 시드의 {@code course.planned_unit_count} 그대로다. 없는 코스는 {@code null}.
+     *
+     * <p><b>왜 {@link Course} 행이 아니라 별도 표인가</b>: 위 표의 {@code unitCount}는 <b>지금 열린 수</b>이고
+     * 콘텐츠 전수 검증의 <b>순회 범위</b>로 쓰인다(그 주석 참고). 계획 수는 <b>아직 만들지 않은 것에 대한 편집 계획</b>이라
+     * 순회하면 없는 유닛까지 돌아 전부 404다. 한 행에 섞으면 둘을 혼동해 쓰는 길이 열리므로 <b>성질이 다른 값은 표를 가른다</b>.
+     *
+     * <p>그래도 <b>한 곳</b>에 모으는 이유: 2026-11-14 전까지 이 숫자는 {@code EnglishCourseApiIntegrationTest}의
+     * private 상수로만 있었는데, 코스 <b>목록·상세</b>에도 같은 값이 실리게 되면서
+     * ({@code plannedUnitCount}, 작업자(AI)_문서/04 §2-3-B) 그 값을 읽는 테스트가 둘이 됐다.
+     * 두 벌로 두면 E2가 20/20을 채우는 날 한쪽만 고치게 된다.
+     *
+     * <p>⚠️ <b>이 표를 고치는 것은 senior-dev다</b> — 계약 값이다(시드 {@code data-course-en-content.sql}과 맞춰야 한다).
+     * 일본어는 한 줄도 없다: 일본어 코스는 전부 {@code planned_unit_count IS NULL}이고, <b>그것이 회귀 방어선</b>이다
+     * (null이면 부분 공개 개념이 없어 동작이 한 줄도 바뀌지 않는다).
+     */
+    private static final java.util.Map<Long, Integer> PLANNED_UNITS = java.util.Map.of(
+            101L, 15,   // E1 — 15/15로 계획을 채운 완주 코스
+            102L, 20);  // E2 — 부분 공개(열린 수는 위 표의 unitCount)
+
+    /** 그 코스의 계획 유닛 수, 없으면 {@code null}(= 지금 있는 유닛이 전부) */
+    static Integer plannedUnitsOf(long courseId) {
+        return PLANNED_UNITS.get(courseId);
+    }
+
     /** 영어 코스 하나 — 일본어 {@link #byId}와 표를 섞지 않는다(두 목록은 서로를 포함하지 않는 것이 계약이다) */
     static Course englishById(long id) {
         return ENGLISH.stream().filter(course -> course.id == id).findFirst()

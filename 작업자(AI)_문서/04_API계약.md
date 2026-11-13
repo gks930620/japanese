@@ -209,10 +209,12 @@
 `courseNo` 오름차순 6개.
 
 ```
-data: [ { id, courseNo, levelLabel, levelCode, title, targetAudience, goal, notice, status, unitCount } ]
+data: [ { id, courseNo, levelLabel, levelCode, title, targetAudience, goal, notice, status, unitCount,
+          plannedUnitCount } ]
 ```
 
 - `status`: `"AVAILABLE"` | `"PREPARING"`
+- `plannedUnitCount`: 계획 유닛 수. **`null`이면 계획값 없음 = 지금 있는 유닛이 전부** (§2-3-A·§2-3-B). null이어도 키는 항상 직렬화한다.
 - `levelCode`: 레벨 **코드**(`INTRO`·`N5`~`N1`). 자료실 `level=` 필터에 그대로 넘길 수 있는 유일한 값이다 — `levelLabel`(표시 문구)을 잘라 만들지 않는다(§3-1).
 - `notice`: 코스 카드의 보조 안내. 값이 있는 코스만 표시(현재 N5만).
 - `unitCount`: 유닛 수(DB 집계, PREPARING은 0) — 진도 막대의 분모다(§6-1).
@@ -226,12 +228,16 @@ data: [ { id, courseNo, levelLabel, levelCode, title, targetAudience, goal, noti
 ```
 data: {
   id, courseNo, levelLabel, levelCode, title, targetAudience, goal, notice, description, status,
+  plannedUnitCount,                                                  // §2-3-B — null = 계획값 없음
   summary: { unitCount, grammarCount, kanjiCount, vocabCount },
   units: [ { unitNo, title, grammarCount, kanjiCount, vocabCount } ]
 }
 ```
 
 - `summary`는 **DB 집계값이다 — 하드코딩 금지 계약.** 유닛별 집계의 합이다.
+- `plannedUnitCount`는 **`summary` 밖, 루트에 둔다** — `summary`의 네 칸은 전부 "유닛별 집계의 합"이라는
+  한 가지 성질로 묶여 있는데 계획 수는 **아직 만들지 않은 것에 대한 편집 계획**이라 집계가 아니다(§2-3-B).
+  같은 봉투에 넣으면 "summary는 DB 집계" 계약이 깨지고, 언젠가 누군가 집계로 채우게 된다.
 - `units[]`에 회화 개수가 없는 이유: 유닛당 회화는 항상 정확히 1편(도메인 규칙)이라 내릴 필요가 없다.
 - 없는 `courseId` → 404 `NOT_FOUND`.
 
@@ -330,6 +336,71 @@ completedCourse = nextUnitNo == null && !moreUnitsComing
 
 일본어 테스트가 값이 아니라 **키의 존재**를 보는 이유: 필드가 통째로 빠져도 프론트 판정은 false가 되어 지금과 똑같이
 동작하므로, 일본어를 부분 공개하는 날 **조용히** 거짓 완주 안내로 되돌아간다.
+
+#### 2-3-B. 같은 사실을 **코스 목록·상세도** 받는다 — `plannedUnitCount` (2026-11-14, qa 결함 1·2)
+
+§2-3-A는 계획 수를 **유닛 응답에만** 실었다. 그래서 유닛 화면만 두 상태를 가를 수 있었고,
+**코스 목록·코스 상세·홈·마이페이지는 판정할 재료 자체가 없었다** — 그 결과 E2(102, 계획 20 중 일부 공개)에서
+한 사람이 네 자리에서 네 가지 말을 들었다:
+
+| 화면 | 2026-11-14 실제 | 왜 |
+|---|---|---|
+| 유닛 마지막 정리 | ✅ "열린 데까지의 끝" | 유닛 응답에 `coursePlannedUnits`가 있다 |
+| 코스 상세 ✎ 안내 | ✅ "채우는 중이에요" | 사람이 쓴 `notice` |
+| **같은 화면의 CTA** | ❌ "✓ 이 코스를 완주했어요" | `summary.unitCount`만 보고 판정 |
+| **홈·마이페이지·코스 카드** | ❌ "완주했어요" · 진도 5/5 = 100% | 목록 응답에 계획 수가 없다 |
+
+**계약**: 코스를 표현하는 모든 응답이 계획 수를 싣는다. 대상은 넷이다 —
+`GET /api/courses` · `GET /api/courses/{id}` · `GET /api/en/courses` · `GET /api/en/courses/{id}`.
+
+| 항목 | 규칙 |
+|---|---|
+| 이름 | **`plannedUnitCount`** (Integer, nullable) |
+| 자리 | 코스 객체의 **루트**. 상세에서도 `summary` 안이 아니다(§2-2) |
+| 값 | `course.planned_unit_count` **그대로**. `unitCount`·`summary.unitCount`에서 **파생하지 않는다** |
+| `null` | 계획값 없음 = **지금 있는 유닛이 전부**. 일본어 전 코스가 여기 — **동작이 한 줄도 바뀌지 않는 것이 회귀 방어선이다** |
+| 직렬화 | **null이어도 키는 항상 있다**(§1-3 · `coursePlannedUnits`와 같은 규칙) |
+| PREPARING 코스 | 지금은 전부 `null`(E3~E5). 열면서 부분 공개로 시작하면 그때 값이 생긴다 |
+
+**왜 유닛 응답과 이름이 다른가** — 두 이름은 **주어가 다르기 때문**이다. 유닛 응답의 주어는 유닛이라
+어느 코스 얘기인지 밝혀야 하고(`coursePlannedUnits`), 코스 응답의 주어는 코스 자신이라 `course` 접두가 중복이다.
+코스 응답에서는 바로 옆 칸이 `unitCount`이므로(`courseUnitCount`가 아니다) **같은 자리의 이름 규칙을 따르는 쪽**이
+`plannedUnitCount`다. DB 컬럼명(`planned_unit_count`)과도 같아 "이 값이 어디서 오나"를 문서 없이 답할 수 있다.
+유닛 쪽 이름을 바꾸지 않은 이유: 이미 세 스택과 백엔드 테스트 네 건이 읽고 있어, 개명은 결함 수정이 아니라 **계약 파괴**다.
+
+> ⚠️ **두 이름이 만나는 곳은 한 곳뿐이어야 한다.** 프론트는 비교식을 화면마다 다시 쓰지 않고
+> `lib/progressView.js`의 순수 함수 하나에 모은다 — 이 결함의 뿌리가 "규칙이 한 화면에만 있었다"이기 때문이다.
+>
+> ```js
+> moreUnitsComing(openUnits, plannedUnits) = plannedUnits != null && openUnits < plannedUnits
+> courseUnitTotal(course)                  = course.plannedUnitCount ?? course.unitCount ?? 0
+> ```
+> 유닛 화면은 `moreUnitsComing(data.totalUnits, data.coursePlannedUnits)`로,
+> 코스 화면은 `moreUnitsComing(course.unitCount, course.plannedUnitCount)`로 부른다. **판정식은 한 벌이다.**
+
+**화면 판정 — 코스를 가진 화면이 지켜야 하는 것** (고정 테스트는 아래 표):
+
+| 무엇 | 규칙 |
+|---|---|
+| 완주 주장 | `moreUnitsComing`이면 **"완주"라고 말하지 않는다** — 코스 카드 배지·코스 상세 CTA·홈/마이페이지 이어보기 문구 전부 |
+| 진도 막대 분모 | **`courseUnitTotal(course)`** = 계획 수가 있으면 계획 수. 열린 수를 분모로 쓰면 **5/5 = 100%** 가 되어 "완주"를 막대가 대신 말한다(§6-1) |
+| 다음 코스로 내보내기 | `moreUnitsComing`이면 **다음 코스로 보내지 않는다** — 유닛 화면이 이미 그렇게 한다(`05` "끝은 두 종류다" 표). 참인 행선지는 **그 코스 자신**이다 |
+| `null`일 때 | 위 셋 **전부 지금 동작 그대로**. 일본어는 한 픽셀도 바뀌지 않는다 |
+
+- **문구는 designer·planner의 것이다.** 이 계약이 정하는 것은 *무엇을 금지하는가*와 *어느 값을 분모로 쓰는가*까지다.
+  그래서 고정 테스트도 **문구 전문을 박지 않고** "완주를 주장하지 않는다"는 금지와 구조(분모·행선지)로 고정한다(2026-11-13 배너 건과 같은 방식).
+- **`notice`를 신호로 쓰지 않는다**는 §2-3-A 규칙이 그대로 적용된다. 코스 상세의 ✎ 안내와 CTA가 서로 다른 말을 한 것이
+  이 결함의 눈에 보이는 증상이었고, 둘이 **같은 값**(`plannedUnitCount`)을 보게 하는 것이 수정이다.
+
+고정 테스트:
+
+| 무엇 | 어디 |
+|---|---|
+| 목록·상세에 값이 실린다(E2 = 20 · E1 = 15) · 열린 수에서 파생하지 않는다 | `integration/CoursePlannedUnitsContractIntegrationTest` |
+| 일본어는 **키는 있고 값은 null** (목록·상세 둘 다) | 같은 파일 |
+| 분모·완주 판정(`courseUnitTotal`·`moreUnitsComing`·배지) | `frontend/src/lib/progressView.plannedUnits.test.js` |
+| 이어보기가 부분 공개 코스를 완주라고 말하지 않는다 | `frontend/src/lib/resume.plannedUnits.test.js` |
+| 코스 상세 CTA·진도 막대 | `frontend/src/pages/CourseDetailPage.plannedUnits.test.jsx` |
 
 ---
 
@@ -642,8 +713,41 @@ content: [ {
 
 | API | 필드 | 규칙 |
 |---|---|---|
-| `GET /api/courses` | `unitCount` | 그 코스의 유닛 수(**DB 집계, 하드코딩 금지**). PREPARING은 0. 진도 막대의 **분모**이고, 비로그인도 막대를 그리므로 공개 API가 준다 |
-| `GET /api/courses/{courseId}/units/{unitNo}` → `vocabularies[]` | `entryId` | 그 어휘가 속한 **자료실 표제어 행의 `id`**(= 03 §4-1의 어휘 `target_id`). 그룹이 하나뿐이면 `id`와 같다 |
+| `GET /api/courses` | `unitCount` | 그 코스의 **지금 열린** 유닛 수(**DB 집계, 하드코딩 금지**). PREPARING은 0. 비로그인도 진도 막대를 그리므로 공개 API가 준다 |
+| `GET /api/courses` · `GET /api/courses/{courseId}` | `plannedUnitCount` | 계획 유닛 수(§2-3-B). **진도 막대의 분모는 `plannedUnitCount ?? unitCount`** 다 — 열린 수를 분모로 쓰면 부분 공개 코스가 5/5 = 100%로 보여 막대가 "완주"를 대신 말한다(2026-11-14 qa 결함 2) |
+| `GET /api/courses/{courseId}/units/{unitNo}` → `vocabularies[]` | `entryId` | 그 어휘가 속한 **자료실 표제어 행의 `id`**(= 03 §4-1의 어휘 `target_id`). 그룹이 하나뿐이면 `id`와 같다. **유닛 → 자료실 링크는 이 값으로 건다** ↓ |
+
+#### 유닛 어휘 → 자료실 링크는 **`entryId` 기반이다** (2026-11-14, qa 결함 4)
+
+유닛 어휘 표의 단어를 누르면 자료실이 **검색어(`?q=단어`)** 로 열렸다. 표기가 한 행에 하나뿐일 때는 맞아 보였지만,
+**동철이음어를 별개 행으로 가른 뒤**(§8-2 · 08 A-8) 거짓이 됐다 — E2 유닛의 `close`(`/kloʊz/` 닫다)를 누르면
+E1의 `close`(`/kloʊs/` 가까운)까지 **두 줄이 나온다.** 유닛은 어느 줄인지 알고 있는데(`entryId`) 링크가 그 값을 버렸다.
+
+| 항목 | 규칙 |
+|---|---|
+| 화면 주소 | `/library/vocabulary?ids={entryId}` (영어는 `/en/library/vocabulary?ids={entryId}`) — **`q`를 함께 싣지 않는다** |
+| 근거 값 | 유닛 응답의 `vocabularies[].entryId`. **행의 `id`가 아니다**(병합된 표제어는 둘이 다르다) |
+| 서버 | 새 API가 없다 — `ids`는 **이미 있는 계약**이다(§6-7, 어휘는 표제어 대표 id 기준) |
+| 자료실 화면 | `ids`를 **주소에서 읽어** 목록 조회에 그대로 넘긴다. 적용 조건 **1개로 세고**(= [초기화]가 보인다) 해제 칩을 가진다 — 조건이 안 보이면 사용자는 왜 한 줄만 나오는지 알 수 없다 |
+| 칩 문구 | designer의 것이다. 계약이 정하는 것은 **칩이 있다 · 해제하면 `ids`가 빠진다**까지다 |
+
+고정 테스트: `frontend/src/pages/UnitStudyPage.entryLink.test.jsx` · `frontend/src/lib/libraryQuery.ids.test.js`
+
+#### 진도 **배너** 판정은 과정별이다 — 마지막 위치와 다른 규칙이다 (2026-11-14, qa 결함 3)
+
+`GET /api/progress`의 문서에는 **과정 구분이 없다**(`completedUnits[].courseId`·`lastPosition.courseId`만 있다).
+그래서 "진도가 있나?"를 전체 문서로 판정하면 **영어만 공부한 사람이 일본어 코스 목록에서 "지금 코스가 너무 쉽거나 어렵나요?"**
+(= 진도 있음 배너)를 본다 — 같은 화면의 입문 카드는 "여기서 시작하세요"(= 진도 없음)라 **띠와 배지가 서로 다른 말을 한다.**
+
+**계약**: 한 화면의 진도 판정은 **그 화면이 들고 있는 코스 목록 안에서만** 한다.
+`hasProgressIn(progress, courses)` = 그 목록에 있는 코스의 완료 유닛이 하나라도 있거나, `lastPosition`이 그 목록의 코스를 가리킨다.
+배지 계산(`courseBadges`)이 이미 목록을 받아 그 안에서만 판정하고 있다 — **띠도 같은 재료로 판정해야 둘이 갈리지 않는다.**
+
+> ⚠️ **"마지막 위치는 사이트 전체에 하나"(`01 §10-4`)를 뒤집는 것이 아니다.** 저장 문서는 그대로 하나이고,
+> 홈·마이페이지의 이어보기는 **두 과정 목록을 다 받아** 어느 쪽이든 가리킨다(`lib/resume.js`). 여기서 바꾸는 것은
+> **한 과정만 보여주는 화면의 배너 판정**뿐이다. 둘을 섞으면 이어보기가 과정별로 쪼개져 더 큰 회귀가 된다.
+
+고정 테스트: `frontend/src/lib/progressView.scope.test.js` · `frontend/src/pages/CoursesPage.progressScope.test.jsx`
 
 **공개 응답에 `bookmarked`·`completed` 같은 사용자 상태 필드는 넣지 않는다.** 넣는 순간 "콘텐츠(공개)/사용자 상태(인증)"의 경계가 응답 본문에서 무너진다. ★ 판정은 `GET /api/bookmarks/ids`가 준 집합으로 한다.
 
@@ -809,8 +913,8 @@ data: { completedUnitCount, lastPosition, bookmarkCounts: { kanji, grammar, voca
 
 | 메서드 | 경로 | 응답 |
 |---|---|---|
-| GET | `/api/en/courses` | 코스 5개(`courseNo` 오름차순). 일본어 `CourseDTO`와 **같은 필드**이고 `levelCode`만 `E1`~`E5`다 |
-| GET | `/api/en/courses/{courseId}` | `{ id, courseNo, levelLabel, levelCode, title, targetAudience, goal, notice, description, status, summary, units[] }` |
+| GET | `/api/en/courses` | 코스 5개(`courseNo` 오름차순). 일본어 `CourseDTO`와 **같은 필드**이고 `levelCode`만 `E1`~`E5`다 — `plannedUnitCount` 포함(§2-3-B) |
+| GET | `/api/en/courses/{courseId}` | `{ id, courseNo, levelLabel, levelCode, title, targetAudience, goal, notice, description, status, plannedUnitCount, summary, units[] }` |
 | GET | `/api/en/courses/{courseId}/units/{unitNo}` | 유닛 학습 데이터 — 아래 |
 
 ```
@@ -839,6 +943,9 @@ data: {
 - `partOfSpeech`는 **영어 7종**(`NOUN`·`VERB`·`ADJECTIVE`·`ADVERB`·`PREPOSITION`·`CONJUNCTION`·`PHRASE`)이다.
   일본어 7종과 코드 집합이 다르다 — 허용 밖 값은 400.
 - 준비중 코스(**2026-09-22부터 E3~E5**)는 일본어와 같다: 상세 200(빈 units), 유닛 404 `COURSE_PREPARING`.
+- **코스 목록·상세의 `plannedUnitCount`도 일본어와 같은 필드·같은 규칙**이다(§2-3-B).
+  2026-11-14 현재 값을 가진 코스는 **E1 = 15 · E2 = 20** 뿐이고 나머지(E3~E5·일본어 전부)는 `null`이다.
+  여기가 **유일하게 `null`이 아닌 실데이터**라, 일본어만으로는 "파생 구현인지"를 가릴 수 없다(§2-3-A ③과 같은 구조).
 - `coursePlannedUnits`는 **일본어와 완전히 같은 필드·같은 규칙**이다(§2-3-A).
   **2026-11-13 현재 E1은 15/15(완주) · E2는 10/20(열린 데까지의 끝)** 이고, `notice`는 E1이 NULL · E2가 공용 문구다.
   "열린 데까지의 끝"인 유닛 번호는 공개 범위를 넓힐 때마다 옮겨 다니므로(E1은 5 → 10 → 없음, E2는 5 → **10** → 15 → 없음)

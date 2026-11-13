@@ -1,4 +1,4 @@
-import { isUnitCompleted } from "./progressView.js";
+import { isUnitCompleted, moreUnitsComing } from "./progressView.js";
 
 // 마지막 위치 → "이어서 학습하기" 대상 (2026-09 결정 D-2 · 작업자(AI)_문서/01 §7-8).
 //
@@ -30,7 +30,7 @@ function nextAvailableCourse(list, course) {
 /**
  * @param {{completedUnits: {courseId:number,unitNo:number}[], lastPosition: {courseId:number, unitNo:number}|null}} progress
  * @param {{ja: object[], en: object[]}} lists 두 과정의 코스 목록
- * @returns {{kind:"RESUME"|"NEXT_UNIT"|"COURSE_DONE", course:object, lang:"ja"|"en",
+ * @returns {{kind:"RESUME"|"NEXT_UNIT"|"OPEN_END"|"COURSE_DONE", course:object, lang:"ja"|"en",
  *            unitNo:number|null, to:string, text:string, ctaLabel:string}|null}
  *          못 찾으면 null — 사라졌거나 준비중인 코스면 버튼도 문구도 만들지 않는다(작업자(AI)_문서/05 §8, 홈과 같은 규칙)
  */
@@ -77,7 +77,23 @@ export function resumeTarget(progress, { ja = [], en = [] } = {}) {
     };
   }
 
-  // ③ 보던 유닛 뒤를 다 마쳤으면 다음 AVAILABLE 코스 상세로 — 버튼에 "이어서"가 없다.
+  // ③ 보던 유닛 뒤를 다 마쳤다 — 여기서 끝은 **두 종류**다(작업자(AI)_문서/04 §2-3-B · 08 C-33).
+  //    아직 채우는 중인 코스라면 "열린 데까지의 끝"이지 완주가 아니다. 다음 코스로 내보내면
+  //    "이 코스는 끝났다"고 말하는 것과 같으므로, 참인 행선지는 **그 코스 자신**(유닛 목록)이다.
+  //    ⚠️ 문구는 임시다 — planner·designer 확정 대기(고정 테스트는 "완주를 주장하지 않는다"만 본다).
+  if (moreUnitsComing(course.unitCount, course.plannedUnitCount)) {
+    return {
+      kind: "OPEN_END",
+      course,
+      lang: english ? "en" : "ja",
+      unitNo: null,
+      to: `${base}/${course.id}`,
+      text: `${label} 코스 · 지금 열려 있는 유닛은 여기까지예요`,
+      ctaLabel: "유닛 목록으로",
+    };
+  }
+
+  //    계획을 채운 코스는 지금 그대로 다음 AVAILABLE 코스 상세로 — 버튼에 "이어서"가 없다.
   //    이 코스 안의 앞쪽 미완료 유닛으로 끌고 가지 않는다(복습은 사용자가 고른다).
   const next = nextAvailableCourse(list, course);
   return {

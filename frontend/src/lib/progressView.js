@@ -32,6 +32,43 @@ export function nextUnitNo(completedUnits, courseId, unitCount) {
   return null;
 }
 
+/**
+ * 아직 채우는 중인 코스인가 — **"다음이 없다"는 "끝냈다"가 아니다**(작업자(AI)_문서/04 §2-3-A·§2-3-B · 08 C-29·C-33).
+ *
+ * 인자를 코스 객체가 아니라 **숫자 둘**로 받는다: 유닛 응답은 (`totalUnits`, `coursePlannedUnits`),
+ * 코스 응답은 (`unitCount`, `plannedUnitCount`)로 **이름이 다르기 때문**이다(주어가 다르다 — §2-3-B).
+ * 두 이름은 **이 함수의 인자 자리에서만** 만난다. 이름이 둘인 것은 괜찮고, 판정식이 둘인 것은 안 된다.
+ *
+ * 계획값이 없으면(null·undefined) 지금 있는 유닛이 전부다 → 거짓(일본어는 한 줄도 바뀌지 않는다).
+ */
+export function moreUnitsComing(openUnits, plannedUnits) {
+  return plannedUnits != null && openUnits < plannedUnits;
+}
+
+/**
+ * 진도 막대의 분모 (작업자(AI)_문서/04 §6-1) — 계획 수가 있으면 계획 수다.
+ * 열린 수를 분모로 쓰면 부분 공개 코스가 **5/5 = 100%** 가 되어 막대가 "완주"를 대신 말한다.
+ */
+export function courseUnitTotal(course) {
+  return course?.plannedUnitCount ?? course?.unitCount ?? 0;
+}
+
+/**
+ * 그 **목록 안에** 진도가 있는가 (작업자(AI)_문서/04 §6-1 "진도 배너 판정은 과정별이다").
+ *
+ * 진도 문서는 사이트 전체에 하나지만(01 §10-4), 한 과정만 보여주는 화면의 배너는 **그 화면이 들고 있는
+ * 코스 목록 안에서만** 판정해야 한다 — 그러지 않으면 영어만 공부한 사람이 일본어 목록에서 "진도 있음" 띠를 본다.
+ * 배지 계산(`courseBadges`)이 이미 목록 안에서만 판정하므로, 띠도 **같은 재료**를 봐야 둘이 갈리지 않는다.
+ */
+export function hasProgressIn(progress, courses) {
+  const ids = (courses ?? []).map((course) => course.id);
+  if (ids.length === 0) return false;
+  const completedUnits = progress?.completedUnits ?? [];
+  if (completedUnits.some((unit) => ids.includes(unit.courseId))) return true;
+  const lastPosition = progress?.lastPosition ?? null;
+  return lastPosition != null && ids.includes(lastPosition.courseId);
+}
+
 /** 저장된 스텝 키의 현재 위치. 없는 키(콘텐츠 개편으로 사라진 스텝)면 첫 스텝으로 되돌린다(작업자(AI)_문서/04 §6-2). */
 export function resolveStepIndex(stepKeys, stepKey) {
   const index = (stepKeys ?? []).indexOf(stepKey);
@@ -53,7 +90,12 @@ export function courseBadges(courses, progress) {
   const lastPosition = progress?.lastPosition ?? null;
 
   const isAvailable = (course) => course.status === "AVAILABLE";
-  const isDone = (course) => course.unitCount > 0 && completedCount(completedUnits, course.id) >= course.unitCount;
+  // 완주 판정의 분모도 **계획 수**다(§2-3-B) — 열린 수로 세면 부분 공개 코스가 DONE이 되고,
+  // 그 뒤 코스가 NEXT로 넘어가 "앞 코스는 끝났다"는 말이 배지로 한 번 더 선다.
+  const isDone = (course) => {
+    const total = courseUnitTotal(course);
+    return total > 0 && completedCount(completedUnits, course.id) >= total;
+  };
 
   // ① 기준 코스(anchor) — 마지막 위치가 가리키는 AVAILABLE 코스
   let anchor = null;
