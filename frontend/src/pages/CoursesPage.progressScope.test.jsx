@@ -22,10 +22,11 @@ import { render, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
 import { apiError, apiSuccess, stubFetch } from "../test/helpers.jsx";
+import { AsyncProbe } from "../test/AsyncProbe.jsx";
+import { USER_DATA_TIMEOUT, waitForGuestProgress } from "../test/userDataWait.js";
 import { coursesFixture } from "../test/apiFixtures.js";
 import { AuthProvider } from "../context/AuthContext.jsx";
 import { UserDataProvider } from "../context/UserDataContext.jsx";
-import { useUserData } from "../context/userDataStore.js";
 import { setGuestLastPosition, setGuestUnitCompleted } from "../lib/guestStore.js";
 import { CoursesPage } from "./CoursesPage.jsx";
 
@@ -33,17 +34,8 @@ const EN_COURSE_ID = 102; // 영어 코스 — 일본어 목록(`/api/courses`)�
 const JA_COURSE_ID = 2;
 const NOW = new Date("2026-11-14T10:00:00"); // 시각은 주입한다(컨벤션 §6 — 결정적 테스트)
 
-/**
- * 진도가 **도착했는지**를 DOM으로 드러내는 탐침.
- *
- * 진도는 인증 판정(401) 뒤에 비동기로 온다 — 그 전에 띠를 읽으면 "진도 없음" 화면을 읽고
- * 테스트가 <b>거짓 초록</b>이 된다(이 결함의 증상이 정확히 "진도 없음 화면"이라 더 위험하다).
- */
-function ProgressProbe() {
-  const { ready, progress } = useUserData();
-  return <i data-completed={progress.completedUnits.length} data-ready={String(ready)} />;
-}
-
+// 진도 도착 탐침은 `test/AsyncProbe.jsx`로 옮겼다 — 같은 탐침을 파일마다 다시 쓰면 조용히 갈린다(08 E-4).
+// 이 화면에서 거짓 초록이 특히 비싼 이유: 결함의 증상이 정확히 **"진도 없음 화면"** 이라, 안 기다리면 결함과 구분되지 않는다.
 async function renderCourses() {
   stubFetch((url) => {
     if (url.includes("/api/users/me")) return apiError(401, "NOT_AUTHENTICATED");
@@ -54,13 +46,17 @@ async function renderCourses() {
       <AuthProvider>
         <UserDataProvider>
           <CoursesPage />
-          <ProgressProbe />
+          <AsyncProbe />
         </UserDataProvider>
       </AuthProvider>
     </MemoryRouter>,
   );
-  await waitFor(() => expect(container.querySelector('[data-ready="true"]')).not.toBeNull());
-  await waitFor(() => expect(container.querySelector(".courses-start-notice")).not.toBeNull());
+  // 심어 둔 진도가 **그대로** 실릴 때까지 기다린다 — "기다리긴 했는데 빈 진도였다"가 이 화면의 거짓 초록이다.
+  // ⚠️ 이 파일은 한 테스트에서 화면을 **두 번** 띄워 맞대어 보므로(진도 있음 / 지운 뒤) 탐침도 둘이다 — container로 좁힌다
+  await waitForGuestProgress({ container });
+  await waitFor(() => expect(container.querySelector(".courses-start-notice")).not.toBeNull(), {
+    timeout: USER_DATA_TIMEOUT,
+  });
   return container.querySelector(".courses-start-notice").textContent.replace(/\s+/g, " ").trim();
 }
 

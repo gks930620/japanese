@@ -21,9 +21,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
 import { apiError, apiSuccess, stubFetch } from "../test/helpers.jsx";
+import { AsyncProbe } from "../test/AsyncProbe.jsx";
+import { USER_DATA_TIMEOUT, waitForGuestProgress } from "../test/userDataWait.js";
 import { AuthProvider } from "../context/AuthContext.jsx";
 import { UserDataProvider } from "../context/UserDataContext.jsx";
-import { useUserData } from "../context/userDataStore.js";
 import { setGuestUnitCompleted } from "../lib/guestStore.js";
 import { CourseDetailPage } from "./CourseDetailPage.jsx";
 
@@ -79,15 +80,7 @@ function japaneseDetail() {
   };
 }
 
-/**
- * 진도가 **도착했는지**를 DOM으로 드러내는 탐침 — 진도는 인증 판정(401) 뒤에 비동기로 온다.
- * 그 전에 단언하면 "아직 아무것도 안 한 사람" 화면을 읽고 <b>거짓 초록</b>이 난다.
- */
-function ProgressProbe() {
-  const { ready } = useUserData();
-  return <i data-ready={String(ready)} />;
-}
-
+// 진도 도착 탐침은 `test/AsyncProbe.jsx`로 옮겼다 — 같은 탐침을 파일마다 다시 쓰면 조용히 갈린다(08 E-4).
 async function renderDetail(payload, { lang = "en" } = {}) {
   const base = lang === "en" ? "/en/courses" : "/courses";
   stubFetch((url) => {
@@ -102,14 +95,17 @@ async function renderDetail(payload, { lang = "en" } = {}) {
           <Routes>
             <Route element={<CourseDetailPage lang={lang} />} path={`${base}/:courseId`} />
           </Routes>
-          <ProgressProbe />
+          <AsyncProbe />
         </UserDataProvider>
       </AuthProvider>
     </MemoryRouter>,
   );
-  await waitFor(() => expect(container.querySelector('[data-ready="true"]')).not.toBeNull());
+  // 심어 둔 완료 유닛이 **그대로** 화면에 실릴 때까지 기다린다(거짓 통과·거짓 실패 양쪽을 막는다)
+  await waitForGuestProgress({ container });
   // 진도가 반영된 화면인지까지 확인한다 — 진도 막대는 완료 유닛이 있을 때만 그려진다(05 §8)
-  await waitFor(() => expect(container.querySelector(".statusbar-progress")).not.toBeNull());
+  await waitFor(() => expect(container.querySelector(".statusbar-progress")).not.toBeNull(), {
+    timeout: USER_DATA_TIMEOUT,
+  });
 }
 
 /** 그 코스의 유닛 1~n을 마친 상태로 둔다(게스트 저장소 = 회원과 같은 계산 — 작업자(AI)_문서/04 §6-3) */

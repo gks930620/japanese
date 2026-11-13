@@ -12,6 +12,8 @@ import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
 import { apiError, apiSuccess, stubFetch } from "../test/helpers.jsx";
+import { AsyncProbe } from "../test/AsyncProbe.jsx";
+import { waitForGuestProgress } from "../test/userDataWait.js";
 import { AuthProvider } from "../context/AuthContext.jsx";
 import { UserDataProvider } from "../context/UserDataContext.jsx";
 import { setGuestLastPosition, setGuestUnitCompleted } from "../lib/guestStore.js";
@@ -24,19 +26,26 @@ const DETAIL = {
   units: Array.from({ length: 8 }, (_, i) => ({ unitNo: i + 1, title: `제목 ${i + 1}`, grammarCount: 2, kanjiCount: 5, vocabCount: 15 })),
 };
 
-function renderDetail() {
+/**
+ * 화면을 띄우고 **심어 둔 진도가 실릴 때까지** 기다린 뒤 돌려준다 (08 E-4 · test/AsyncProbe.jsx).
+ * 진도는 인증 판정(401) 뒤에 비동기로 오고, 그 전의 이 화면은 "아무것도 안 한 사람" 화면이다 —
+ * 거기서 단언하면 `…toBeNull()` 쪽은 **거짓 통과**, 나머지는 부하가 걸릴 때 **거짓 실패**가 된다.
+ */
+async function renderDetail() {
   stubFetch((url) => (url.includes("/api/users/me") ? apiError(401, "NOT_AUTHENTICATED") : apiSuccess(DETAIL)));
-  render(
+  const { container } = render(
     <MemoryRouter initialEntries={["/courses/2"]}>
       <AuthProvider>
         <UserDataProvider>
           <Routes>
             <Route element={<CourseDetailPage />} path="/courses/:courseId" />
           </Routes>
+          <AsyncProbe />
         </UserDataProvider>
       </AuthProvider>
     </MemoryRouter>,
   );
+  await waitForGuestProgress({ container });
 }
 
 /**
@@ -63,7 +72,7 @@ describe("코스 상세 주 버튼 — '다음 유닛'이지 '이어서'가 아�
   it("1·2 완료면 주 버튼은 유닛 3으로 가고 문구에 '이어서'가 없다", async () => {
     setGuestUnitCompleted(2, 1, true);
     setGuestUnitCompleted(2, 2, true);
-    renderDetail();
+    await renderDetail();
 
     const primary = await screen.findByRole("link", { name: /유닛 3/ });
     expect(primary).toHaveAttribute("href", "/courses/2/units/3");
@@ -78,7 +87,7 @@ describe("유닛 행 표시 — '여기부터'는 최전선, '보던 중'은 마
     setGuestUnitCompleted(2, 1, true);
     setGuestUnitCompleted(2, 2, true);
     setGuestLastPosition({ courseId: 2, unitNo: 7, stepKey: "dialog" }, new Date());
-    renderDetail();
+    await renderDetail();
 
     expect(await screen.findByRole("link", { name: /유닛 3/ })).toHaveAttribute("href", "/courses/2/units/3");
     expect(within(await unitRow(3)).getByText("여기부터")).toBeInTheDocument();
@@ -93,7 +102,7 @@ describe("유닛 행 표시 — '여기부터'는 최전선, '보던 중'은 마
     setGuestUnitCompleted(2, 1, true);
     setGuestUnitCompleted(2, 2, true);
     setGuestLastPosition({ courseId: 2, unitNo: 3, stepKey: "dialog" }, new Date());
-    renderDetail();
+    await renderDetail();
 
     // 진도는 비동기로 실린다 — 이 케이스는 앞선 대기 단언이 없으므로 여기서 기다린다(단언 자체는 그대로)
     expect(await within(await unitRow(3)).findByText("여기부터")).toBeInTheDocument();
@@ -104,7 +113,7 @@ describe("유닛 행 표시 — '여기부터'는 최전선, '보던 중'은 마
     setGuestUnitCompleted(2, 1, true);
     setGuestUnitCompleted(2, 2, true);
     setGuestLastPosition({ courseId: 2, unitNo: 2, stepKey: "summary" }, new Date());
-    renderDetail();
+    await renderDetail();
 
     // 진도는 비동기로 실린다 — 앞선 대기 단언이 없으므로 여기서 기다린다(단언 자체는 그대로)
     expect(await within(await unitRow(3)).findByText("여기부터")).toBeInTheDocument();
@@ -114,7 +123,7 @@ describe("유닛 행 표시 — '여기부터'는 최전선, '보던 중'은 마
   it("다른 코스의 마지막 위치는 이 코스에 '보던 중'을 만들지 않는다", async () => {
     setGuestUnitCompleted(2, 1, true);
     setGuestLastPosition({ courseId: 3, unitNo: 5, stepKey: "dialog" }, new Date());
-    renderDetail();
+    await renderDetail();
 
     // 진도는 비동기로 실린다 — 앞선 대기 단언이 없으므로 여기서 기다린다(단언 자체는 그대로)
     expect(await within(await unitRow(2)).findByText("여기부터")).toBeInTheDocument();

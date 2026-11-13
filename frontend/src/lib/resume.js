@@ -80,7 +80,8 @@ export function resumeTarget(progress, { ja = [], en = [] } = {}) {
   // ③ 보던 유닛 뒤를 다 마쳤다 — 여기서 끝은 **두 종류**다(작업자(AI)_문서/04 §2-3-B · 08 C-33).
   //    아직 채우는 중인 코스라면 "열린 데까지의 끝"이지 완주가 아니다. 다음 코스로 내보내면
   //    "이 코스는 끝났다"고 말하는 것과 같으므로, 참인 행선지는 **그 코스 자신**(유닛 목록)이다.
-  //    ⚠️ 문구는 임시다 — planner·designer 확정 대기(고정 테스트는 "완주를 주장하지 않는다"만 본다).
+  //    문구는 **작업자(AI)_문서/05 §8**이 단일 출처다 — 다른 이어보기 줄과 같은 `코스 · 상태 · 다음` 세 토막이다.
+  //    띠가 없는 홈·마이페이지에서는 두 토막이 함께 서야 참이 된다(뒤 토막이 없으면 같은 줄이 완주로 읽힌다).
   if (moreUnitsComing(course.unitCount, course.plannedUnitCount)) {
     return {
       kind: "OPEN_END",
@@ -88,7 +89,7 @@ export function resumeTarget(progress, { ja = [], en = [] } = {}) {
       lang: english ? "en" : "ja",
       unitNo: null,
       to: `${base}/${course.id}`,
-      text: `${label} 코스 · 지금 열려 있는 유닛은 여기까지예요`,
+      text: `${label} 코스 · 열려 있는 유닛은 모두 마쳤어요 · 다음 유닛은 채우는 중이에요`,
       ctaLabel: "유닛 목록으로",
     };
   }

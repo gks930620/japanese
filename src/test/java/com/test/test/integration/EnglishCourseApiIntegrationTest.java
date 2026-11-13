@@ -27,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
 
     private static final long EN_COURSE_1 = 101L; // 영어 대역(작업자(AI)_문서/03 §5-2 시드 대역)
-    private static final long EN_COURSE_2 = 102L; // E2 「일상 말하기」 — 2026-09-22 5/20 → 2026-11-13 10/20 부분 공개
+    // E2 「일상 말하기」 — 2026-09-22 5/20 → 2026-11-13 10/20 → 2026-11-14 15/20 부분 공개
+    private static final long EN_COURSE_2 = 102L;
 
     /**
      * E1의 <b>계획</b> 유닛 수 — 시드 {@code data-course-en-content.sql}의 course 101 행({@code planned_unit_count = 15}).
@@ -53,7 +54,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
     /**
      * E2의 <b>계획</b> 유닛 수 — 시드 {@code data-course-en-content.sql}의 course 102 행({@code planned_unit_count = 20}).
      *
-     * <p>{@link CourseCatalog#ENGLISH}의 {@code unitCount}(= 지금 열린 수, 2026-11-13 기준 10)와
+     * <p>{@link CourseCatalog#ENGLISH}의 {@code unitCount}(= 지금 열린 수, 2026-11-14 기준 15)와
      * <b>다른 값이라는 것이 요점</b>이다.
      * E1에서는 두 값이 15로 같아져 "파생 구현인지 아닌지"를 영어 쪽에서 구분할 수 없었는데(작업자(AI)_문서/08 C-30),
      * E2가 5/20으로 열리면서 <b>구분할 수 있는 실데이터가 돌아왔다.</b>
@@ -382,13 +383,14 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      * (프론트는 {@code moreUnitsComing}이 참이면 [유닛 목록으로 ›]를 보여준다 — §11-12 ④ R5).
      * 서버에서 이 값을 null로 만들어 "고치면" 상태 1·3의 분기가 무너진다. <b>고치지 말라는 뜻의 단언</b>이다.
      *
-     * <p><b>★ 2026-11-13 — 대상이 유닛 5 → 10으로 옮겨 갔다</b>(E2 10/20 배치). <b>손으로 옮긴 것이 아니다</b>:
+     * <p><b>★ 2026-11-13 유닛 5 → 10, 2026-11-14 유닛 10 → 15로 대상이 옮겨 갔다</b>(E2 15/20 배치).
+     * <b>두 번 다 손으로 옮긴 것이 아니다</b>:
      * 유닛 번호를 {@code english2.unitCount}로 부르기 때문에 {@link CourseCatalog#ENGLISH} 한 줄을 올리는 순간
      * 같은 커밋 안에서 저절로 따라왔다 — 이것이 C-30이 (e)로 지시한 <b>"같은 커밋에서 옮겨 공백을 하루도 두지 않는다"</b>의
      * 실제 모양이다. 유닛 10이 열려 유닛 5가 더 이상 끝이 아니게 되는 날 <b>커버리지가 조용히 사라지는</b> 흔한 사고
      * (= 테스트는 초록인데 보는 자리가 틀린 것)가, 숫자를 박지 않은 덕에 아예 생기지 않았다.
-     * <b>유닛 5가 잃은 자리도 비어 있지 않다</b> — 이제 중간 유닛이 되어
-     * {@code EnglishContentRuleIntegrationTest} 규칙 7이 그 유닛의 1~5 복습 블록을 본다.
+     * <b>끝 자리를 내준 유닛도 비어 있지 않다</b> — 중간 유닛이 되면서
+     * {@code EnglishContentRuleIntegrationTest} 규칙 7이 그 유닛의 복습 블록(5는 1~5, 10은 6~10)을 보기 때문이다.
      */
     @Test
     void the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course() throws Exception {

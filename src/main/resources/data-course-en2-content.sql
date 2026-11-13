@@ -799,3 +799,433 @@ INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_appr
 (9493, 'actually', NULL, '(알고 보면) 실은', 'ADVERB', '/ˈæktʃuəli/', '액추얼리'),
 (9494, 'totally', NULL, '완전히', 'ADVERB', '/ˈtoʊtəli/', '토우털리'),
 (9495, 'possibly', NULL, '어쩌면', 'ADVERB', '/ˈpɑːsəbli/', '파-서블리');
+
+
+-- ── 유닛 11~15(덩어리 ③ 앞으로의 일) 작성 기록 — 2026-11-14 backend-dev ──
+--   ⚠️⚠️ **이 다섯 유닛은 앞 열 유닛과 경계의 방향이 반대다**(기획 §8-3 27 · §3-4 ⑤ · AC-15).
+--     유닛 1~10 저자의 일은 will·be going to를 **피하는 것**이었고, 여기서는 **쓰는 것**이 일이다.
+--     점검 한 줄: *"이 회화에서 will과 be going to를 전부 지워도 장면이 성립하는가?"* → 성립하면 결함이다.
+--     다섯 장면 모두 그 줄을 통과한다 — 11 즉석 분담 · 12 전부터 정해 둔 이사·휴가 · 13 네 가지 미래가 한 장면 ·
+--     14 won''t와 not going to가 둘 다 오감 · 15 was going to(못 한 일) + I''ll(다음번).
+--   * 유닛당 실제 사용: 문법 3 · 문법당 예문 3 · 회화 1편(8줄) · 표현 7 · 표현 예문 7 · 어휘 16 · 한자 0.
+--   * **표를 다시 그리지 않았다**(기획 §8-3 21). 학교의 표 → E2가 주는 판정 기준 한 줄:
+--       will vs be going to 비교표 → "언제 정했는가"             (유닛 12 문법 1)
+--       미래 표현 4종 비교표       → "누가 언제 정했는가"         (유닛 13 문법 3)
+--       in/within 용법표           → "거꾸로 세나 앞으로 세나"    (유닛 14 문법 3 — 유닛 5의 ago와 한 쌍)
+--       12시제 표                  → "바뀌는 것은 동사 한 자리뿐" (유닛 15 문법 3)
+--   * **아직 안 열린 것을 쓰지 않았다**: 완료형(유닛 16) 0건 · could/would/should/might(E4) 0건 ·
+--     수동태(E4) 0건 · when/while/if 절(E3) 0건 · 비교급(E3) 0건.
+--     - 유닛 11 회화는 "문제가 어떻게 생겼는지"를 **능동으로** 적었다(Something went wrong / The file won''t open) —
+--       The file was deleted. 류로 가면 수동태라 E4다(§8-3 25). 유닛 13의 tight·overlap도 비교 없이만 썼다.
+--     - 유닛 15 회화는 "그동안 한 번도 못 왔다"(I haven''t been able to come.)로 가지 않고 **어제 하루**로 못 박았다.
+--     - 유닛 12·13·15에서 so로 두 문장을 이었다(§2-1 허용). when/while/if로 바꾸지 않았다 —
+--       meanwhile(유닛 13 어휘 9555)은 문장 앞 이정표로만 썼고(회화 8번째 줄) while 절은 한 번도 안 나온다.
+--   ⚠️ **기획 §3-3이 어휘에 요구한 usage_note는 넣을 자리가 없다** — `usage_note` 컬럼은 `expression`에만 있고
+--     `vocabulary`에는 (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx)뿐이다(VocabularyEntity).
+--     그래서 어휘 쪽 혼동 짝은 전부 **meaning_ko의 괄호**로 좁혔다(§11-5의 방식) —
+--     fix「(고장난 것을) 고치다」↔ solve「(문제를) 풀다」 · depart「(시간표대로) 출발하다」↔ E2 유닛 2 leave ·
+--     turn「(일을 맡을) 차례」↔ E1 turn「돌다」 · move「이사하다」↔ E1 move「옮기다」 ·
+--     relax「(긴장을 풀고) 느긋해지다」↔ 유닛 1 rest「휴식」 · peaceful「(사람 손이 안 탄) 고요한」↔ E1 quiet ·
+--     sick「(몸이) 아픈」 · shame「아쉬운 일」 · regret「(못 해서) 아쉬워하다」 · hopefully「바라건대」.
+--     **표현 쪽 혼동 짝은 전부 usage_note에 적었다**(deal with↔E1 take care of · go wrong↔유닛 10 get it wrong ·
+--     push back↔E1 put off·같은 유닛 reschedule · come up↔E1 come up with · on second thought↔유닛 3
+--     come to think of it · can''t wait↔유닛 6 wait · take time off↔E1 day off · work out↔E1 work for·work on).
+--     → senior-dev에게 넘김: 어휘에도 혼동 짝을 적어야 한다면 컬럼 추가가 **계약 변경**이다.
+--   * **E1과 겹친 표제어는 둘뿐이고 둘 다 기획 §4-5-1이 임자를 정해 둔 자리다** —
+--     turn(E1 9255 돌다/VERB → E2 9505 차례/NOUN) · move(E1 9260 옮기다 → E2 9532 이사하다).
+--     **발음(ipa·ko_approx)은 E1 값을 그대로 복사했다** — 자료실 병합 키가 (word, ipa)라서다(§11-3 상자 · 기획 §4-4 1).
+--   * 기획이 후보 단계에서 거른 것을 그대로 지켰다: one of these days(유닛 5 these days의 변형) ·
+--     catch up on(E1 catch up의 변형) · nothing much(유닛 4 nothing special) · be scheduled for(수동태) ·
+--     next(한정사) · maybe·probably(유닛 15 문법 2의 것) · flight·busy·change(E2 내부 중복) ·
+--     rest(유닛 1 9304) — 전부 어휘·표현 표제어로 올리지 않고 본문에만 썼다.
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 11 「지금 정한 일은 will로 말한다」 — will + 원형 · won''t · I think it will ~
+-- 문법 9150~9152 / 예문 9450~9458 / 회화 9111(대사 9400~9407) / 표현 9500~9506 / 어휘 9500~9515
+-- 장면: 일이 틀어져 **그 자리에서** 누가 무엇을 맡을지 나눈다 — 미리 세운 계획을 확인하는 자리가 아니다.
+-- ⚠️ 기획 §8-3 27 요구: Let me ~(E1 우회로)로 때운 줄이 없다. 여덟 줄 중 다섯 줄이 I''ll ~ 이고,
+--    표현 7개가 **전부 이 회화 안에 실제로 나온다**(go wrong 1 · take over 3 · sort out 4 · deal with 5 ·
+--    be on it 6 · back on track 8 · in no time 8).
+-- ⚠️ 여기서부터 앞을 가리키는 시간 표기를 쓸 수 있다(§4-2 · AC-24) — tomorrow는 유닛 14가 임자라 본문에만 썼다.
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9150, 'will + 동사원형', '미리 정해 둔 것이 아니라 지금 정한 것이다', '학교에서는 will을 「~할 것이다(미래형)」라는 이름으로 외웠습니다. 실제로 will이 하는 일은 말하는 그 순간 정했다는 표시입니다. 무거운 상자를 든 사람을 보고 I''ll get the door.라고 하면 미리 세워 둔 계획이 아니라 지금 막 정한 일입니다. 주어가 I든 Mina든 모양이 안 바뀌고, 뒤에는 언제나 원형이 옵니다 — E1에서 배운 can이 앉던 바로 그 자리입니다. 말할 때는 I will보다 I''ll 쪽이 훨씬 자주 나옵니다.'),
+(9151, 'won''t', '예고가 아니라 끝내 안 한다는 뜻이다', '학교에서는 will not의 줄임으로만 배웠습니다. 실제로 이 말에는 하지 않겠다는 뜻이 실립니다 — 사람에게 쓰면 「그럴 생각이 없다」에 가깝고, 사물에 쓰면 그 성질이 그대로 드러납니다: The door won''t open.은 「문이 안 열린다」는 말이고 「열리지 않을 것이다」라는 예고가 아닙니다. 그래서 단순한 미래 부정이 아니라 끝까지 안 한다는 쪽으로 기울고, 말할 때 풀어 쓰는 일이 거의 없습니다.'),
+(9152, 'I think it will ~', '짐작에는 눈앞의 근거가 없어도 된다', '학교에서는 will을 「단순미래」라는 이름으로만 받았습니다. 실제로 눈에 보이는 근거 없이 그냥 그럴 것 같을 때 고르는 것이 will입니다 — I think it will rain tomorrow.는 하늘을 보고 하는 말이 아니라 그냥 짐작입니다. 하늘이 시커먼 것을 보고 말하는 쪽은 유닛 12에서 따로 배웁니다. E1에서 배운 I think ~가 여기서 앞일과 처음 만나고, 아니라고 할 때는 뒤가 아니라 앞을 부정합니다(I don''t think it will ~).');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9450, 9150, 1, 'I''ll get the door.', NULL, '제가 문 열어 드릴게요.'),
+(9451, 9150, 2, 'I''ll call them right now.', NULL, '제가 지금 바로 전화할게요.'),
+(9452, 9150, 3, 'Mina will handle the rest.', NULL, '나머지는 미나가 알아서 처리할 거예요.'),
+(9453, 9151, 1, 'The door won''t open.', NULL, '문이 안 열려요.'),
+(9454, 9151, 2, 'I won''t be late again.', NULL, '다시는 늦지 않을게요.'),
+(9455, 9151, 3, 'Ben won''t answer the phone.', NULL, '벤이 전화를 받으려고 하지 않아요.'),
+(9456, 9152, 1, 'I think it will rain tomorrow.', NULL, '내일 비 올 것 같아요.'),
+(9457, 9152, 2, 'I think Mina will solve it in a minute.', NULL, '미나가 금방 풀 것 같아요.'),
+(9458, 9152, 3, 'I don''t think it will take long.', NULL, '오래 걸리지 않을 것 같아요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9111, '일이 틀어진 아침, 누가 무엇을 맡을지 나눈다');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9400, 9111, 1, 'Mina', 'Something went wrong with the delivery list. Half of it is a mess.', NULL, '배송 목록이 틀어졌어요. 절반이 엉망이에요.'),
+(9401, 9111, 2, 'Ben', 'The file won''t open on my computer either. I''ll call the support team.', NULL, '제 컴퓨터에서도 파일이 안 열려요. 제가 지원팀에 전화할게요.'),
+(9402, 9111, 3, 'Mina', 'Then I''ll take over the list and fix the numbers by hand.', NULL, '그럼 제가 목록을 넘겨받아서 숫자를 손으로 고칠게요.'),
+(9403, 9111, 4, 'Ben', 'Let''s split it. I''ll sort out the first half.', NULL, '나눠서 하죠. 앞쪽 절반은 제가 정리할게요.'),
+(9404, 9111, 5, 'Mina', 'Good. It''s my turn to deal with the client, so I''ll send a quick note too.', NULL, '좋아요. 고객 응대는 제 차례니까 짧은 메모도 제가 보낼게요.'),
+(9405, 9111, 6, 'Ben', 'I''m on it. I think it will take about an hour.', NULL, '지금 하고 있어요. 한 시간쯤 걸릴 것 같아요.'),
+(9406, 9111, 7, 'Mina', 'It wasn''t your fault, anyway. Nobody volunteered for this.', NULL, '어차피 당신 잘못도 아니었어요. 아무도 하겠다고 나선 일이 아니고요.'),
+(9407, 9111, 8, 'Ben', 'Thanks. We''ll be back on track in no time.', NULL, '고마워요. 금방 다시 제자리로 돌아올 거예요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9500, 'take over', '(남이 하던 일을) 넘겨받아 맡다', '처음부터 내가 하는 것이 아니라 하고 있던 사람에게서 중간에 받아 오는 것입니다. 새 일을 떠안는 take on과 갈리는 지점이 바로 그것입니다.', '/teɪk ˈoʊvər/', '테이크 오우버'),
+(9501, 'deal with', '(성가신 일·사람을) 상대해 처리하다', 'E1의 take care of는 맡아서 돌보는 쪽이고, 이쪽은 귀찮은 것을 마주 보고 처리하는 쪽입니다. 뒤에는 대개 문제·불만·까다로운 사람이 옵니다.', '/diːl wɪð/', '디-일 위드'),
+(9502, 'be on it', '(이미) 손대고 있다 · 지금 하고 있다', '맡았다는 대답으로 I''m on it.처럼 현재진행으로 씁니다(유닛 6). I''ll be on it.은 어색합니다 — 앞일을 정하는 말이 아니라 이미 손을 댔다는 말이기 때문입니다.', '/bi ɑːn ɪt/', '비 온- 잇'),
+(9503, 'sort out', '(엉킨 것을) 갈라서 바로잡다', '뒤섞인 것을 하나씩 제자리에 놓는 그림입니다. 고장을 고치는 fix와 달리 목록·서류·오해처럼 엉켜 있는 것에 씁니다.', '/sɔːrt aʊt/', '소-트 아웃'),
+(9504, 'in no time', '아주 금방', '시간이 하나도 안 걸린다는 과장입니다. no가 들어 있어도 부정이 아니라 「빨리」라는 뜻이고, 자리는 문장 끝입니다.', '/ɪn noʊ taɪm/', '인 노우 타임'),
+(9505, 'go wrong', '(일이) 틀어지다', '유닛 10의 get it wrong은 사람이 잘못 아는 것이고, 이쪽은 일·기계가 어긋나는 것입니다. 그래서 주어가 사람이 아니라 대개 something이나 그 일 자체입니다.', '/ɡoʊ rɔːŋ/', '고우 롱-'),
+(9506, 'back on track', '다시 제자리로', '궤도를 벗어났던 일이 원래 흐름으로 돌아온다는 말입니다. be나 get 뒤에 붙여 씁니다(We''re back on track.).', '/bæk ɑːn træk/', '백 온- 트랙');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9500, 9500, 1, 'I''ll take over the delivery list.', '배송 목록은 제가 넘겨받을게요.'),
+(9501, 9501, 1, 'I''ll deal with the client.', '고객은 제가 상대할게요.'),
+(9502, 9502, 1, 'I''m on it.', '지금 하고 있어요.'),
+(9503, 9503, 1, 'I''ll sort out the first half.', '앞쪽 절반은 제가 정리할게요.'),
+(9504, 9504, 1, 'We''ll be done in no time.', '금방 끝날 거예요.'),
+(9505, 9505, 1, 'Something went wrong with the list.', '목록에 뭔가 틀어졌어요.'),
+(9506, 9506, 1, 'We''ll be back on track today.', '오늘 다시 제자리로 돌아올 거예요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9500, 'trouble', NULL, '(곤란한) 말썽', 'NOUN', '/ˈtrʌbl/', '트러블'),
+(9501, 'mess', NULL, '엉망인 상태', 'NOUN', '/mes/', '메스'),
+(9502, 'fault', NULL, '(누구의) 잘못', 'NOUN', '/fɔːlt/', '폴-트'),
+(9503, 'part', NULL, '(전체 중 한) 부분', 'NOUN', '/pɑːrt/', '파-트'),
+(9504, 'half', NULL, '절반', 'NOUN', '/hæf/', '해프'),
+(9505, 'turn', NULL, '(일을 맡을) 차례', 'NOUN', '/tɜːrn/', '턴-'),
+(9506, 'fix', NULL, '(고장난 것을) 고치다', 'VERB', '/fɪks/', '픽스'),
+(9507, 'solve', NULL, '(문제를) 풀다', 'VERB', '/sɑːlv/', '살-브'),
+(9508, 'handle', NULL, '(일을) 알아서 처리하다', 'VERB', '/ˈhændl/', '핸들'),
+(9509, 'volunteer', NULL, '(하겠다고) 나서다', 'VERB', '/ˌvɑːlənˈtɪr/', '발-런티어'),
+(9510, 'split', NULL, '(둘로) 나누다', 'VERB', '/splɪt/', '스플릿'),
+(9511, 'serious', NULL, '(가볍지 않게) 심각한', 'ADJECTIVE', '/ˈsɪriəs/', '시리어스'),
+(9512, 'extra', NULL, '(원래 것 말고) 추가의', 'ADJECTIVE', '/ˈekstrə/', '엑스트러'),
+(9513, 'quick', NULL, '(손이 금방 가는) 빠른', 'ADJECTIVE', '/kwɪk/', '퀵'),
+(9514, 'simple', NULL, '(손이 많이 안 가는) 간단한', 'ADJECTIVE', '/ˈsɪmpl/', '심플'),
+(9515, 'anyway', NULL, '어차피 · 아무튼', 'ADVERB', '/ˈeniweɪ/', '에니웨이');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 12 「미리 정해 둔 일은 be going to」 — be going to · 보고 아는 앞일 · going to go
+-- 문법 9155~9157 / 예문 9465~9473 / 회화 9112(대사 9420~9427) / 표현 9510~9516 / 어휘 9520~9535
+-- 장면: **전부터 정해 둔** 이사·휴가를 주고받는다 — "집을 알아보는 중"으로 흐르면 유닛 6이고,
+--       "이미 상대와 잡힌 일정"으로 흐르면 유닛 13의 몫이다(기획 §3-3 가드).
+-- ⚠️ maybe·probably를 대사에 섞지 않았다 — 확신의 세기를 한 단어로 얹는 것은 **유닛 15 문법 2**의 몫이다.
+-- ⚠️ 어휘 move(9532)는 E1 9260과 같은 표기다. 뜻을 「이사하다」로 갈랐고 **발음은 E1 값을 그대로 복사**했다.
+-- ⚠️⚠️ **지정값 `closet`을 `landlord`(9522)로 바꿨다 — 테스트가 막았다. senior-dev 판정 필요.**
+--    `EnglishVocabularyMergeContractIntegrationTest.an_english_homograph_with_two_pronunciations_is_two_rows`가
+--    `/api/en/library/vocabulary?q=close` 결과를 **정확히 2행**(E1 close 가까운 · E2 유닛 5 close 닫다)으로 고정하는데,
+--    자료실 검색이 부분 일치라서 `closet`이 **3번째 행**으로 끼어들어 그 계약이 깨졌다(실측 실패 메시지 그대로).
+--    테스트는 senior-dev 소유라 손대지 않았고, 06 §11-11 3-3(한 코스 안에 어간이 같은 표기를 두 번 올리지 않는다 —
+--    E2 유닛 5가 `close`를 이미 가졌다)도 같은 방향을 가리켜 **대체**를 골랐다.
+--    `landlord`를 고른 이유: ① E1 238 · E2 유닛 1~10 160 · 유닛 11~15 신규 어디에도 없고, ② 같은 유닛의
+--    `rent`·`deposit`·`budget`과 한 덩어리로 「이사·임대」 테마 정중앙이며, ③ 뒤 유닛(16~20) 테마를 가져가지 않고,
+--    ④ `close`·`leave`(테스트가 쓰는 검색어 둘) 어느 쪽도 부분 문자열로 품지 않는다.
+--    → **되돌릴 선택지**: 테스트를 표기 완전일치로 거르게 고치면 `closet`을 복구할 수 있다. 그 판단은 senior-dev다.
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9155, 'be going to + 동사원형', '뜻이 아니라 언제 정했는지가 다르다', '학교에서는 「will = be going to, 바꿔 써도 된다」로 배웠습니다. 실제로 갈리는 지점은 언제 정했느냐 하나입니다. 말하는 순간 정했으면 will, 전부터 정해 둔 것이면 be going to입니다 — I''m going to move next month.는 오늘 갑자기 정한 일이 아닙니다. 그래서 짐을 싸 둔 사람, 표를 끊어 둔 사람이 쓰는 말입니다. 뜻이 다른 것이 아니라 결정한 시점이 다릅니다. 앞의 be는 주어에 맞춰 am·is·are로 갈립니다.'),
+(9156, '보고 아는 앞일도 be going to', '짐작과 갈리는 자리는 근거가 보이느냐 하나다', '학교에서는 앞일의 짐작을 전부 will로 배웠습니다. 실제로는 눈에 보이는 근거가 있으면 be going to입니다 — 하늘이 시커먼 것을 보고 It''s going to rain.이라고 합니다. 유닛 11의 I think it will rain.은 아무 근거 없는 짐작이었습니다. 표를 외울 일이 아니라 질문 하나로 끝납니다: 지금 눈앞에 징조가 보이나. 보이면 be going to, 그냥 느낌이면 will입니다.'),
+(9157, 'going to 뒤에 go가 또 와도 된다', '통째로 하나라서 뒤에 무엇이 와도 된다', '학교에서는 이것을 배운 적이 거의 없어서, I''m going to go라고 쓰다가 go가 두 번이라 스스로 고쳐 버립니다. 실제로 be going to는 통째로 하나의 표시라서 뒤에 어떤 동사든 옵니다 — go가 와도 맞는 문장입니다. 짧게 하려고 I''m going to the station.으로 바꾸면 뜻이 달라집니다(지금 역으로 가는 중이라는 말이 됩니다). 앞일을 말할 생각이면 go를 지우지 않습니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9465, 9155, 1, 'I''m going to move next month.', NULL, '저는 다음 달에 이사해요.'),
+(9466, 9155, 2, 'We''re going to rent a truck.', NULL, '우리는 트럭을 빌릴 거예요.'),
+(9467, 9155, 3, 'Ben is going to take a week off.', NULL, '벤은 일주일 휴가를 낼 거예요.'),
+(9468, 9156, 1, 'It''s going to rain. Look at the sky.', NULL, '비 올 거예요. 하늘 좀 보세요.'),
+(9469, 9156, 2, 'The bus is going to leave. Hurry.', NULL, '버스 출발하려고 해요. 서둘러요.'),
+(9470, 9156, 3, 'This box is going to fall.', NULL, '이 상자 떨어지려고 해요.'),
+(9471, 9157, 1, 'I''m going to go to the bank first.', NULL, '저는 먼저 은행에 갈 거예요.'),
+(9472, 9157, 2, 'We''re going to go by truck.', NULL, '우리는 트럭으로 갈 거예요.'),
+(9473, 9157, 3, 'Mina is going to go home early today.', NULL, '미나는 오늘 일찍 집에 갈 거예요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9112, '다음 달 이사와 휴가 계획을 주고받는다');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9420, 9112, 1, 'Mina', 'I''m going to move next month. The new apartment is near the station.', NULL, '저 다음 달에 이사해요. 새 집이 역 근처예요.'),
+(9421, 9112, 2, 'Ben', 'Nice. Are you going to rent a truck?', NULL, '좋네요. 트럭 빌릴 거예요?'),
+(9422, 9112, 3, 'Mina', 'Yes. I saved up for a year, so I can afford a small one.', NULL, '네. 1년 동안 돈을 모아서 작은 건 감당할 수 있어요.'),
+(9423, 9112, 4, 'Ben', 'Are you going to take a week off?', NULL, '일주일 휴가 낼 거예요?'),
+(9424, 9112, 5, 'Mina', 'Just two days. I''m going to pack on Friday, and I''ll unpack over the weekend.', NULL, '이틀만요. 금요일에 짐을 싸고, 주말 동안 짐을 풀 거예요.'),
+(9425, 9112, 6, 'Ben', 'The kitchen stuff is going to be the hard part. Mine took two days.', NULL, '부엌 짐이 제일 힘든 부분일 거예요. 제 건 이틀 걸렸어요.'),
+(9426, 9112, 7, 'Mina', 'I know. I''m going to give the old furniture away and buy nothing new.', NULL, '알아요. 낡은 가구는 그냥 줘 버리고 새로 안 살 거예요.'),
+(9427, 9112, 8, 'Ben', 'Good plan. I can''t wait to see the new place. I''ll help you on Saturday.', NULL, '좋은 계획이네요. 새 집 보는 게 너무 기대돼요. 토요일에 도와줄게요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9510, 'look forward to', '(앞일을) 기대하며 기다리다', '뒤에는 명사나 -ing가 옵니다(look forward to moving). to가 보여서 원형을 넣기 쉬운데 그 자리가 아닙니다.', '/lʊk ˈfɔːrwərd tuː/', '룩 포-워드 투-'),
+(9511, 'save up', '(쓰지 않고) 돈을 모으다', '그냥 save는 아끼는 것이고 up이 붙으면 목표를 두고 모아 간다는 쪽입니다. 무엇을 위한 돈인지는 for로 붙입니다.', '/seɪv ʌp/', '세이브 업'),
+(9512, 'settle in', '(새 곳에) 자리를 잡다', '이사·입사 직후에 짐과 생활이 제자리를 찾는 기간을 말합니다. 들어가는 순간(move in)이 아니라 그 뒤의 적응입니다.', '/ˈsetl ɪn/', '세틀 인'),
+(9513, 'take time off', '(일을 쉬고) 휴가를 내다', 'E1의 day off는 쉬는 날이라는 명사이고, 이쪽은 휴가를 내는 행동입니다. 사이에 기간을 넣습니다: take a week off.', '/teɪk taɪm ɔːf/', '테이크 타임 오-프'),
+(9514, 'for good', '(돌아오지 않게) 아예 · 영영', 'good이 들어 있지만 좋다는 뜻이 아니라 「이번이 마지막」이라는 말입니다. 떠남·그만둠과 붙여 씁니다.', '/fər ɡʊd/', '퍼 굿'),
+(9515, 'plan on', '(하기로) 작정해 두다', '뒤에 -ing가 옵니다(plan on moving). plan to와 뜻이 거의 같지만 말할 때는 이쪽이 더 흔합니다.', '/plæn ɑːn/', '플랜 온-'),
+(9516, 'can''t wait', '너무 기대된다', '정말 못 기다린다는 말이 아니라 기대가 크다는 과장입니다. 유닛 6의 wait(그 자리에서 기다리다)과 뜻이 거꾸로 서는 자리입니다. 뒤에는 for 명사나 to 원형이 옵니다.', '/kænt weɪt/', '캔트 웨이트');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9510, 9510, 1, 'I''m looking forward to the trip.', '여행이 기대돼요.'),
+(9511, 9511, 1, 'I saved up for a year.', '1년 동안 돈을 모았어요.'),
+(9512, 9512, 1, 'I''m going to settle in by Sunday.', '일요일까지는 자리를 잡을 거예요.'),
+(9513, 9513, 1, 'I''m going to take a week off.', '일주일 휴가를 낼 거예요.'),
+(9514, 9514, 1, 'He left the city for good.', '그는 아예 도시를 떠났어요.'),
+(9515, 9515, 1, 'I''m planning on moving next month.', '다음 달에 이사할 작정이에요.'),
+(9516, 9516, 1, 'I can''t wait for the vacation.', '휴가가 너무 기대돼요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9520, 'apartment', NULL, '(한 세대가 사는) 아파트 · 집', 'NOUN', '/əˈpɑːrtmənt/', '어파-트먼트'),
+(9521, 'furniture', NULL, '가구', 'NOUN', '/ˈfɜːrnɪtʃər/', '퍼-니처'),
+(9522, 'landlord', NULL, '(집을 빌려주는) 집주인', 'NOUN', '/ˈlændlɔːrd/', '랜드로-드'),
+(9523, 'truck', NULL, '트럭 · 짐차', 'NOUN', '/trʌk/', '트럭'),
+(9524, 'stuff', NULL, '(잡다한) 짐 · 물건', 'NOUN', '/stʌf/', '스터프'),
+(9525, 'deposit', NULL, '(집을 얻을 때 내는) 보증금', 'NOUN', '/dɪˈpɑːzɪt/', '디파-지트'),
+(9526, 'budget', NULL, '(쓰기로 잡아 둔) 예산', 'NOUN', '/ˈbʌdʒɪt/', '버지트'),
+(9527, 'vacation', NULL, '(길게 쉬며 떠나는) 휴가', 'NOUN', '/veɪˈkeɪʃn/', '베이케이션'),
+(9528, 'passport', NULL, '여권', 'NOUN', '/ˈpæspɔːrt/', '패스포-트'),
+(9529, 'rent', NULL, '(돈을 내고) 빌리다', 'VERB', '/rent/', '렌트'),
+(9530, 'pack', NULL, '(짐을) 싸다', 'VERB', '/pæk/', '팩'),
+(9531, 'unpack', NULL, '(짐을) 풀다', 'VERB', '/ˌʌnˈpæk/', '언팩'),
+(9532, 'move', NULL, '이사하다', 'VERB', '/muːv/', '무-브'),
+(9533, 'cost', NULL, '(값이) 얼마 들다', 'VERB', '/kɔːst/', '코-스트'),
+(9534, 'afford', NULL, '(돈이 돼서) 감당하다', 'VERB', '/əˈfɔːrd/', '어포-드'),
+(9535, 'someday', NULL, '(언제인지 모를) 언젠가', 'ADVERB', '/ˈsʌmdeɪ/', '섬데이');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 13 「이미 잡힌 일정은 진행형으로 말한다」 — 진행형의 미래 · 시간표의 단순현재 · 네 가지를 고르는 한 줄
+-- 문법 9160~9162 / 예문 9480~9488 / 회화 9113(대사 9440~9447) / 표현 9520~9526 / 어휘 9540~9555
+-- 장면: 다음 주 일정을 맞춰 본다.
+-- ⚠️⚠️ 기획 §3-3·§8-3 27이 **지시로 못 박은 것**: 이 회화에는 will로 즉석에서 정하는 줄이 **하나 더** 있어야 한다.
+--    문법 3이 「앞일을 말하는 네 가지」를 고르게 하므로 진행형·단순현재만 나오면 그 문법이 증명되지 않고,
+--    AC-15가 요구하는 will·be going to도 사라진다. 대사 6·7이 will, 8이 be going to, 1·4가 진행형, 5가 단순현재다.
+-- ⚠️ be scheduled for를 쓰지 않았다 — be + 과거분사라 자연스러운 예문이 곧 수동태가 된다(§8-3 25 · §11-11 3-4).
+--    대신 능동인 fit in·move up을 넣었고, 「일정이 잡혔다」는 뜻은 문법 1의 진행형이 감당한다.
+-- ⚠️ tight·overlap은 비교급으로 번지지 않게 썼다(tighter than 금지 · §2-1).
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9160, '현재진행으로 앞일 말하기 (I''m meeting Mina at two.)', '약속이 이미 잡혔다는 신호', '학교에서는 「현재진행은 지금 하는 중」으로만 배워서 I''m meeting Mina at two.를 틀린 문장으로 읽습니다. 실제로는 시간이 함께 오면 진행형이 앞일을 가리킵니다. 그리고 이 말에는 이미 상대와 약속이 잡혔다는 뜻이 실려서, 혼자 정해 둔 be going to보다 확실합니다. 유닛 6에서 배운 모양 그대로이고 바뀌는 것은 가리키는 시간뿐입니다 — at two, on Friday처럼 시간을 붙이는 것이 그 신호입니다.'),
+(9161, '시간표처럼 정해진 일은 단순현재 (The train leaves at seven.)', '내가 못 바꾸는 일정', '학교에서는 「현재형은 현재」로만 배웠습니다. 실제로 기차·영화·가게 시간처럼 내 마음대로 못 바꾸는 일정은 단순현재로 말합니다 — The train leaves at seven. 여기에 will을 쓰면 오히려 어색해집니다. 내 사정으로 바뀌는 일이 아니라 시간표에 적힌 사실이기 때문입니다. E1에서 「습관·사실」로 배운 현재형이 앞일을 가리키는 유일한 자리입니다.'),
+(9162, '앞일을 말하는 네 가지를 한 줄로 고른다', '누가 언제 정했는가', '학교에서는 네 가지를 표로 비교했습니다. 실제로는 질문 하나로 끝납니다 — 누가 언제 정했는가. 지금 내가 정했으면 will, 전에 내가 정해 뒀으면 be going to, 이미 상대와 잡았으면 진행형, 아무도 못 바꾸면 단순현재입니다. 네 칸을 외우는 것이 아니라 이 한 줄을 들고 고르면 됩니다. 한 대화 안에서 넷이 섞여 나오는 것도 정상입니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9480, 9160, 1, 'I''m meeting Mina at two.', NULL, '두 시에 미나를 만나요. (약속이 이미 잡혀 있어요)'),
+(9481, 9160, 2, 'Ben is leaving on Friday.', NULL, '벤은 금요일에 떠나요.'),
+(9482, 9160, 3, 'We''re having dinner with the client on Monday.', NULL, '월요일에 고객과 저녁을 먹어요.'),
+(9483, 9161, 1, 'The train leaves at seven.', NULL, '기차는 일곱 시에 출발해요.'),
+(9484, 9161, 2, 'The store opens at ten on Sundays.', NULL, '그 가게는 일요일에 열 시에 열어요.'),
+(9485, 9161, 3, 'My flight departs at six sharp.', NULL, '제 비행기는 여섯 시 정각에 출발해요.'),
+(9486, 9162, 1, 'I''ll book the early train.', NULL, '제가 이른 기차를 예약할게요. (지금 정했어요)'),
+(9487, 9162, 2, 'I''m going to visit the client on Monday.', NULL, '월요일에 고객을 찾아갈 거예요. (전부터 정해 뒀어요)'),
+(9488, 9162, 3, 'I''m seeing the client at two, and the train leaves at seven.', NULL, '두 시에 고객을 만나고, 기차는 일곱 시에 출발해요. (이미 잡힌 약속과 시간표)');
+
+INSERT INTO dialog (id, title) VALUES
+(9113, '다음 주 일정을 서로 맞춰 본다');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9440, 9113, 1, 'Mina', 'I''m meeting the client at two on Tuesday.', NULL, '화요일 두 시에 고객을 만나요.'),
+(9441, 9113, 2, 'Ben', 'My Tuesday is back to back. Can we make time on Wednesday?', NULL, '제 화요일은 일정이 줄줄이 붙어 있어요. 수요일에 시간 낼 수 있을까요?'),
+(9442, 9113, 3, 'Mina', 'Wednesday is tight. Two things overlap in the morning.', NULL, '수요일은 빠듯해요. 아침에 두 건이 겹쳐요.'),
+(9443, 9113, 4, 'Ben', 'Then let''s push back the review. I''m taking the early train on Thursday.', NULL, '그럼 검토는 뒤로 밀죠. 저는 목요일에 이른 기차를 타요.'),
+(9444, 9113, 5, 'Mina', 'The train leaves at seven, so you need to confirm the seat today.', NULL, '기차는 일곱 시에 출발하니까 오늘 좌석을 확정해야 해요.'),
+(9445, 9113, 6, 'Ben', 'Right. Then I''ll book the aisle seat now.', NULL, '맞아요. 그럼 지금 복도 쪽 좌석을 예약할게요.'),
+(9446, 9113, 7, 'Mina', 'I''ll double-check the calendar and move up the afternoon call.', NULL, '제가 일정표를 다시 확인하고 오후 통화를 앞당길게요.'),
+(9447, 9113, 8, 'Ben', 'Good. Meanwhile I''m going to reschedule the Friday meeting.', NULL, '좋아요. 그동안 저는 금요일 회의 날짜를 다시 잡을 거예요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9520, 'push back', '(이미 잡힌 일정을) 뒤로 밀다', 'E1의 put off는 할 일을 그냥 미루는 것이고, 이쪽은 날짜·시각이 이미 잡힌 일정을 뒤로 옮기는 것입니다. 같은 유닛의 reschedule은 날짜를 새로 잡는 것이라 또 다릅니다 — 이쪽은 밀기만 합니다.', '/pʊʃ bæk/', '푸시 백'),
+(9521, 'move up', '(일정을) 앞당기다', 'push back의 정확한 반대편입니다. 여기의 move는 유닛 12의 move(이사하다)와 다른 말이고, 뒤에는 일정·시각이 옵니다.', '/muːv ʌp/', '무-브 업'),
+(9522, 'make time', '(없는 중에) 시간을 내다', 'have time(시간이 있다)과 달리 일부러 자리를 비운다는 말입니다. 누구를 위한 시간인지는 for로 붙입니다.', '/meɪk taɪm/', '메이크 타임'),
+(9523, 'fit in', '(일정 사이에) 끼워 넣다', '빈 틈에 밀어 넣는 그림입니다. 사람을 주어로 쓰면 「무리에 섞여 들다」라는 다른 뜻이 되니 일정 이야기임을 함께 말해 줍니다.', '/fɪt ɪn/', '핏 인'),
+(9524, 'double-check', '(한 번 더) 확인하다', '이미 한 번 봤는데 또 본다는 말입니다. 처음 확인하는 check와 달리 두 번째라는 사실이 말 안에 들어 있습니다.', '/ˈdʌbl tʃek/', '더블 체크'),
+(9525, 'back to back', '(일정이) 줄줄이 붙어 있는', '등을 맞대고 선 그림입니다. 바쁘다는 말이 아니라 쉬는 틈 없이 이어 붙었다는 모양을 말합니다.', '/bæk tə bæk/', '백 터 백'),
+(9526, 'run over', '(회의가) 예정 시간을 넘기다', '차로 치는 뜻이 아니라 시간이 넘쳐 흐르는 쪽입니다. 유닛 9의 run(뛰다·달리다)과 뜻이 완전히 갈립니다.', '/rʌn ˈoʊvər/', '런 오우버');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9520, 9520, 1, 'Let''s push back the review to Friday.', '검토는 금요일로 미루죠.'),
+(9521, 9521, 1, 'I''ll move up the afternoon call.', '오후 통화를 앞당길게요.'),
+(9522, 9522, 1, 'Can we make time on Wednesday?', '수요일에 시간 낼 수 있을까요?'),
+(9523, 9523, 1, 'I''m going to fit it in before lunch.', '점심 전에 끼워 넣을 거예요.'),
+(9524, 9524, 1, 'I''ll double-check the calendar.', '일정표를 다시 확인할게요.'),
+(9525, 9525, 1, 'My Tuesday is back to back.', '제 화요일은 일정이 줄줄이예요.'),
+(9526, 9526, 1, 'The meeting ran over by twenty minutes.', '회의가 20분 넘겼어요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9540, 'ticket', NULL, '(차·공연) 표', 'NOUN', '/ˈtɪkɪt/', '티킷'),
+(9541, 'reservation', NULL, '(자리·방을 잡아 두는) 예약', 'NOUN', '/ˌrezərˈveɪʃn/', '레저베이션'),
+(9542, 'seat', NULL, '(앉는) 자리', 'NOUN', '/siːt/', '시-트'),
+(9543, 'aisle', NULL, '(좌석 사이의) 통로', 'NOUN', '/aɪl/', '아일'),
+(9544, 'platform', NULL, '(기차) 승강장', 'NOUN', '/ˈplætfɔːrm/', '플랫폼-'),
+(9545, 'gate', NULL, '(공항) 탑승구', 'NOUN', '/ɡeɪt/', '게이트'),
+(9546, 'fare', NULL, '(차를 타는) 요금', 'NOUN', '/fer/', '페어'),
+(9547, 'calendar', NULL, '일정표 · 달력', 'NOUN', '/ˈkælɪndər/', '캘린더'),
+(9548, 'transfer', NULL, '(다른 차로) 갈아타다', 'VERB', '/trænsˈfɜːr/', '트랜스퍼-'),
+(9549, 'depart', NULL, '(시간표대로) 출발하다', 'VERB', '/dɪˈpɑːrt/', '디파-트'),
+(9550, 'confirm', NULL, '(틀림없다고) 확정하다', 'VERB', '/kənˈfɜːrm/', '컨펌-'),
+(9551, 'reschedule', NULL, '(날짜를) 다시 잡다', 'VERB', '/ˌriːˈskedʒuːl/', '리-스케줄-'),
+(9552, 'overlap', NULL, '(두 일정이) 겹치다', 'VERB', '/ˌoʊvərˈlæp/', '오우버랩'),
+(9553, 'tight', NULL, '(일정이) 빠듯한', 'ADJECTIVE', '/taɪt/', '타이트'),
+(9554, 'sharp', NULL, '(시각) 정각에', 'ADVERB', '/ʃɑːrp/', '샤-프'),
+(9555, 'meanwhile', NULL, '그동안에 · 한편', 'ADVERB', '/ˈmiːnwaɪl/', '민-와일');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 14 「앞일을 묻고, 안 할 거라고 말한다」 — 미래의 의문 두 갈래 · won''t와 not going to · in two days
+-- 문법 9165~9167 / 예문 9495~9503 / 회화 9114(대사 9460~9467) / 표현 9530~9536 / 어휘 9560~9575
+-- 장면: 연휴 계획을 묻고 아무 계획 없다고 답한다 — "작년 연휴엔 어땠는지"로 새면 유닛 4의 재방송이 된다.
+-- ⚠️ 기획 §8-3 27 요구: won''t**와** not going to가 **둘 다** 오간다 —
+--    not going to는 대사 2·8, won''t는 대사 4다. 하나만 쓰면 문법 2(「두 가지」)가 비어 버린다.
+-- ⚠️ recently·lately·already·yet을 대사에 쓰지 않았다 — 완료와 붙어 사는 말이라 유닛 16부터다(AC-24).
+-- ⚠️ tomorrow(9575)는 **이 유닛이 임자다**(기획 §3-3) — 문법 3이 그것을 가르치므로 예문에 실제로 나온다.
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9165, 'Will you ~? / Are you going to ~?', '계획을 묻는 말과 해 달라는 말이 갈린다', '학교에서는 둘을 같은 뜻으로 배웠습니다. 실제로 Are you going to ~?는 정해 둔 게 있는지를 묻고, Will you ~?는 해 줄 건지를 묻는 쪽으로 기웁니다. 그래서 계획을 물을 때는 be going to 쪽이 자연스럽습니다 — Will you travel?은 계획을 묻는 말로는 덜 자연스럽고 여행 좀 가 달라는 말처럼 들립니다. 묻는 모양은 E1과 같습니다: 앞의 be나 will을 주어 앞으로 보내면 끝이고 뒤는 하나도 안 바뀝니다.'),
+(9166, 'won''t와 not going to의 갈림', '거절의 세기가 다르다', '학교에서는 부정을 하나만 배웠습니다. 실제로 I won''t.는 안 하겠다는 쪽(그러기로 정했다)이고, I''m not going to.는 그럴 계획이 없다는 쪽입니다. 거절의 세기가 다릅니다 — 앞쪽은 의지가 실려 단호하게 들리고, 뒤쪽은 예정에 없다는 사실만 말합니다. 그래서 부탁을 물리칠 때는 앞쪽이 세게 들리고, 계획을 묻는 말에는 뒤쪽이 자연스럽습니다.'),
+(9167, '앞일의 시간을 재는 말 (tomorrow / next week / in two days)', '이틀 안이 아니라 이틀 뒤를 가리킨다', '학교에서는 in을 「~ 안에」로 외웠습니다. 실제로 앞일에 붙는 in two days는 지금부터 이틀 뒤입니다. 「이틀 안에」는 within two days라 아예 다른 말입니다. 유닛 5의 ago가 지금에서 거꾸로 세는 말이었다면 이 in은 앞으로 셉니다 — 한 쌍으로 기억하면 둘 다 안 틀립니다. 자리는 문장 끝이고, E1의 「장소 먼저 시간 나중」이 그대로 갑니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9495, 9165, 1, 'Are you going to travel this weekend?', NULL, '이번 주말에 여행 갈 계획이에요?'),
+(9496, 9165, 2, 'Will you join us?', NULL, '같이 하실래요?'),
+(9497, 9165, 3, 'What are you going to do tomorrow?', NULL, '내일 뭐 할 거예요?'),
+(9498, 9166, 1, 'I''m not going to do anything this weekend.', NULL, '이번 주말엔 아무것도 안 할 거예요.'),
+(9499, 9166, 2, 'I won''t say a word.', NULL, '한 마디도 하지 않을게요.'),
+(9500, 9166, 3, 'Mina isn''t going to join the picnic.', NULL, '미나는 소풍에 올 계획이 없어요.'),
+(9501, 9167, 1, 'The festival starts tomorrow.', NULL, '축제는 내일 시작해요.'),
+(9502, 9167, 2, 'I''m going to visit my hometown next week.', NULL, '다음 주에 고향에 갈 거예요.'),
+(9503, 9167, 3, 'They''re going to arrive in two days.', NULL, '그들은 이틀 뒤에 도착해요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9114, '연휴에 뭐 할 거냐고 묻고, 아무 계획 없다고 답한다');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9460, 9114, 1, 'Mina', 'The holiday starts in two days. Are you going to travel?', NULL, '이틀 뒤면 연휴예요. 여행 갈 거예요?'),
+(9461, 9114, 2, 'Ben', 'No, I''m not going to do anything. I''ll just stay in.', NULL, '아뇨, 아무것도 안 할 거예요. 그냥 집에 있을게요.'),
+(9462, 9114, 3, 'Mina', 'Really? My relatives are going to gather at my hometown.', NULL, '진짜요? 저희 친척들은 고향에 모일 거예요.'),
+(9463, 9114, 4, 'Ben', 'That sounds nice. But I won''t drive for five hours again.', NULL, '좋네요. 그래도 다섯 시간 운전은 다시 안 할 거예요.'),
+(9464, 9114, 5, 'Mina', 'Fair enough. We''re going camping on Saturday. Will you join us?', NULL, '그럴 만하죠. 저희는 토요일에 캠핑 가요. 같이 가실래요?'),
+(9465, 9114, 6, 'Ben', 'A tent in the rain? I''m going to sleep in and take it easy.', NULL, '비 오는데 텐트요? 저는 늦잠 자고 느긋하게 있을 거예요.'),
+(9466, 9114, 7, 'Mina', 'Lazy but peaceful. I''ll send you a picnic photo.', NULL, '게으르지만 평화롭네요. 소풍 사진 보내 드릴게요.'),
+(9467, 9114, 8, 'Ben', 'Please do. I''m not going out of town, so I''ll be here all week.', NULL, '그래 주세요. 저는 멀리 안 나갈 거니까 한 주 내내 여기 있을 거예요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9530, 'take it easy', '무리하지 않고 느긋하게 있다', '쉬라는 권유로도 쓰고 헤어질 때 인사로도 씁니다. it 자리를 다른 말로 바꾸지 않습니다 — 통째로 굳은 덩어리입니다.', '/teɪk ɪt ˈiːzi/', '테이크 잇 이-지'),
+(9531, 'stay in', '(나가지 않고) 집에 있다', '바로 아래 stay up과 꼴이 비슷하지만 이쪽은 장소, 저쪽은 시간입니다. 밖에서 노는 go out의 반대편입니다.', '/steɪ ɪn/', '스테이 인'),
+(9532, 'stay up', '(안 자고) 늦게까지 깨어 있다', '위의 stay in과 짝으로 외우면 안 섞입니다 — in은 집 안, up은 잠들지 않은 상태입니다. 늦게까지라면 뒤에 late를 붙입니다.', '/steɪ ʌp/', '스테이 업'),
+(9533, 'sleep in', '(일부러) 늦잠을 자다', '유닛 1의 sleep(자다)과 달리 평소보다 늦게까지 자는 것입니다. 실수로 늦잠을 잔 것은 oversleep이라 아예 다른 말입니다.', '/sliːp ɪn/', '슬리-프 인'),
+(9534, 'out of town', '(일·여행으로) 동네를 떠나 있는', '여행 중이라는 말이 아니라 지금 이 도시에 없다는 상태입니다. be나 go 뒤에 붙여 씁니다.', '/aʊt əv taʊn/', '아웃 어브 타운'),
+(9535, 'get away', '(답답한 데서) 훌쩍 떠나다', '어디로 가는지보다 벗어난다는 쪽에 무게가 있습니다. 도망친다는 뜻으로도 쓰이니 쉬러 간다는 맥락을 함께 말해 줍니다.', '/ɡet əˈweɪ/', '겟 어웨이'),
+(9536, 'kill time', '(남는 시간을) 때우다', '할 일이 없어 시간을 흘려보낸다는 말입니다. 즐기는 쪽이 아니라 버티는 쪽이라 쉬는 계획이 없을 때 씁니다.', '/kɪl taɪm/', '킬 타임');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9530, 9530, 1, 'I''m going to take it easy all weekend.', '주말 내내 느긋하게 있을 거예요.'),
+(9531, 9531, 1, 'I''ll just stay in tomorrow.', '내일은 그냥 집에 있을게요.'),
+(9532, 9532, 1, 'I stayed up late last night.', '어젯밤에 늦게까지 안 자고 있었어요.'),
+(9533, 9533, 1, 'I''m going to sleep in on Sunday.', '일요일엔 늦잠 잘 거예요.'),
+(9534, 9534, 1, 'Ben is out of town this week.', '벤은 이번 주에 동네에 없어요.'),
+(9535, 9535, 1, 'We want to get away for a few days.', '며칠 훌쩍 떠나고 싶어요.'),
+(9536, 9536, 1, 'I killed time at the station.', '역에서 시간을 때웠어요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9560, 'countryside', NULL, '(도시 밖) 시골', 'NOUN', '/ˈkʌntrisaɪd/', '컨트리사이드'),
+(9561, 'beach', NULL, '바닷가', 'NOUN', '/biːtʃ/', '비-치'),
+(9562, 'camping', NULL, '캠핑', 'NOUN', '/ˈkæmpɪŋ/', '캠핑'),
+(9563, 'tent', NULL, '텐트', 'NOUN', '/tent/', '텐트'),
+(9564, 'picnic', NULL, '소풍', 'NOUN', '/ˈpɪknɪk/', '피크닉'),
+(9565, 'festival', NULL, '축제', 'NOUN', '/ˈfestɪvl/', '페스티벌'),
+(9566, 'hometown', NULL, '고향', 'NOUN', '/ˈhoʊmtaʊn/', '호움타운'),
+(9567, 'relative', NULL, '친척', 'NOUN', '/ˈrelətɪv/', '렐러티브'),
+(9568, 'gather', NULL, '(여럿이) 모이다', 'VERB', '/ˈɡæðər/', '개더'),
+(9569, 'invite', NULL, '(오라고) 부르다', 'VERB', '/ɪnˈvaɪt/', '인바이트'),
+(9570, 'join', NULL, '(무리에) 끼다 · 함께하다', 'VERB', '/dʒɔɪn/', '조인'),
+(9571, 'relax', NULL, '(긴장을 풀고) 느긋해지다', 'VERB', '/rɪˈlæks/', '릴랙스'),
+(9572, 'lazy', NULL, '(움직이기 싫은) 게으른', 'ADJECTIVE', '/ˈleɪzi/', '레이지'),
+(9573, 'peaceful', NULL, '(사람 손이 안 탄) 고요한', 'ADJECTIVE', '/ˈpiːsfl/', '피-스펄'),
+(9574, 'sunny', NULL, '햇볕이 좋은', 'ADJECTIVE', '/ˈsʌni/', '서니'),
+(9575, 'tomorrow', NULL, '내일', 'ADVERB', '/təˈmɑːroʊ/', '터마-로우');
+
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 유닛 15 「하려고 했는데」 ★복습(11~15) — was/were going to · 확신을 얹는 말 · 같은 일을 세 시점으로
+-- 문법 9170~9172 / 예문 9510~9518 / 회화 9115(대사 9480~9487) / 표현 9540~9546 / 어휘 9580~9595
+-- 장면: 어제 못 온 이유와 다음엔 어떻게 할지.
+-- ⚠️ 기획 §8-3 27 요구: was going to(못 한 일)**와** I''ll(다음번)이 **한 장면에** 선다 —
+--    대사 1이 was going to, 7이 I''ll definitely, 8이 will + be going to다. 과거만 말하고 끝내지 않았다.
+-- ⚠️ "그동안 한 번도 못 왔다"로 가지 않았다 — 그 뜻의 영어는 I haven''t been able to come.이고 완료는 유닛 16이다.
+--    못 온 것은 **어제 하루**이고 다음은 **다음번 한 번**이다. 시점을 박아 두면 완료형으로 샐 길이 막힌다(AC-13).
+-- ⚠️ I should have come. 류로 끝맺지 않았다 — should는 E4다(§3-4 ⑥ · AC-17).
+-- ⚠️ maybe(E1 9225)·probably(E1 9286)는 **어휘로 올리지 않았다** — 문법 2가 가르치고 예문·설명에만 나온다.
+--    definitely(9595)만 어휘로 올렸다(E1·E2 어디에도 없는 표기다).
+-- ⚠️ 이 유닛의 정리 스텝에 11~15 복습 블록이 붙는다(unitNo % 5 == 0) — 유닛 11~14의 unit_grammar 매핑이
+--    하나라도 빠지면 404가 아니라 **조용히 적은 칩**으로 나타난다(규칙 7이 문법 칩 10~15개를 센다).
+-- ═══════════════════════════════════════════════════════════════════
+INSERT INTO grammar_point (id, name, name_ko, explanation) VALUES
+(9170, 'was / were going to', '안 했다는 말까지 함께 전해진다', '학교에서는 이 모양을 배운 적이 거의 없습니다. 실제로는 앞일을 과거에서 본 것입니다 — I was going to call you.는 하려고 했는데 안 했다는 말까지 함께 전합니다. 유닛 5의 used to가 「지금은 아니다」를 담은 것과 같은 방식입니다. 형태는 유닛 12의 be만 과거로 갈아 끼운 것이라 새로 외울 것이 없습니다. 안 한 이유를 바로 뒤에 붙이는 것이 보통입니다.'),
+(9171, '앞일에 확신을 얹는 말 (maybe / probably / definitely)', '얼마나 확실한지를 한 단어로', '학교에서는 「maybe = 아마」로만 외웠습니다. 실제로 셋은 확신의 세기가 다르고 앉는 자리도 다릅니다 — maybe는 문장 맨 앞, probably와 definitely는 will 뒤입니다(I''ll probably go.). 세기는 maybe(반쯤) → probably(거의) → definitely(틀림없이) 순서로 올라갑니다. E1에서 배운 「빈도를 말하는 말의 자리」가 여기서도 그대로 갑니다.'),
+(9172, '같은 일을 세 시점으로 말한다', '바뀌는 것은 동사 한 자리뿐이다', '학교에서는 시제를 표의 칸으로 배웠습니다. 실제로 한 가지 일(work late)을 어제·지금·내일로 옮겨 보면 바뀌는 것은 동사 한 자리뿐입니다 — I worked late. / I''m working late. / I''ll work late. 표를 외울 일이 아니라 한 문장을 옮겨 보는 것이 시제 연습입니다. 유닛 1~15에서 배운 것이 전부 이 한 줄 안에 들어옵니다.');
+
+INSERT INTO grammar_example (id, grammar_point_id, sort_order, jp, kana, meaning_ko) VALUES
+(9510, 9170, 1, 'I was going to call you.', NULL, '전화하려고 했어요. (그런데 못 했어요)'),
+(9511, 9170, 2, 'We were going to leave at six.', NULL, '여섯 시에 나가려고 했어요. (그런데 못 나갔어요)'),
+(9512, 9170, 3, 'Ben was going to join us, but something came up.', NULL, '벤도 오려고 했는데 일이 갑자기 생겼어요.'),
+(9513, 9171, 1, 'Maybe I''ll go next time.', NULL, '다음번엔 갈지도 몰라요.'),
+(9514, 9171, 2, 'I''ll probably work late today.', NULL, '오늘은 아마 늦게까지 일할 거예요.'),
+(9515, 9171, 3, 'I''ll definitely be there.', NULL, '꼭 갈게요.'),
+(9516, 9172, 1, 'I worked late yesterday.', NULL, '어제 늦게까지 일했어요.'),
+(9517, 9172, 2, 'I''m working late today.', NULL, '오늘 늦게까지 일하고 있어요.'),
+(9518, 9172, 3, 'I''ll work late tomorrow.', NULL, '내일 늦게까지 일할 거예요.');
+
+INSERT INTO dialog (id, title) VALUES
+(9115, '어제 못 온 이유와 다음엔 어떻게 할지');
+
+INSERT INTO dialog_line (id, dialog_id, sort_order, speaker, jp, kana, meaning_ko) VALUES
+(9480, 9115, 1, 'Mina', 'I was going to come yesterday. I''m sorry.', NULL, '어제 가려고 했어요. 미안해요.'),
+(9481, 9115, 2, 'Ben', 'It happens. What came up?', NULL, '그럴 수 있죠. 무슨 일이 생겼어요?'),
+(9482, 9115, 3, 'Mina', 'Something came up at home. A small accident with the water pipe.', NULL, '집에 일이 생겼어요. 수도관에 작은 사고가 났어요.'),
+(9483, 9115, 4, 'Ben', 'That''s a shame. Our plan fell through too, so we called off the picnic.', NULL, '아쉽네요. 저희 계획도 틀어져서 소풍을 취소했어요.'),
+(9484, 9115, 5, 'Mina', 'Unfortunately I only knew at the last minute. I apologize.', NULL, '하필 저도 막판에야 알았어요. 사과드려요.'),
+(9485, 9115, 6, 'Ben', 'On second thought, let''s move it to next week. Is Tuesday all right?', NULL, '다시 생각해 보니, 다음 주로 옮기죠. 화요일 괜찮아요?'),
+(9486, 9115, 7, 'Mina', 'Tuesday works. I''ll definitely be there next time. I promise.', NULL, '화요일 좋아요. 다음번엔 꼭 갈게요. 약속해요.'),
+(9487, 9115, 8, 'Ben', 'Then everything will work out. I''m going to book the room today.', NULL, '그럼 다 잘 풀릴 거예요. 제가 오늘 방을 예약할 거예요.');
+
+INSERT INTO expression (id, text, meaning_ko, usage_note, ipa, ko_approx) VALUES
+(9540, 'come up', '(일이) 갑자기 생기다', 'E1의 come up with는 생각을 떠올리는 것이고, with가 없는 이쪽은 일·용건이 예고 없이 생기는 것입니다. 주어는 대개 something이고 사람이 아닙니다.', '/kʌm ʌp/', '컴 업'),
+(9541, 'fall through', '(다 된 일이) 틀어지다', '바닥이 꺼져 아래로 빠지는 그림입니다. 계획·거래가 마지막에 무너지는 것이고, 주어는 사람이 아니라 그 계획입니다.', '/fɔːl θruː/', '폴- 스루-'),
+(9542, 'call off', '(잡혀 있던 것을) 취소하다', '예정된 행사·경기를 없애는 것입니다. 사이에 목적어를 넣어도 됩니다: call the picnic off.', '/kɔːl ɔːf/', '콜- 오-프'),
+(9543, 'at the last minute', '막판에 · 아주 늦게야', '시간이 거의 다 된 뒤라는 말입니다. 급하게라는 뜻이 아니라 늦은 시점을 가리킵니다.', '/æt ðə læst ˈmɪnɪt/', '앳 더 래스트 미닛'),
+(9544, 'on second thought', '다시 생각해 보니', '마음을 바꿨다는 신호입니다. 유닛 3의 come to think of it은 말하다가 떠올린 것이고, 이쪽은 앞서 말한 것을 뒤집는 자리입니다.', '/ɑːn ˈsekənd θɔːt/', '온- 세컨드 소-트'),
+(9545, 'next time', '다음번에는', '이번에 못 한 것을 다음으로 넘길 때 문장 맨 앞이나 끝에 붙입니다. 뒤에 오는 말이 앞일이라 will과 잘 붙습니다.', '/nekst taɪm/', '넥스트 타임'),
+(9546, 'work out', '(일이) 잘 풀리다', '운동한다는 뜻이 아닙니다. 꼬였던 일이 결국 괜찮게 끝난다는 쪽이고, E1의 work for·work on과는 다른 세 번째 work입니다.', '/wɜːrk aʊt/', '워-크 아웃');
+
+INSERT INTO expression_example (id, expression_id, sort_order, en, meaning_ko) VALUES
+(9540, 9540, 1, 'Something came up at home.', '집에 일이 생겼어요.'),
+(9541, 9541, 1, 'The plan fell through.', '계획이 틀어졌어요.'),
+(9542, 9542, 1, 'We called off the picnic.', '소풍을 취소했어요.'),
+(9543, 9543, 1, 'I only knew at the last minute.', '막판에야 알았어요.'),
+(9544, 9544, 1, 'On second thought, let''s meet on Tuesday.', '다시 생각해 보니, 화요일에 만나죠.'),
+(9545, 9545, 1, 'I''ll be there next time.', '다음번엔 갈게요.'),
+(9546, 9546, 1, 'Everything will work out.', '다 잘 풀릴 거예요.');
+
+INSERT INTO vocabulary (id, word, kana, meaning_ko, part_of_speech, ipa, ko_approx) VALUES
+(9580, 'excuse', NULL, '(못 한) 핑계 · 사정', 'NOUN', '/ɪkˈskjuːs/', '익스큐-스'),
+(9581, 'emergency', NULL, '급한 일 · 비상', 'NOUN', '/ɪˈmɜːrdʒənsi/', '이머-전시'),
+(9582, 'accident', NULL, '(뜻하지 않은) 사고', 'NOUN', '/ˈæksɪdənt/', '액시던트'),
+(9583, 'rain', NULL, '비', 'NOUN', '/reɪn/', '레인'),
+(9584, 'delay', NULL, '(늦어진) 지연', 'NOUN', '/dɪˈleɪ/', '딜레이'),
+(9585, 'refund', NULL, '환불', 'NOUN', '/ˈriːfʌnd/', '리-펀드'),
+(9586, 'shame', NULL, '아쉬운 일', 'NOUN', '/ʃeɪm/', '셰임'),
+(9587, 'apologize', NULL, '사과하다', 'VERB', '/əˈpɑːlədʒaɪz/', '어팔-러자이즈'),
+(9588, 'promise', NULL, '약속하다', 'VERB', '/ˈprɑːmɪs/', '프라-미스'),
+(9589, 'understand', NULL, '(사정을) 이해하다', 'VERB', '/ˌʌndərˈstænd/', '언더스탠드'),
+(9590, 'regret', NULL, '(못 해서) 아쉬워하다', 'VERB', '/rɪˈɡret/', '리그렛'),
+(9591, 'sick', NULL, '(몸이) 아픈', 'ADJECTIVE', '/sɪk/', '식'),
+(9592, 'sorry', NULL, '미안한 · 안타까운', 'ADJECTIVE', '/ˈsɑːri/', '사-리'),
+(9593, 'unfortunately', NULL, '하필 · 아쉽게도', 'ADVERB', '/ʌnˈfɔːrtʃənətli/', '언포-처너틀리'),
+(9594, 'hopefully', NULL, '바라건대', 'ADVERB', '/ˈhoʊpfəli/', '호웁펄리'),
+(9595, 'definitely', NULL, '틀림없이 · 꼭', 'ADVERB', '/ˈdefɪnətli/', '데퍼너틀리');

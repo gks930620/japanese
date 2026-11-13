@@ -285,13 +285,17 @@ data: {
 
 #### 2-3-A. 부분 공개 코스 — "완주"와 "열린 데까지의 끝"은 다른 상태다 (2026-09-21)
 
-> **2026-11-13 현황**: E1은 **15/15로 계획을 채운 완주 코스**이고, **E2가 10/20으로 부분 공개**돼 있다(2026-09-22 5/20 → 10/20).
+> **2026-11-14 현황**: E1은 **15/15로 계획을 채운 완주 코스**이고, **E2가 15/20으로 부분 공개**돼 있다(2026-09-22 5/20 → 11-13 10/20 → 11-14 15/20).
 > 즉 `totalUnits < coursePlannedUnits`인 코스가 **다시 존재한다**(E2 = 102). 한때 이 상태를 실데이터로 태우는
 > 백엔드 테스트가 없었지만(작업자(AI)_문서/08 C-30), **E2 개통과 함께 복구했다** — 아래 커버리지 표의 마지막 줄.
 >
-> **5 → 10으로 넓힐 때 이 표에서 고친 것은 숫자 두 개뿐이다**(현황 줄과 아래 마지막 줄). 테스트는 하나도
-> 안 고쳤다 — 전부 `CourseCatalog.ENGLISH`의 `unitCount`에서 유닛 번호를 받아오기 때문에 **대상이 유닛 5 → 10으로
+> **5 → 10 → 15로 넓힐 때 이 표에서 고친 것은 숫자 두 개뿐이다**(현황 줄과 아래 마지막 줄). 테스트는 하나도
+> 안 고쳤다 — 전부 `CourseCatalog.ENGLISH`의 `unitCount`에서 유닛 번호를 받아오기 때문에 **대상이 유닛 5 → 10 → 15로
 > 저절로 옮겨 갔다.** 숫자를 테스트에 박았다면 그날 "고쳐서 살리는" 선택지가 생기고, 그것이 C-30이 경계한 길이다.
+>
+> ⚠️ **이 현황 줄은 계약이 먼저 선 상태를 적는다**(순서는 계약 → Red → 콘텐츠 — `CourseCatalog.ENGLISH` 주석).
+> 유닛 11~15 시드가 들어오기 전까지는 **서버가 아직 10/20을 돌려주고 백엔드 테스트 10건이 빨갛다** — 깨진 것이 아니라
+> 그물을 먼저 친 것이다. 콘텐츠가 들어오면 그대로 초록이 되고 이 줄이 참이 된다.
 
 `nextUnitNo == null`은 **"이 코스의 마지막 유닛"** 일 뿐 완주가 아니다. 유닛을 앞에서부터 채워 나가는
 코스(E1은 2026-09-21 시점 15유닛 계획 중 **10유닛** 공개였다)에서는 **열린 마지막 유닛**도 `nextUnitNo: null`이라 두 상태가 겹친다.
@@ -326,7 +330,7 @@ completedCourse = nextUnitNo == null && !moreUnitsComing
 | 계획을 채운 코스에 `notice`가 남지 않는다 | `EnglishCourseApiIntegrationTest.a_course_that_met_its_plan_carries_no_leftover_notice` | ○ |
 | **채우는 중인 코스는 `notice`를 달고 있다**(반대쪽 · §06 §11-12 ③ R6) | `EnglishCourseApiIntegrationTest.a_partly_published_course_carries_the_shared_notice` | ○ (E2) |
 | 판정식(`moreUnitsComing`)과 상태 2 화면 | `frontend/src/pages/UnitStudyPage.partialCourse.test.jsx` | ✕ **픽스처** |
-| **상태 2를 서버 응답으로 태우기**(`totalUnits < coursePlannedUnits` — 2026-11-13 기준 `10 < 20`) | `EnglishCourseApiIntegrationTest.the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course` | ○ **(E2 — 2026-09-22 복구)** |
+| **상태 2를 서버 응답으로 태우기**(`totalUnits < coursePlannedUnits` — 2026-11-14 기준 `15 < 20`) | `EnglishCourseApiIntegrationTest.the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course` | ○ **(E2 — 2026-09-22 복구)** |
 | 공개 경계가 **5의 배수**이고 그 유닛의 복습 블록이 직전 5유닛을 끌어온다(§06 §11-12 ① 1) | `EnglishContentRuleIntegrationTest.english_courses_open_on_a_five_unit_boundary_and_every_fifth_unit_reviews_the_previous_five` | ○ **(E1·E2 — 2026-11-13 신설)** |
 | 열린 영어 코스의 **집계 네 칸**이 기대치 표와 같다 | `EnglishCourseDetailIntegrationTest.every_open_english_course_summary_matches_the_catalog` | ○ **(E1·E2 — 2026-11-13 신설)** |
 
@@ -925,7 +929,7 @@ units:   [ { unitNo, title, grammarCount, expressionCount, vocabCount } ]
 // 유닛 학습
 data: {
   courseId, courseTitle, levelCode, unitNo, title, totalUnits,
-  coursePlannedUnits,                      // §2-3-A — E1은 15(완주) · E2는 20(10유닛 공개), 나머지는 null
+  coursePlannedUnits,                      // §2-3-A — E1은 15(완주) · E2는 20(15유닛 공개), 나머지는 null
   prevUnitNo, nextUnitNo, nextCourse,
   grammars: [ ... ],                       // 일본어와 같은 GrammarDTO
   dialog:   { id, title, lines: [ ... ] }, // 일본어와 같은 DialogDTO
@@ -947,8 +951,8 @@ data: {
   2026-11-14 현재 값을 가진 코스는 **E1 = 15 · E2 = 20** 뿐이고 나머지(E3~E5·일본어 전부)는 `null`이다.
   여기가 **유일하게 `null`이 아닌 실데이터**라, 일본어만으로는 "파생 구현인지"를 가릴 수 없다(§2-3-A ③과 같은 구조).
 - `coursePlannedUnits`는 **일본어와 완전히 같은 필드·같은 규칙**이다(§2-3-A).
-  **2026-11-13 현재 E1은 15/15(완주) · E2는 10/20(열린 데까지의 끝)** 이고, `notice`는 E1이 NULL · E2가 공용 문구다.
-  "열린 데까지의 끝"인 유닛 번호는 공개 범위를 넓힐 때마다 옮겨 다니므로(E1은 5 → 10 → 없음, E2는 5 → **10** → 15 → 없음)
+  **2026-11-14 현재 E1은 15/15(완주) · E2는 15/20(열린 데까지의 끝)** 이고, `notice`는 E1이 NULL · E2가 공용 문구다.
+  "열린 데까지의 끝"인 유닛 번호는 공개 범위를 넓힐 때마다 옮겨 다니므로(E1은 5 → 10 → 없음, E2는 5 → 10 → **15** → 없음)
   **유닛 번호를 계약에 박지 않는다** — 판정식은 언제나 `totalUnits < coursePlannedUnits`다.
   고정 테스트도 같은 방식으로 `CourseCatalog.ENGLISH`에서 유닛 번호를 받아온다
   (`the_last_unit_is_a_finished_course_because_the_plan_is_met`(E1) ·

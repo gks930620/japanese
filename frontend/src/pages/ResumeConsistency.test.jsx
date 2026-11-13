@@ -9,6 +9,8 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { apiSuccess, stubFetch } from "../test/helpers.jsx";
+import { AsyncProbe } from "../test/AsyncProbe.jsx";
+import { lastPositionKey, waitForUserData } from "../test/userDataWait.js";
 import { coursesFixture, enCoursesFixture } from "../test/apiFixtures.js";
 import { AuthProvider } from "../context/AuthContext.jsx";
 import { UserDataProvider } from "../context/UserDataContext.jsx";
@@ -43,18 +45,34 @@ function stubAll(progress) {
   });
 }
 
-function renderAt(route, element, path) {
-  return render(
+/**
+ * 화면을 띄우고 **그 진도가 실릴 때까지** 기다린 뒤 돌려준다 (08 E-4 · test/AsyncProbe.jsx).
+ *
+ * 진도는 인증 판정 → `/api/progress` 두 왕복 뒤에 온다. 그 전의 홈·마이페이지는 "아직 아무것도 안 한 사람"
+ * 화면이라, 여기서 단언하면 부하에 따라 무작위로 깨지고(거짓 실패) 부재 단언은 조용히 통과한다(거짓 통과).
+ * 기대값은 `stubAll`에 넘긴 **같은 progress 객체**에서 뽑으므로 심은 값과 기다리는 값이 갈릴 수 없다.
+ */
+async function renderAt(route, element, path, progress) {
+  const view = render(
     <MemoryRouter initialEntries={[route]}>
       <AuthProvider>
         <UserDataProvider>
           <Routes>
             <Route element={element} path={path} />
           </Routes>
+          <AsyncProbe />
         </UserDataProvider>
       </AuthProvider>
     </MemoryRouter>,
   );
+  await waitForUserData(
+    {
+      completed: progress.completedUnits.length,
+      lastPosition: lastPositionKey(progress.lastPosition),
+    },
+    { container: view.container },
+  );
+  return view;
 }
 
 async function homeCta() {
@@ -68,7 +86,7 @@ describe("홈과 마이페이지의 [이어서 학습하기]는 같은 곳으로
     const progress = { completedUnits: done(2, 1, 2, 3), lastPosition: { courseId: 2, unitNo: 2, stepKey: "summary", updatedAt: "2026-09-01T00:00:00" } };
 
     stubAll(progress);
-    const home = renderAt("/", <HomePage />, "/");
+    const home = await renderAt("/", <HomePage />, "/", progress);
     const homeLink = await homeCta();
     expect(homeLink).toHaveAttribute("href", "/courses/2/units/4");
     expect(homeLink).toHaveTextContent("이어서 학습하기");
@@ -76,7 +94,7 @@ describe("홈과 마이페이지의 [이어서 학습하기]는 같은 곳으로
     home.unmount();
 
     stubAll(progress);
-    renderAt("/mypage", <MyPage />, "/mypage");
+    await renderAt("/mypage", <MyPage />, "/mypage", progress);
     const myLink = await screen.findByRole("link", { name: "이어서 학습하기" });
     expect(myLink).toHaveAttribute("href", "/courses/2/units/4");
     expect(screen.getByText(/다음은 유닛 4/)).toBeInTheDocument();
@@ -87,7 +105,7 @@ describe("홈과 마이페이지의 [이어서 학습하기]는 같은 곳으로
     const progress = { completedUnits: done(1, ...all), lastPosition: { courseId: 1, unitNo: 10, stepKey: "summary", updatedAt: "2026-09-01T00:00:00" } };
 
     stubAll(progress);
-    const home = renderAt("/", <HomePage />, "/");
+    const home = await renderAt("/", <HomePage />, "/", progress);
     const homeLink = await screen.findByRole("link", { name: /다음 코스.*왕초보/ });
     expect(homeLink).toHaveAttribute("href", "/courses/2");
     expect(screen.queryByRole("link", { name: /이어서 학습하기/ })).toBeNull();
@@ -96,7 +114,7 @@ describe("홈과 마이페이지의 [이어서 학습하기]는 같은 곳으로
     home.unmount();
 
     stubAll(progress);
-    renderAt("/mypage", <MyPage />, "/mypage");
+    await renderAt("/mypage", <MyPage />, "/mypage", progress);
     const myLink = await screen.findByRole("link", { name: /다음 코스.*왕초보/ });
     expect(myLink).toHaveAttribute("href", "/courses/2");
     expect(screen.queryByRole("link", { name: /이어서 학습하기/ })).toBeNull();
@@ -108,12 +126,12 @@ describe("순서대로 가는 사용자에게 '이어서'와 '다음 유닛'은 
     const progress = { completedUnits: done(2, 1, 2), lastPosition: { courseId: 2, unitNo: 3, stepKey: "dialog", updatedAt: "2026-09-01T00:00:00" } };
 
     stubAll(progress);
-    const home = renderAt("/", <HomePage />, "/");
+    const home = await renderAt("/", <HomePage />, "/", progress);
     expect(await homeCta()).toHaveAttribute("href", "/courses/2/units/3");
     home.unmount();
 
     stubAll(progress);
-    renderAt("/courses/2", <CourseDetailPage />, "/courses/:courseId");
+    await renderAt("/courses/2", <CourseDetailPage />, "/courses/:courseId", progress);
     const primary = await screen.findByRole("link", { name: /유닛 3 학습하기/ });
     expect(primary).toHaveAttribute("href", "/courses/2/units/3");
   });

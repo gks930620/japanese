@@ -13,6 +13,8 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { apiError, apiSuccess, stubFetch } from "../test/helpers.jsx";
+import { AsyncProbe } from "../test/AsyncProbe.jsx";
+import { waitForUserData } from "../test/userDataWait.js";
 import { LocationProbe } from "../test/LocationProbe.jsx";
 import { AuthProvider } from "../context/AuthContext.jsx";
 import { CommunityListPage } from "./CommunityListPage.jsx";
@@ -46,6 +48,7 @@ function renderCommunity(route) {
   return render(
     <MemoryRouter initialEntries={[route]}>
       <AuthProvider>
+        <AsyncProbe />
         <LocationProbe />
         <Routes>
           <Route element={<CommunityListPage />} path="/community" />
@@ -100,6 +103,9 @@ describe("쓰기 뒤에는 목록 캐시를 무효화한다", () => {
 
     // ① 목록을 한 번 본다(캐시에 "지울 글"이 들어간다) → ② 그 글을 연다
     renderCommunity("/community");
+    // [삭제]는 **작성자일 때만** 그려진다 — 그 판정은 `/api/users/me` 응답 뒤에 온다.
+    // 인증 판정을 기다리지 않고 버튼을 찾으면 부하가 걸릴 때 무작위로 깨진다(08 E-4 · test/AsyncProbe.jsx).
+    await waitForUserData();
     await user.click(await screen.findByText("지울 글"));
     await screen.findByRole("heading", { name: "지울 글" });
 

@@ -2167,6 +2167,11 @@ a.course-card:hover {
   margin-right: auto;
 }
 
+/* 열린 데까지의 끝은 축하가 아니다 — 완주 노트의 초록(--ok-text)을 그대로 두면 색이 "완주"를 말한다 (05 §8) */
+.cta-note.open-end {
+  color: var(--muted);
+}
+
 /* 유닛 학습 — 완료 토글 (primary 아님: 이 화면의 primary는 [다음 유닛]) */
 .done-toggle {
   display: flex;

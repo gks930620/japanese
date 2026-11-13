@@ -43,24 +43,30 @@ function LoadingSkeleton() {
  *
  * **끝은 두 종류다**(작업자(AI)_문서/04 §2-3-B · 08 C-33): 아직 채우는 중인 코스에서 열린 유닛을 다 본 것은
  * 완주가 아니다 — 완주 축하도, [처음부터 다시 보기]도 내지 않는다. ✎ 안내(notice)와 같은 말을 해야 한다.
- * ⚠️ 열린 끝의 **문구는 임시다** — planner·designer 확정 대기(고정 테스트는 "완주를 주장하지 않는다"만 본다).
+ *
+ * 열린 끝의 **문구·행선지는 작업자(AI)_문서/05 §8**이 단일 출처다:
+ * 띠(course.notice) = 제품 상태("채우는 중") · 노트 = 학습자 위치("모두 마쳤어요")로 역할이 갈리고,
+ * 주 버튼은 **자료실**로 보낸다 — 이 화면이 이미 유닛 목록이라 [유닛 목록으로]는 제자리이고,
+ * 열린 마지막 유닛으로 되돌리면 방금 떠나온 자리로 돌아가는 고리가 된다. 그래서 이 분기만 유닛이 아닌 곳을 가리킨다.
  *
  * @param {number} done 완료 유닛 수
  * @param {number|null} next 미완료 최전선 유닛 번호(없으면 null)
- * @param {{openUnits:number, moreComing:boolean}} course 열린 유닛 수 · 아직 채우는 중인가(moreUnitsComing)
+ * @param {{moreComing:boolean, unitBase:string, libraryTo:string}} nav 아직 채우는 중인가(moreUnitsComing) ·
+ *        유닛 주소 앞머리 · 자료실 주소. 분기마다 목적지가 달라서 **완성된 `to`를 돌려준다**(호출부는 그대로 쓴다).
  */
-function ctaState(done, next, { openUnits, moreComing }) {
-  if (done === 0) return { label: "유닛 1부터 시작하기", unitNo: 1, note: null };
+function ctaState(done, next, { moreComing, unitBase, libraryTo }) {
+  if (done === 0) return { label: "유닛 1부터 시작하기", to: `${unitBase}/1`, note: null };
   if (next == null && moreComing) {
-    const lastOpen = Math.max(1, openUnits ?? 1);
     return {
-      label: `유닛 ${lastOpen} 다시 보기`,
-      unitNo: lastOpen,
-      note: "✎ 열려 있는 유닛은 여기까지예요",
+      label: "자료실에서 다시 보기",
+      to: libraryTo,
+      note: "✎ 열려 있는 유닛은 모두 마쳤어요",
+      // 중립 톤 — 완주 노트의 초록(--ok-text)을 그대로 두면 색이 "완주"를 말한다(05 §8)
+      noteClass: "cta-note open-end",
     };
   }
-  if (next == null) return { label: "처음부터 다시 보기", unitNo: 1, note: "✓ 이 코스를 완주했어요" };
-  return { label: `유닛 ${next} 학습하기`, unitNo: next, note: null };
+  if (next == null) return { label: "처음부터 다시 보기", to: `${unitBase}/1`, note: "✓ 이 코스를 완주했어요" };
+  return { label: `유닛 ${next} 학습하기`, to: `${unitBase}/${next}`, note: null };
 }
 
 /**
@@ -135,7 +141,11 @@ export function CourseDetailPage({ lang = "ja" }) {
   const moreComing = moreUnitsComing(summary.unitCount, data.plannedUnitCount);
   // 이 코스에서 마지막으로 보던 유닛 — 다른 코스의 마지막 위치는 이 화면에 표시하지 않는다
   const lastSeenUnitNo = progress.lastPosition?.courseId === data.id ? progress.lastPosition.unitNo : null;
-  const cta = ctaState(done, next, { openUnits: summary.unitCount, moreComing });
+  const cta = ctaState(done, next, {
+    moreComing,
+    unitBase: `${pathBase}/${data.id}/units`,
+    libraryTo: en ? "/en/library" : "/library",
+  });
 
   return (
     <section>
@@ -181,9 +191,9 @@ export function CourseDetailPage({ lang = "ja" }) {
       </div>
 
       <div className="k-flex course-cta-row">
-        {cta.note && <span className="cta-note">{cta.note}</span>}
-        {/* 이 화면의 유일한 primary */}
-        <Link className={btnClass({ variant: "primary", size: "lg" })} to={`${pathBase}/${data.id}/units/${cta.unitNo}`}>
+        {cta.note && <span className={cta.noteClass ?? "cta-note"}>{cta.note}</span>}
+        {/* 이 화면의 유일한 primary — 목적지는 분기가 정한다(열린 끝만 유닛이 아니라 자료실이다, 05 §8) */}
+        <Link className={btnClass({ variant: "primary", size: "lg" })} to={cta.to}>
           {cta.label}
         </Link>
       </div>

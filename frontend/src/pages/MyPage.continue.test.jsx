@@ -2,6 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { apiSuccess, stubFetch } from "../test/helpers.jsx";
+import { AsyncProbe } from "../test/AsyncProbe.jsx";
+import { lastPositionKey, waitForUserData } from "../test/userDataWait.js";
 import { coursesFixture, enCoursesFixture } from "../test/apiFixtures.js";
 import { AuthProvider } from "../context/AuthContext.jsx";
 import { UserDataProvider } from "../context/UserDataContext.jsx";
@@ -38,7 +40,12 @@ const ACCOUNT = {
   passwordChangeable: true,
 };
 
-function renderMyPage({ lastPosition = null, completedUnits = [] } = {}) {
+/**
+ * 화면을 띄우고 **그 진도가 실릴 때까지** 기다린다 (08 E-4 · test/AsyncProbe.jsx).
+ * 진도가 오기 전의 마이페이지는 "아직 학습 기록이 없어요" 화면이다 —
+ * 부재 단언(`…not.toBeInTheDocument()`)이 거기서 **거짓 통과**하는 것을 막는 자리이기도 하다.
+ */
+async function renderMyPage({ lastPosition = null, completedUnits = [] } = {}) {
   stubFetch((url) => {
     const target = String(url);
     if (target.includes("/api/me/account")) return apiSuccess(ACCOUNT);
@@ -49,16 +56,21 @@ function renderMyPage({ lastPosition = null, completedUnits = [] } = {}) {
     if (target.includes("/api/bookmarks")) return apiSuccess({ kanji: [], grammar: [], vocabulary: [] });
     return apiSuccess(null);
   });
-  render(
+  const { container } = render(
     <MemoryRouter initialEntries={["/mypage"]}>
       <AuthProvider>
         <UserDataProvider>
           <Routes>
             <Route element={<MyPage />} path="/mypage" />
           </Routes>
+          <AsyncProbe />
         </UserDataProvider>
       </AuthProvider>
     </MemoryRouter>,
+  );
+  await waitForUserData(
+    { completed: completedUnits.length, lastPosition: lastPositionKey(lastPosition) },
+    { container },
   );
 }
 
@@ -68,21 +80,21 @@ describe("영어 진도에서 이어서 학습하기 (B-H3)", () => {
   it("영어 코스는 영어 주소로 잇는다 — 일본어 주소가 아니다", async () => {
     // 이 테스트가 보는 것은 **주소의 과정**이다. 보던 유닛을 완료로 두면 2026-09 결정 D-2에 따라
     // "그 뒤 유닛"으로 가버려 검증 대상이 흐려진다 — 미완료로 두어 마지막 위치 그대로를 본다.
-    renderMyPage({ lastPosition: { courseId: 101, unitNo: 1, stepKey: "vocab" }, completedUnits: [] });
+    await renderMyPage({ lastPosition: { courseId: 101, unitNo: 1, stepKey: "vocab" }, completedUnits: [] });
 
     await waitFor(() => expect(resumeLink()).toBeInTheDocument());
     expect(resumeLink()).toHaveAttribute("href", "/en/courses/101/units/1");
   });
 
   it("일본어 코스는 지금과 같다 (회귀)", async () => {
-    renderMyPage({ lastPosition: { courseId: 4, unitNo: 7, stepKey: "grammar-0" }, completedUnits: [{ courseId: 4, unitNo: 6 }] });
+    await renderMyPage({ lastPosition: { courseId: 4, unitNo: 7, stepKey: "grammar-0" }, completedUnits: [{ courseId: 4, unitNo: 6 }] });
 
     await waitFor(() => expect(resumeLink()).toBeInTheDocument());
     expect(resumeLink()).toHaveAttribute("href", "/courses/4/units/7");
   });
 
   it("사라진 코스면 버튼을 만들지 않는다 — 홈과 같은 규칙(작업자(AI)_문서/05 §8)", async () => {
-    renderMyPage({ lastPosition: { courseId: 999, unitNo: 3, stepKey: "vocab" } });
+    await renderMyPage({ lastPosition: { courseId: 999, unitNo: 3, stepKey: "vocab" } });
 
     await waitFor(() => expect(screen.getByRole("heading", { name: "내 학습" })).toBeInTheDocument());
     expect(resumeLink()).not.toBeInTheDocument();
@@ -92,13 +104,13 @@ describe("영어 진도에서 이어서 학습하기 (B-H3)", () => {
 
 describe("내 학습 카드의 문구 (B-L3)", () => {
   it("코스 이름이 들어간다 — '유닛 1'만으로는 어디였는지 알 수 없다", async () => {
-    renderMyPage({ lastPosition: { courseId: 4, unitNo: 7, stepKey: "vocab" } });
+    await renderMyPage({ lastPosition: { courseId: 4, unitNo: 7, stepKey: "vocab" } });
 
     await waitFor(() => expect(screen.getByText(/중급\(JLPT N3\) 코스 · 유닛 7 학습 중이었어요/)).toBeInTheDocument());
   });
 
   it("영어 코스는 레벨 괄호 없이 코스명만 쓴다 (작업자(AI)_문서/05 §16-2)", async () => {
-    renderMyPage({ lastPosition: { courseId: 101, unitNo: 2, stepKey: "vocab" } });
+    await renderMyPage({ lastPosition: { courseId: 101, unitNo: 2, stepKey: "vocab" } });
 
     await waitFor(() => expect(screen.getByText(/다시 세우기 코스 · 유닛 2 학습 중이었어요/)).toBeInTheDocument());
     expect(screen.queryByText(/E1/)).not.toBeInTheDocument();
@@ -107,14 +119,14 @@ describe("내 학습 카드의 문구 (B-L3)", () => {
 
 describe("학습 기록이 0일 때 (B-L1)", () => {
   it("[학습 기록 초기화]를 그리지 않는다 — 지울 것이 없다", async () => {
-    renderMyPage({ completedUnits: [] });
+    await renderMyPage({ completedUnits: [] });
 
     await waitFor(() => expect(screen.getByText("아직 학습 기록이 없어요")).toBeInTheDocument());
     expect(screen.queryByRole("button", { name: "학습 기록 초기화" })).not.toBeInTheDocument();
   });
 
   it("기록이 있으면 그대로 있다 (회귀)", async () => {
-    renderMyPage({ completedUnits: [{ courseId: 2, unitNo: 1 }, { courseId: 2, unitNo: 2 }] });
+    await renderMyPage({ completedUnits: [{ courseId: 2, unitNo: 1 }, { courseId: 2, unitNo: 2 }] });
 
     await waitFor(() => expect(screen.getByText("완료한 유닛 2개")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "학습 기록 초기화" })).toBeInTheDocument();
