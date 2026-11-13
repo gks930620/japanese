@@ -38,7 +38,7 @@ describe("진단 레벨 목록 — 두 하드코딩 사본은 같은 값이어�
     expect(stagePlan(shuffled).map((stage) => stage.courseId)).toEqual([1, 2, 4, 6]);
   });
 
-  /** 영어 과정 코드는 선택지에 들어가지 않는다 — 진단은 일본어 과정의 도구다(설계/09 §5) */
+  /** 영어 과정 코드는 선택지에 들어가지 않는다 — 진단은 일본어 과정의 도구다(작업자(AI)_문서/09 §5) */
   it("영어 레벨 코드는 선택지가 되지 않는다", () => {
     const enCourses = [{ id: 101, courseNo: 1, levelCode: "E1", levelLabel: "E1", title: "다시 세우기", status: "AVAILABLE" }];
     expect(stagePlan(enCourses)).toEqual([]);

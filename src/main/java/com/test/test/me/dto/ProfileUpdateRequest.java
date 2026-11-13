@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 /**
- * 회원정보 수정 요청 (설계/04 §4-1) — 검증 기준은 <b>가입과 같다</b>.
+ * 회원정보 수정 요청 (작업자(AI)_문서/04 §4-1) — 검증 기준은 <b>가입과 같다</b>.
  *
  * <p>email을 "로컬만 필수"로 만들지 않은 이유: 조건부 필수는 @Valid로 표현되지 않아 400이 두 종류
  * (VALIDATION_ERROR·BUSINESS_RULE_VIOLATION)로 갈린다. 소셜 계정은 <b>값을 무시하고</b> 현재 값을 응답한다.</p>
@@ -32,7 +32,7 @@ public class ProfileUpdateRequest {
     }
 
     /**
-     * 이메일은 trim에 더해 <b>소문자로 정규화</b>한다 (설계/04 §4 · 08 C-24).
+     * 이메일은 trim에 더해 <b>소문자로 정규화</b>한다 (작업자(AI)_문서/04 §4 · 08 C-24).
      *
      * <p>정규화를 바인딩에서 하면 중복 검사·비교·저장이 전부 같은 값을 본다.
      * 덕분에 "대소문자만 바꾼 내 이메일"은 §4-1의 "값이 바뀔 때만 검사"에서 <b>바뀌지 않은 것</b>이 되고,

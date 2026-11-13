@@ -32,7 +32,7 @@ public class CommentController {
     private final CommentService commentService;
 
     /**
-     * 댓글 목록 — 정렬은 서버가 정한다(설계/04 §1-5 · 08 C-26).
+     * 댓글 목록 — 정렬은 서버가 정한다(작업자(AI)_문서/04 §1-5 · 08 C-26).
      *
      * <p>클라이언트가 보낸 {@code sort}는 <b>읽지 않는다.</b> {@code @PageableDefault}에도 정렬을 두지 않는다 —
      * 순서의 단일 출처는 리포지토리 {@code @Query}의 {@code ORDER BY}(최신순)다. 두 곳에 두면 갈린다.</p>

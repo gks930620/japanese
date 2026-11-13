@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { renderDiagnosis, resultRows, startLevel, submitLevel } from "../test/diagnosisHelpers.jsx";
 
 /**
- * 실력 진단 — **여러 판을 이어 칠 때** (설계/09 §3-2-1 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
+ * 실력 진단 — **여러 판을 이어 칠 때** (작업자(AI)_문서/09 §3-2-1 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
  *
  * 기획 D10·D11·D12·D13 / 인수 조건 **A24·A30·A31·A33·A34-1·A35** + 예외 **E23·E24·E25**.
  *

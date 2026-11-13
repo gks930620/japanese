@@ -11,7 +11,7 @@ import { toggleGuestBookmark } from "../lib/guestStore.js";
 import { BookmarksPage } from "./BookmarksPage.jsx";
 
 /**
- * 보관함 화면 (설계/05 §8) — 비로그인 기준.
+ * 보관함 화면 (작업자(AI)_문서/05 §8) — 비로그인 기준.
  * /api/users/me를 401로 스텁해 게스트 상태로 두면 진도·보관함이 localStorage에서 온다.
  */
 function render(route = "/bookmarks?tab=kanji", page = libraryPage([kanjiItem()])) {

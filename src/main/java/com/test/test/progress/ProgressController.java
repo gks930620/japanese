@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 진도 API (설계/04 §6-3) — 4개 전부 <b>인증 필요</b>(결정기록 B-8, SecurityConfig에 명시).
+ * 진도 API (작업자(AI)_문서/04 §6-3) — 4개 전부 <b>인증 필요</b>(결정기록 B-8, SecurityConfig에 명시).
  * 사용자는 토큰에서 꺼낸다 — 클라이언트가 준 id로 남의 기록을 건드릴 수 없다(컨벤션 §4-1).
  */
 @RestController

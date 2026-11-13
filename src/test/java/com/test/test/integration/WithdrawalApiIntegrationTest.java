@@ -21,10 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 회원 탈퇴 API 통합테스트 (senior-dev 작성)
  *
- * <p>계약 문서: `설계/04_API계약.md` §4-1 (탈퇴 미리보기 · POST /api/me/withdrawal)
+ * <p>계약 문서: `작업자(AI)_문서/04_API계약.md` §4-1 (탈퇴 미리보기 · POST /api/me/withdrawal)
  * 인수 조건: AC-A-30 ~ AC-A-40, AC-X-07
  *
- * <p>2026-08-17 — <b>채팅 기능이 사용자 결정으로 제거됐다</b>(설계/04 §5).
+ * <p>2026-08-17 — <b>채팅 기능이 사용자 결정으로 제거됐다</b>(작업자(AI)_문서/04 §5).
  * 채팅 참여 삭제·메시지 익명화·방장 표기 검증과 미리보기의 채팅 숫자 검증을 이 파일에서 걷어냈다.
  * 미리보기 응답에 채팅 필드가 <b>없어야 한다</b>는 것도 계약이므로 doesNotExist로 고정한다.
  *
@@ -130,7 +130,7 @@ class WithdrawalApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.commentCount").isNumber())
                 // 로컬 계정은 비밀번호로 본인을 확인한다 (AC-A-18의 반대 분기)
                 .andExpect(jsonPath("$.data.confirmationType").value("PASSWORD"))
-                // 채팅 제거(설계/04 §5) — 죽은 숫자를 계약에 남기지 않는다
+                // 채팅 제거(작업자(AI)_문서/04 §5) — 죽은 숫자를 계약에 남기지 않는다
                 .andExpect(jsonPath("$.data.chatMessageCount").doesNotExist())
                 .andExpect(jsonPath("$.data.joinedRoomCount").doesNotExist())
                 .andExpect(jsonPath("$.data.ownedRoomCount").doesNotExist());
@@ -162,7 +162,7 @@ class WithdrawalApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("PASSWORD_MISMATCH"));
 
-        // 실패해도 로그인은 유지된다 (설계/04 §4-1 예외표)
+        // 실패해도 로그인은 유지된다 (작업자(AI)_문서/04 §4-1 예외표)
         mockMvc.perform(get("/api/users/me")
                         .header(HttpHeaders.AUTHORIZATION, bearer(tokens.accessToken())))
                 .andExpect(status().isOk());

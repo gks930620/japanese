@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 회화 수정 응답 (설계/04 §9) — 저장 후 값 */
+/** 회화 수정 응답 (작업자(AI)_문서/04 §9) — 저장 후 값 */
 @Getter
 @Builder
 @NoArgsConstructor

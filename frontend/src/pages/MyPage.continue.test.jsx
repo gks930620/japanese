@@ -10,7 +10,7 @@ import { MyPage } from "./MyPage.jsx";
 /**
  * 마이페이지 [이어서 학습하기] (2026-08-25 판정 B-H3 · B-L3 · B-L1)
  *
- * 마지막 위치는 사이트 전체에 **하나**인데(설계/04 §6-3) 영어 과정이 생기면서 그 하나에 영어 코스 id(101~105)가 들어간다.
+ * 마지막 위치는 사이트 전체에 **하나**인데(작업자(AI)_문서/04 §6-3) 영어 과정이 생기면서 그 하나에 영어 코스 id(101~105)가 들어간다.
  * 마이페이지는 그 값을 **일본어 주소에 그대로** 끼워 `/courses/101/units/1` → `404 존재하지 않는 코스입니다: 101`.
  * 진도 저장은 켜 두기로 했으므로(08 C-14) **그 기능이 만드는 상태까지 화면이 책임진다.**
  *
@@ -20,9 +20,9 @@ import { MyPage } from "./MyPage.jsx";
  * 계약:
  *   ① 마지막 위치의 코스를 **두 과정 목록**(`/api/courses` + `/api/en/courses`)에서 찾는다.
  *   ② 찾으면 **그 과정의 주소**로 잇는다 — 영어면 `/en/courses/{id}/units/{n}`.
- *   ③ 문구에 **코스 이름**을 넣는다(설계/05 §8 "진행 중인 코스" — B-L3). 홈과 같은 문장을 쓴다.
- *      영어는 레벨 괄호가 없다(설계/05 §16-2 — 코스명이 곧 단계 이름).
- *   ④ 못 찾으면(사라진 코스) 버튼도 문구도 만들지 않는다 — 홈과 같은 규칙(설계/05 §8).
+ *   ③ 문구에 **코스 이름**을 넣는다(작업자(AI)_문서/05 §8 "진행 중인 코스" — B-L3). 홈과 같은 문장을 쓴다.
+ *      영어는 레벨 괄호가 없다(작업자(AI)_문서/05 §16-2 — 코스명이 곧 단계 이름).
+ *   ④ 못 찾으면(사라진 코스) 버튼도 문구도 만들지 않는다 — 홈과 같은 규칙(작업자(AI)_문서/05 §8).
  *   ⑤ 완료 유닛이 0이면 [학습 기록 초기화]를 그리지 않는다(08 C-12 ① — B-L1).
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.
@@ -81,7 +81,7 @@ describe("영어 진도에서 이어서 학습하기 (B-H3)", () => {
     expect(resumeLink()).toHaveAttribute("href", "/courses/4/units/7");
   });
 
-  it("사라진 코스면 버튼을 만들지 않는다 — 홈과 같은 규칙(설계/05 §8)", async () => {
+  it("사라진 코스면 버튼을 만들지 않는다 — 홈과 같은 규칙(작업자(AI)_문서/05 §8)", async () => {
     renderMyPage({ lastPosition: { courseId: 999, unitNo: 3, stepKey: "vocab" } });
 
     await waitFor(() => expect(screen.getByRole("heading", { name: "내 학습" })).toBeInTheDocument());
@@ -97,7 +97,7 @@ describe("내 학습 카드의 문구 (B-L3)", () => {
     await waitFor(() => expect(screen.getByText(/중급\(JLPT N3\) 코스 · 유닛 7 학습 중이었어요/)).toBeInTheDocument());
   });
 
-  it("영어 코스는 레벨 괄호 없이 코스명만 쓴다 (설계/05 §16-2)", async () => {
+  it("영어 코스는 레벨 괄호 없이 코스명만 쓴다 (작업자(AI)_문서/05 §16-2)", async () => {
     renderMyPage({ lastPosition: { courseId: 101, unitNo: 2, stepKey: "vocab" } });
 
     await waitFor(() => expect(screen.getByText(/다시 세우기 코스 · 유닛 2 학습 중이었어요/)).toBeInTheDocument());

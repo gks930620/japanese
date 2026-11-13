@@ -5,11 +5,11 @@ import { canDoChoices } from "../lib/enStart.js";
 import { Card } from "../components/ui/Card.jsx";
 
 /**
- * 영어 자가진단 `/en/start` (설계/06 §11-12) — **진단이 아니라 자기 선택**이다.
+ * 영어 자가진단 `/en/start` (작업자(AI)_문서/06 §11-12) — **진단이 아니라 자기 선택**이다.
  * 문제도 채점도 정답도 없다: 지금 상태에 가장 가까운 문장을 고르면 그 코스로 간다.
  * 결과는 저장하지 않는다(08 F-21 — 일본어 진단과 같은 판정).
  *
- * 화면에 레벨을 쓰지 않는다 — 코스명이 곧 단계 이름이다(설계/05 §16-2).
+ * 화면에 레벨을 쓰지 않는다 — 코스명이 곧 단계 이름이다(작업자(AI)_문서/05 §16-2).
  */
 export function EnStartPage() {
   const { data, loading, error, reload } = useApiQuery("/api/en/courses");

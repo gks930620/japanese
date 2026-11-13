@@ -23,7 +23,7 @@ public class UserDTO {
     private String email;
     private String nickname;
 
-    /** JWT `tv` 클레임의 원본(설계/03 §4) — 필터가 매 요청 이 값과 토큰을 대조해 옛 토큰을 죽인다 */
+    /** JWT `tv` 클레임의 원본(작업자(AI)_문서/03 §4) — 필터가 매 요청 이 값과 토큰을 대조해 옛 토큰을 죽인다 */
     @Builder.Default
     private Long tokenVersion = 0L;
 

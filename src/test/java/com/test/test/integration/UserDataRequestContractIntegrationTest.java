@@ -14,11 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * 요청 형식 계약 (설계/04 §1-2 · §6-4 · §6-5) — qa 결함 2·3·4번의 회귀 방지. backend-dev 작성.
+ * 요청 형식 계약 (작업자(AI)_문서/04 §1-2 · §6-4 · §6-5) — qa 결함 2·3·4번의 회귀 방지. backend-dev 작성.
  *
  * <ul>
  *   <li>2번 — 손상된 localStorage 문서(배열 안의 null)가 그대로 올라와도 500이 아니라 400이다</li>
- *   <li>3번 — 경로의 {@code {type}}은 <b>소문자</b>다(설계/04 §6-4). 대문자는 같은 자원의 두 번째 URL이 되므로 404다</li>
+ *   <li>3번 — 경로의 {@code {type}}은 <b>소문자</b>다(작업자(AI)_문서/04 §6-4). 대문자는 같은 자원의 두 번째 URL이 되므로 404다</li>
  *   <li>4번 — 404 메시지에 조사 자리표시자("을(를)")를 쓰지 않는다</li>
  * </ul>
  */

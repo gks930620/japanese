@@ -3,7 +3,9 @@
 
 # Log file
 *.log
-logs/
+# 런타임 데이터는 전부 data/ 아래 (README만 추적)
+/data/*
+!/data/README.md
 
 # BlueJ files
 *.ctxt
@@ -107,7 +109,6 @@ Thumbs.db
 # application-prod.yml은 환경변수로 처리되므로 커밋 가능
 application-prod.properties
 
-/uploads/
 
 # React frontend
 frontend/node_modules/

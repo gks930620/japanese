@@ -1,4 +1,4 @@
-// frontend-dev 작성 — 음성 버튼·속도 토글(설계/05 §15-3). 게이트·토글·단일 재생의 화면 결합을 고정한다.
+// frontend-dev 작성 — 음성 버튼·속도 토글(작업자(AI)_문서/05 §15-3). 게이트·토글·단일 재생의 화면 결합을 고정한다.
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";

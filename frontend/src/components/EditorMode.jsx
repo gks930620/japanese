@@ -5,12 +5,12 @@ import { Alert } from "./ui/Alert.jsx";
 import { Button } from "./ui/Button.jsx";
 
 /**
- * 편집 모드 게이트 (설계/04 §9 · 기획 A1·A2·C4).
+ * 편집 모드 게이트 (작업자(AI)_문서/04 §9 · 기획 A1·A2·C4).
  *
  * 프론트의 유일한 판단 근거는 `GET /api/editor/status`다 — 200 + enabled=true면 켜짐.
  * 꺼진 환경에서는 컨트롤러 빈이 없어 **404**가 온다(다른 없는 주소와 구별 불가 — 흔적 없음).
  * 404·네트워크 실패·이상 응답 전부 "꺼짐"으로 취급하고, 띠·[고치기]·안내를 **하나도 렌더하지 않는다**
- * — 없는 기능을 사과하지 않는다(설계/05 §12).
+ * — 없는 기능을 사과하지 않는다(작업자(AI)_문서/05 §12).
  */
 export function EditorModeProvider({ children }) {
   const [enabled, setEnabled] = useState(false);
@@ -33,7 +33,7 @@ export function EditorModeProvider({ children }) {
   return <EditorModeContext.Provider value={{ enabled }}>{children}</EditorModeContext.Provider>;
 }
 
-/** 상단 상시 띠 (A2) — 휘발성 고지가 핵심이다: 이걸 모르면 반드시 사고가 난다(설계/05 §15-4) */
+/** 상단 상시 띠 (A2) — 휘발성 고지가 핵심이다: 이걸 모르면 반드시 사고가 난다(작업자(AI)_문서/05 §15-4) */
 export function EditorModeBar() {
   const { enabled } = useEditorMode();
   if (!enabled) return null;

@@ -52,7 +52,7 @@ function requestQuery(url) {
 
 /**
  * 접두사가 맞는 캐시 항목을 버리고, 그 URL로 떠 있는 훅에 재요청을 시킨다.
- * 떠 있는 훅은 **데이터를 유지한 채** 다시 부른다 — 부분 교체(설계/05 §8).
+ * 떠 있는 훅은 **데이터를 유지한 채** 다시 부른다 — 부분 교체(작업자(AI)_문서/05 §8).
  * 쓰기(작성·수정·삭제) 직후처럼 "내가 방금 쓴 것"이 보여야 하는 화면에서만 쓴다.
  *
  * @param {string} prefix 예: "/api/communities"
@@ -88,7 +88,7 @@ export function clearQueryCache() {
  * @param {string} url 호출할 API 경로 (예: "/api/courses"). null이면 조회하지 않는다
  * @param {{ keepPreviousData?: boolean }} [options]
  *        keepPreviousData: URL이 바뀌고 새 URL이 캐시에 없을 때 이전 데이터를 유지한 채 loading=true.
- *        목록의 갱신 로딩(기존 목록을 흐리게 — 설계/05 §8)에 쓴다. 상세 화면은 켜지 않는다
+ *        목록의 갱신 로딩(기존 목록을 흐리게 — 작업자(AI)_문서/05 §8)에 쓴다. 상세 화면은 켜지 않는다
  * @returns {{ data: any, loading: boolean, error: object|null, reload: () => void }}
  *          error는 lib/http.js 표준 에러 객체({ status, message, errorCode, errors })
  */

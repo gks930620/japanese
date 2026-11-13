@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 한자 수정 요청 (설계/04 §9) — 표제 {@code letter}는 요청에 있어도 무시된다(DTO에 필드가 없다).
+ * 한자 수정 요청 (작업자(AI)_문서/04 §9) — 표제 {@code letter}는 요청에 있어도 무시된다(DTO에 필드가 없다).
  * onyomi·kunyomi는 개별로는 선택이지만 둘 다 비면 400 — 그 판정은 서비스가 한다(조건부 필수는 @Valid로 표현되지 않는다).
  */
 @Getter
@@ -30,7 +30,7 @@ public class KanjiUpdateRequest {
     @Valid
     private List<WordRow> words;
 
-    /** 예시 단어 한 행 — <b>수정만</b>(id 일치 필수, 설계/04 §9) */
+    /** 예시 단어 한 행 — <b>수정만</b>(id 일치 필수, 작업자(AI)_문서/04 §9) */
     @Getter
     @Setter
     public static class WordRow {

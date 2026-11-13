@@ -1,4 +1,4 @@
-// 비로그인(게스트) 기록 저장소 — 설계/04 §6-6의 단일 출처.
+// 비로그인(게스트) 기록 저장소 — 작업자(AI)_문서/04 §6-6의 단일 출처.
 //
 // 저장 문서의 모양은 서버 응답과 **완전히 같다**:
 //   progress  ↔ GET /api/progress 의 data
@@ -10,10 +10,10 @@
 
 const STORAGE_KEY = "jp.guest.v1";
 
-/** 종류별 보관함 상한 — 200의 단일 출처 (설계/04 §6-6). 회원은 무제한이라 서버에는 없다. */
+/** 종류별 보관함 상한 — 200의 단일 출처 (작업자(AI)_문서/04 §6-6). 회원은 무제한이라 서버에는 없다. */
 export const GUEST_BOOKMARK_LIMIT = 200;
 
-/** 서버가 받는 stepKey 형식 (설계/04 §6-2) — grammar-0 · vocab · summary … */
+/** 서버가 받는 stepKey 형식 (작업자(AI)_문서/04 §6-2) — grammar-0 · vocab · summary … */
 const STEP_KEY_PATTERN = /^[a-z]+(-[0-9]{1,2})?$/;
 
 const BOOKMARK_TYPES = ["kanji", "grammar", "vocabulary"];
@@ -87,7 +87,7 @@ function readDoc() {
   return doc;
 }
 
-/** 저장 실패(용량 초과·프라이빗 모드)는 조용히 삼킨다 — 학습을 막지 않는다(설계/05 §8). */
+/** 저장 실패(용량 초과·프라이빗 모드)는 조용히 삼킨다 — 학습을 막지 않는다(작업자(AI)_문서/05 §8). */
 function writeDoc(doc) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(doc));
@@ -121,7 +121,7 @@ export function setGuestUnitCompleted(courseId, unitNo, completed) {
 }
 
 /**
- * 로컬 벽시계 문자열(2026-08-14T18:00:00 형식) — 설계/04 §6-6.
+ * 로컬 벽시계 문자열(2026-08-14T18:00:00 형식) — 작업자(AI)_문서/04 §6-6.
  * toISOString()(UTC+Z)로 저장하면 서버가 LocalDateTime으로 읽으며 오프셋을 버려
  * 브라우저 기록이 항상 과거로 평가된다 → 병합의 "더 최근인 쪽" 판정이 뒤집힌다.
  * 서버가 전 구간 LocalDateTime(벽시계)이므로 클라이언트도 벽시계로 맞춘다.
@@ -135,7 +135,7 @@ function toLocalDateTime(date) {
 }
 
 /**
- * 마지막 위치 저장 — 사이트 전체에 하나만 유지한다(설계/04 §6-3).
+ * 마지막 위치 저장 — 사이트 전체에 하나만 유지한다(작업자(AI)_문서/04 §6-3).
  * @param {Date} now 시각은 주입받는다(컨벤션 §6 — 결정적 테스트)
  */
 export function setGuestLastPosition({ courseId, unitNo, stepKey }, now) {

@@ -25,9 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 영어 과정 코스 학습 서비스 (설계/04 §8·§8-1)
+ * 영어 과정 코스 학습 서비스 (작업자(AI)_문서/04 §8·§8-1)
  *
- * <p><b>일본어 서비스를 복제하지 않는다</b>(설계/04 §8) — 코스 목록과 유닛 학습의 공통부는
+ * <p><b>일본어 서비스를 복제하지 않는다</b>(작업자(AI)_문서/04 §8) — 코스 목록과 유닛 학습의 공통부는
  * {@link CourseService}가 그대로 계산하고({@code getCourseList(EN)} · {@code loadUnitStudyBase(..., EN)}),
  * 이 서비스는 <b>영어에서만 다른 것</b>만 채운다: 3번째 자리의 표현, 어휘의 ipa·koApprox 표기.</p>
  *
@@ -47,7 +47,7 @@ public class EnCourseService {
     private final UnitExpressionRepository unitExpressionRepository;
     private final UnitVocabularyRepository unitVocabularyRepository;
 
-    /** 영어 코스 목록 — 일본어 목록에 영어가 섞이지 않고, 그 반대도 마찬가지다(설계/04 §8) */
+    /** 영어 코스 목록 — 일본어 목록에 영어가 섞이지 않고, 그 반대도 마찬가지다(작업자(AI)_문서/04 §8) */
     public List<CourseDTO> getCourseList() {
         return courseService.getCourseList(LANGUAGE);
     }
@@ -82,7 +82,7 @@ public class EnCourseService {
     }
 
     /**
-     * 영어 유닛 학습 (설계/04 §8-1) — 문법·회화·이동 정보·복습은 일본어와 같은 계산을 쓰고
+     * 영어 유닛 학습 (작업자(AI)_문서/04 §8-1) — 문법·회화·이동 정보·복습은 일본어와 같은 계산을 쓰고
      * {@code expressions[]}와 어휘 표기만 여기서 만든다.
      */
     public EnUnitStudyDTO getUnitStudy(Long courseId, Integer unitNo) {

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 영어 과정 코스 학습 API (설계/04 §8 판정 J-7) — 3개 전부 GET, 인증 불필요(permitAll).
+ * 영어 과정 코스 학습 API (작업자(AI)_문서/04 §8 판정 J-7) — 3개 전부 GET, 인증 불필요(permitAll).
  *
  * <p><b>왜 경로를 갈랐나</b>(쿼리 파라미터 {@code ?lang=en} 반려): {@code /api/courses/**}는 GET 전면 공개
  * 와일드카드라, 쿼리로 언어를 가르면 <b>파라미터를 빠뜨린 요청이 조용히 일본어를 돌려준다</b>.

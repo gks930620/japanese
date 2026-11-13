@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 마지막으로 보던 위치 — 사용자당 최대 1행 (설계/03 §4-1)
+ * 마지막으로 보던 위치 — 사용자당 최대 1행 (작업자(AI)_문서/03 §4-1)
  *
  * <p>UNIQUE(user_id)가 "마지막 위치는 사이트 전체에 하나"라는 규칙을 DB에서 강제한다(AC-P-11).
  * 전 컬럼 NOT NULL이라 "반쯤 빈 행"이 생기지 않는다 — 행이 없음 = 마지막 위치가 없음.</p>
@@ -68,7 +68,7 @@ public class UserLastPositionEntity {
         this.updatedAt = updatedAt;
     }
 
-    /** 병합 판정 — 브라우저 값이 계정 값보다 더 최근인가 (설계/04 §6-5) */
+    /** 병합 판정 — 브라우저 값이 계정 값보다 더 최근인가 (작업자(AI)_문서/04 §6-5) */
     public boolean isOlderThan(LocalDateTime other) {
         return other != null && this.updatedAt.isBefore(other);
     }

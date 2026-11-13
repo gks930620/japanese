@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 한자 자료실 API (설계 §4-B-1·§4-B-2) — GET 2개, 인증 불필요(permitAll).
- * {@code ids}·{@code sort}(설계/04 §6-7)는 콘텐츠 필터라 공개 경로에 있어도 결정기록 B-8을 어기지 않는다.
+ * {@code ids}·{@code sort}(작업자(AI)_문서/04 §6-7)는 콘텐츠 필터라 공개 경로에 있어도 결정기록 B-8을 어기지 않는다.
  */
 @RestController
 @RequestMapping("/api/library/kanji")

@@ -28,7 +28,7 @@ public class LearnedInDTO {
                 unit.getUnitNo(), unit.getTitle());
     }
 
-    /** @param levelCode course.level_code 값 — DTO가 courseNo에서 코드를 파생하지 않는다(설계/03 §1·§3 판정 J-4) */
+    /** @param levelCode course.level_code 값 — DTO가 courseNo에서 코드를 파생하지 않는다(작업자(AI)_문서/03 §1·§3 판정 J-4) */
     public static LearnedInDTO of(Long courseId, String courseTitle, String levelCode,
                                   Integer unitNo, String unitTitle) {
         return LearnedInDTO.builder()

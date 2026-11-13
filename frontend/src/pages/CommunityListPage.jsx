@@ -58,7 +58,7 @@ export function CommunityListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlSearchType = searchParams.get("searchType") === "nickname" ? "nickname" : "title";
   const urlKeyword = searchParams.get("keyword") ?? "";
-  // 페이지도 검색 조건과 같은 규칙이다 — 주소가 단일 출처여야 새로고침·뒤로가기·링크 공유가 그 페이지를 복원한다(판정 L7 · 설계/02 §4)
+  // 페이지도 검색 조건과 같은 규칙이다 — 주소가 단일 출처여야 새로고침·뒤로가기·링크 공유가 그 페이지를 복원한다(판정 L7 · 작업자(AI)_문서/02 §4)
   const urlPage = Math.max(0, Number.parseInt(searchParams.get("page") ?? "0", 10) || 0);
 
   // 주소가 곧 조회 URL이다 — 캐시 키도 이 문자열이라 같은 조건으로 돌아오면 캐시가 맞는다

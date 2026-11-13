@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 자료실 API 통합테스트 (TDD Red — senior-dev 작성)
  *
- * 계약 문서: 설계/04_API계약.md §3 (자료실)
+ * 계약 문서: 작업자(AI)_문서/04_API계약.md §3 (자료실)
  * - 5개 엔드포인트 전부 비로그인 GET(permitAll) — 인증 헤더 없이 호출하는 것이 곧 계약 검증이다.
  * - 목록 응답은 기존 PageResponse 재사용(content·page·size·totalElements·totalPages·first·last).
  *
@@ -181,7 +181,7 @@ class LibraryApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.content", hasSize(20)))
                 .andExpect(jsonPath("$.data.size").value(20))
                 .andExpect(jsonPath("$.data.totalElements").value(CourseCatalog.totalGrammar()))
-                // 학습 순서 정렬이라 첫 항목은 가장 낮은 코스다. 레벨 코드는 course.level_code에서 온다(설계/03 §1·§3)
+                // 학습 순서 정렬이라 첫 항목은 가장 낮은 코스다. 레벨 코드는 course.level_code에서 온다(작업자(AI)_문서/03 §1·§3)
                 .andExpect(jsonPath("$.data.content[0].level").value(CourseCatalog.COURSES.get(0).levelCode))
                 .andReturn();
 

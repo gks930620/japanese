@@ -16,10 +16,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 관리자 편집 API 통합테스트 — 편집 모드 <b>켜진</b> 환경 (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: `설계/04_API계약.md` §9 (편집 모드 API)
+ * <p>계약 문서: `작업자(AI)_문서/04_API계약.md` §9 (편집 모드 API)
  * 인수 조건: A5(표제 불변·자식 id 일치) · A6~A8(검증 — 서버가 최종 심판) · A15·A16(공개 GET 반영)
  *
- * <p><b>전부 인증 헤더 없이 호출한다</b> — 편집은 로그인과 무관하다(설계/04 §9 사용자 확정, 계약 판정 ④).
+ * <p><b>전부 인증 헤더 없이 호출한다</b> — 편집은 로그인과 무관하다(작업자(AI)_문서/04 §9 사용자 확정, 계약 판정 ④).
  * 켜고 끄는 기준은 역할이 아니라 실행 환경이고, 이 클래스는 @TestPropertySource로 켠다.
  *
  * <p>대상 id는 하드코딩하지 않고 유닛 학습 공개 API에서 꺼낸다 — 시드 id가 재배치돼도 깨지지 않는다.
@@ -119,7 +119,7 @@ class EditorApiIntegrationTest extends ApiIntegrationTestSupport {
     }
 
     @Test
-    void kanji_letter_is_immutable(/* 표제는 시드 소관 — 설계/04 §9 */) throws Exception {
+    void kanji_letter_is_immutable(/* 표제는 시드 소관 — 작업자(AI)_문서/04 §9 */) throws Exception {
         JsonNode kanji = firstKanjiWithWord();
         long kanjiId = kanji.path("id").asLong();
         String originalLetter = kanji.path("letter").asText();

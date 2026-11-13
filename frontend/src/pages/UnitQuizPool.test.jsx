@@ -1,5 +1,5 @@
 // frontend-dev 작성 — QA 높음 3: 유닛 문법은 2~3개뿐이라 오답 후보가 모자란다.
-// 오답 풀(같은 코스 전체 등 — 설계/05 §15-1)을 주지 않으면 문법 문제가 전량 폐기된다.
+// 오답 풀(같은 코스 전체 등 — 작업자(AI)_문서/05 §15-1)을 주지 않으면 문법 문제가 전량 폐기된다.
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";

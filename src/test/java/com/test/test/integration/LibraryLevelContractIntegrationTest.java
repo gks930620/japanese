@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 레벨 코드 계약 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약: `설계/03_데이터모델.md` §1·§3 (course.level_code) · `설계/04_API계약.md` §2-3
- * 판정 J-4 / 인수 조건 §8-C → 설계/03 §1·§3
+ * <p>계약: `작업자(AI)_문서/03_데이터모델.md` §1·§3 (course.level_code) · `작업자(AI)_문서/04_API계약.md` §2-3
+ * 판정 J-4 / 인수 조건 §8-C → 작업자(AI)_문서/03 §1·§3
  *
  * <p><b>3단계 qa 치명 ①의 뿌리를 없애는 계약이다.</b> 레벨 코드를 `courseNo`에서 파생하지 않고
  * `course.level_code` 컬럼으로 승격해, 표시 문구(`levelLabel`)와 필터 코드(`levelCode`)를 DB에서부터 가른다.

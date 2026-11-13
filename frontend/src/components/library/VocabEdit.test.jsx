@@ -1,5 +1,5 @@
 // frontend-dev 작성 — 코드리뷰 Major 1: 어휘 [고치기]가 **그 줄의** 코스 행을 수정해야 한다.
-// SenseDTO의 vocabularyIds와 learnedIn은 같은 소스·같은 순서라 인덱스로 짝지을 수 있다(설계/04 §3-7).
+// SenseDTO의 vocabularyIds와 learnedIn은 같은 소스·같은 순서라 인덱스로 짝지을 수 있다(작업자(AI)_문서/04 §3-7).
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";

@@ -28,13 +28,13 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 보관함 (설계/04 §6-4)
+ * 보관함 (작업자(AI)_문서/04 §6-4)
  *
  * <p>두 가지를 <b>재사용</b>한다 — 규칙이 두 벌이 되면 곧 갈리기 때문이다(C-7·A-4).
  * ① 어휘 대표 id 정규화는 자료실의 병합 규칙(LibraryVocabularyService)을 그대로 쓴다,
  * ② 목록은 자료실 서비스에 ids 필터를 넣고 그것을 호출한다 — 검색·병합·페이징 로직을 복제하지 않는다.</p>
  *
- * <p>회원에게 <b>개수 상한은 없다</b>(설계/04 §6-6 — 200은 게스트 저장소 전용이다).</p>
+ * <p>회원에게 <b>개수 상한은 없다</b>(작업자(AI)_문서/04 §6-6 — 200은 게스트 저장소 전용이다).</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -47,7 +47,7 @@ public class BookmarkService {
     private final LibraryGrammarService libraryGrammarService;
     private final LibraryVocabularyService libraryVocabularyService;
 
-    /** 종류별 개수 — 지금 존재하는 항목만 센다(설계/03 §4-1 · 04 §6-4) */
+    /** 종류별 개수 — 지금 존재하는 항목만 센다(작업자(AI)_문서/03 §4-1 · 04 §6-4) */
     public BookmarkCountsDTO getCounts(Long userId) {
         Map<BookmarkType, List<Long>> existing = existingIdsByType(userId);
         return BookmarkCountsDTO.of(
@@ -56,7 +56,7 @@ public class BookmarkService {
                 existing.get(BookmarkType.VOCABULARY).size());
     }
 
-    /** ★ 표시용 id 집합 (설계/04 §6-4) — 최근 담은 순 */
+    /** ★ 표시용 id 집합 (작업자(AI)_문서/04 §6-4) — 최근 담은 순 */
     public BookmarkIdsDTO getIds(Long userId) {
         Map<BookmarkType, List<Long>> existing = existingIdsByType(userId);
         return BookmarkIdsDTO.of(
@@ -83,7 +83,7 @@ public class BookmarkService {
     }
 
     /**
-     * 담기/빼기 — <b>동시 요청에서까지</b> 멱등이다(설계/04 §6-4). 없는 대상은 404.
+     * 담기/빼기 — <b>동시 요청에서까지</b> 멱등이다(작업자(AI)_문서/04 §6-4). 없는 대상은 404.
      *
      * <p>★ 연타가 가장 자연스러운 조작이라 두 요청이 겹친다. 겹칠 때 500을 주면 화면이 별을 되돌려
      * 서버 상태와 어긋나므로, {@link #add}가 사용자 행을 잠가 같은 사용자의 쓰기를 줄 세운다.
@@ -111,7 +111,7 @@ public class BookmarkService {
     }
 
     /**
-     * 브라우저 기록 병합용 합집합 (설계/04 §6-5) — <b>존재하지 않는 항목은 조용히 건너뛴다.</b>
+     * 브라우저 기록 병합용 합집합 (작업자(AI)_문서/04 §6-5) — <b>존재하지 않는 항목은 조용히 건너뛴다.</b>
      *
      * <p>쓰기 API가 404를 주는 것과 다른 이유: 병합은 벌크 화해(reconciliation)라
      * 낡은 id 하나 때문에 34항목이 통째로 날아가면 사용자는 무엇을 잃었는지도 모른다.</p>
@@ -146,7 +146,7 @@ public class BookmarkService {
                 .build());
     }
 
-    /** 쓰기 시점 검증 + 정규화 — 어휘는 표제어 대표 id로 바뀐다(설계/03 §4-1) */
+    /** 쓰기 시점 검증 + 정규화 — 어휘는 표제어 대표 id로 바뀐다(작업자(AI)_문서/03 §4-1) */
     private Long requireExistingTarget(BookmarkType type, Long targetId) {
         if (type == BookmarkType.VOCABULARY) {
             return libraryVocabularyService.resolveEntryId(targetId);
@@ -170,7 +170,7 @@ public class BookmarkService {
         return List.copyOf(new LinkedHashSet<>(targetIds.stream().filter(existing::contains).toList()));
     }
 
-    /** 담아 둔 id — 최근 담은 순(설계/04 §6-4). 목록은 자료실의 ids 필터가 존재 여부를 함께 걸러 준다 */
+    /** 담아 둔 id — 최근 담은 순(작업자(AI)_문서/04 §6-4). 목록은 자료실의 ids 필터가 존재 여부를 함께 걸러 준다 */
     private List<Long> storedIds(Long userId, BookmarkType type) {
         return userBookmarkRepository.findByUserIdAndTargetTypeOrderByCreatedAtDescIdDesc(userId, type).stream()
                 .map(UserBookmarkEntity::getTargetId)
@@ -195,7 +195,7 @@ public class BookmarkService {
         return existingByType;
     }
 
-    /** 읽기 시점 필터의 위임 — 존재 판정의 근거는 자료실 한 곳이다(설계/03 §4-1) */
+    /** 읽기 시점 필터의 위임 — 존재 판정의 근거는 자료실 한 곳이다(작업자(AI)_문서/03 §4-1) */
     private List<Long> filterExisting(BookmarkType type, List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return List.of();

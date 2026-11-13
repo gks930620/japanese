@@ -33,7 +33,7 @@ public class CommentService {
             throw EntityNotFoundException.of("게시글", communityId);
         }
 
-        // 범위 밖 page는 0페이지로 보정 — 단일 출처 PageClamp(설계/04 §1-5 · 2026-09 판정 H2)
+        // 범위 밖 page는 0페이지로 보정 — 단일 출처 PageClamp(작업자(AI)_문서/04 §1-5 · 2026-09 판정 H2)
         return PageClamp.query(pageable, p -> commentRepository.findByCommunityIdWithUser(communityId, p))
                 .map(CommentDTO::from);
     }

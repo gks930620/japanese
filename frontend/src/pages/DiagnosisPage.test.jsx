@@ -14,9 +14,9 @@ import {
 
 /**
  * 실력 진단 — **한 판**(레벨 하나, 6문항, 한 번 제출, 결과 화면에서 멈춤)
- * (설계/09 §3 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
+ * (작업자(AI)_문서/09 §3 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
  *
- * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A3·A4·A7·A25·A26·A27·A28·A29·A32** + 예외 **E18**.
+ * 규칙 `작업자(AI)_문서/09 §3`(기획서는 흡수 후 폐기) / 당시 인수 조건 **A3·A4·A7·A25·A26·A27·A28·A29·A32** + 예외 **E18**.
  * 레벨 고르기는 `DiagnosisPage.levels.test.jsx`, 여러 판의 누적은 `DiagnosisPage.rounds.test.jsx`,
  * 갈래 머리글은 `DiagnosisPage.groups.test.jsx`, **미응답 제출 조건(A48~A56)은 `DiagnosisPage.unanswered.test.jsx`**가 맡는다(08 C-11).
  *

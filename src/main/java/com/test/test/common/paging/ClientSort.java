@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 /**
  * 정렬은 <b>서버가 정한다</b> — 클라이언트 {@code Pageable}에서 {@code sort}를 떼어낸다
- * (설계/04 §1-5 · 08 C-26, 2026-09-21 qa 결함 B).
+ * (작업자(AI)_문서/04 §1-5 · 08 C-26, 2026-09-21 qa 결함 B).
  *
  * <p><b>왜 검증이 아니라 제거인가</b>: {@code ?sort=nope,desc}가 500을 낸 원인은 <b>클라이언트 입력이
  * JPA 속성 경로로 들어갔다</b>는 것이다({@code PropertyReferenceException}). 허용 목록으로 걸러도 그 길은 남는다 —

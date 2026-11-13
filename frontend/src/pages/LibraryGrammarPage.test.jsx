@@ -12,7 +12,7 @@ function renderList(page, route = "/library/grammar") {
   return fetchMock;
 }
 
-describe("LibraryGrammarPage — 목록 (설계/05 §7)", () => {
+describe("LibraryGrammarPage — 목록 (작업자(AI)_문서/05 §7)", () => {
   it("명칭·한국어 부제·레벨을 보여주고 상세로 연결한다 (인수 15)", async () => {
     renderList(libraryPage([grammarItem()]));
 
@@ -52,7 +52,7 @@ describe("LibraryGrammarPage — 목록 (설계/05 §7)", () => {
   });
 });
 
-describe("LibraryGrammarDetailPage (설계/05 §7-1)", () => {
+describe("LibraryGrammarDetailPage (작업자(AI)_문서/05 §7-1)", () => {
   function detail(overrides = {}) {
     return {
       id: 37,

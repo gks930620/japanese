@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 계정 API (설계/04 §4-1) — 전부 <b>인증 필요</b>이고 경로는 전부 {@code /api/me/**}다(결정기록 B-8).
+ * 계정 API (작업자(AI)_문서/04 §4-1) — 전부 <b>인증 필요</b>이고 경로는 전부 {@code /api/me/**}다(결정기록 B-8).
  *
  * <p>{@code /api/users/me}는 손대지 않는다 — 그것은 헤더·인증 상태를 그리는 경량 <b>신원</b> 조회다.
  * 계정 화면군이 필요로 하는 것은 신원이 아니라 <b>권한</b>(무엇이 되고 무엇이 안 되는가)이라 따로 둔다.</p>
@@ -86,7 +86,7 @@ public class AccountController {
     }
 
     /**
-     * 회원 탈퇴 — DELETE가 아니라 POST인 이유(설계/04 §4-1): ① 본인 확인 값을 반드시 실어야 하는데 DELETE 바디는
+     * 회원 탈퇴 — DELETE가 아니라 POST인 이유(작업자(AI)_문서/04 §4-1): ① 본인 확인 값을 반드시 실어야 하는데 DELETE 바디는
      * 프록시·클라이언트에 따라 유실될 수 있고, ② 되돌릴 수 없는 동작이 URL과 메서드만으로 실행되는 형태를 만들지 않는다.
      *
      * <p>성공하면 쿠키를 즉시 만료시킨다 — "자동 로그아웃"(AC-A-36)을 화면에 맡기지 않고 서버가 끝낸다.</p>

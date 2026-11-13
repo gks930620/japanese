@@ -53,7 +53,7 @@ class RailwayDeploymentValidatorTest {
     }
 
     @Test
-    void prod_refuses_to_start_when_the_editor_is_enabled(/* 회귀 가드 — 설계/04 §9 */) {
+    void prod_refuses_to_start_when_the_editor_is_enabled(/* 회귀 가드 — 작업자(AI)_문서/04 §9 */) {
         prod.withPropertyValues("app.editor.enabled=true")
                 .run(context -> assertThat(context).hasFailed()
                         .getFailure()
@@ -62,7 +62,7 @@ class RailwayDeploymentValidatorTest {
     }
 
     @Test
-    void prod_refuses_to_start_without_bucket_settings(/* 회귀 가드 — 설계/07 §3-1 */) {
+    void prod_refuses_to_start_without_bucket_settings(/* 회귀 가드 — 작업자(AI)_문서/07 §3-1 */) {
         new ApplicationContextRunner()
                 .withInitializer(context -> context.getEnvironment().setActiveProfiles("prod"))
                 .withUserConfiguration(PlaceholderConfig.class, RailwayDeploymentValidator.class)

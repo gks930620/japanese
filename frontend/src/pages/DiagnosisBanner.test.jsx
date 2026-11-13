@@ -1,5 +1,5 @@
 // frontend-dev 작성 — 진단 배너 위치·분기(화면정의서 판정 B). 선작성 테스트가 덮지 않는 부분.
-// senior-dev 보강 2026-09-23 (Red) — 유입 배너 **문구 금지 규칙**: 기획 §19-2-D의 AC-4·AC-5·AC-7·AC-9 / 설계/05 §15-2.
+// senior-dev 보강 2026-09-23 (Red) — 유입 배너 **문구 금지 규칙**: 기획 §19-2-D의 AC-4·AC-5·AC-7·AC-9 / 작업자(AI)_문서/05 §15-2.
 import { render as rtlRender, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";

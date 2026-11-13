@@ -105,7 +105,7 @@ app:
   cookie:
     secure: true
 
-  # 편집 모드는 로컬 전용(설계/04 §9) — 기본 application.yml의 true를 명시적으로 되돌린다.
+  # 편집 모드는 로컬 전용(작업자(AI)_문서/04 §9) — 기본 application.yml의 true를 명시적으로 되돌린다.
   # true로 바꾸면 RailwayDeploymentValidator가 기동을 거부한다(fail-fast).
   editor:
     enabled: false

@@ -56,7 +56,7 @@ export function unitStudyPayload(overrides = {}) {
     unitNo: 1,
     title: "테스트 유닛",
     totalUnits: 20,
-    // 부분 공개 계약 (설계/04 §2-3, 2026-09-21) — 계획 유닛 수. null = 지금 있는 유닛이 전부
+    // 부분 공개 계약 (작업자(AI)_문서/04 §2-3, 2026-09-21) — 계획 유닛 수. null = 지금 있는 유닛이 전부
     coursePlannedUnits: null,
     prevUnitNo: null,
     nextUnitNo: 2,

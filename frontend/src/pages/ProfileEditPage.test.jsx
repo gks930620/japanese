@@ -8,7 +8,7 @@ import { AuthProvider } from "../context/AuthContext.jsx";
 import { ProfileEditPage } from "./ProfileEditPage.jsx";
 
 /**
- * 회원정보 수정 화면 (설계/04 §4-1) — TDD Red, senior-dev 작성.
+ * 회원정보 수정 화면 (작업자(AI)_문서/04 §4-1) — TDD Red, senior-dev 작성.
  * 인수 조건: AC-A-05 ~ AC-A-13, AC-A-16
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.

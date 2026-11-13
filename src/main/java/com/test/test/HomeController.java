@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * SPA 진입점 — 루트(`/`)를 index.html로 forward한다 (설계/04 §1-7 · 08 C-25).
+ * SPA 진입점 — 루트(`/`)를 index.html로 forward한다 (작업자(AI)_문서/04 §1-7 · 08 C-25).
  *
  * <p><b>화면 경로를 열거하지 않는다.</b> 예전에는 여기에 화면 경로를 나열했고, 열거 밖 주소
  * ({@code /nonexistent-page} · {@code /bookmarks/zzz})는 시큐리티 화이트리스트에도 없어 <b>401 JSON 원문</b>이

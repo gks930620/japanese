@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-/** 비밀번호 변경 요청 (설계/04 §4-1) — newPassword 길이 기준은 가입과 같다(4~100자) */
+/** 비밀번호 변경 요청 (작업자(AI)_문서/04 §4-1) — newPassword 길이 기준은 가입과 같다(4~100자) */
 @Getter
 @Setter
 public class PasswordChangeRequest {

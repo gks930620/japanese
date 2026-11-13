@@ -3,7 +3,7 @@ package com.test.test.bookmark;
 import com.test.test.common.exception.BusinessRuleException;
 
 /**
- * 보관함 목록 정렬 (설계/04 §6-4)
+ * 보관함 목록 정렬 (작업자(AI)_문서/04 §6-4)
  *
  * <ul>
  *   <li>{@code RECENT} — 기본. 최근 담은 순. 정렬 키는 {@code created_at DESC, id DESC}다 —

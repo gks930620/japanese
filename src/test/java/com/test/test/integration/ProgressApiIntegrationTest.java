@@ -15,10 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 진도 API 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: 설계/04_API계약.md §6-3
+ * <p>계약 문서: 작업자(AI)_문서/04_API계약.md §6-3
  * 인수 조건: AC-P-01·03·04·05·07·11·29·30, AC-G-12(로그인 계정 기록)
  *
- * <p>네임스페이스 계약: /api/progress/** 는 전부 <b>인증 필요</b>다(결정기록 B-8 · 설계/07 §5-4).
+ * <p>네임스페이스 계약: /api/progress/** 는 전부 <b>인증 필요</b>다(결정기록 B-8 · 작업자(AI)_문서/07 §5-4).
  * 인증 없는 호출이 401이라는 것 자체가 계약이므로 테스트로 고정한다.
  *
  * <p>이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유 (CLAUDE.md TDD 규칙 2).
@@ -132,7 +132,7 @@ class ProgressApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"));
 
-        // 형식 위반(대문자) → 400. 서버는 스텝 구성을 모르므로 형식만 본다 (설계/04 §6-2)
+        // 형식 위반(대문자) → 400. 서버는 스텝 구성을 모르므로 형식만 본다 (작업자(AI)_문서/04 §6-2)
         mockMvc.perform(put(LAST_POSITION_URL)
                         .header(HttpHeaders.AUTHORIZATION, bearer(tokens.accessToken()))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -157,7 +157,7 @@ class ProgressApiIntegrationTest extends ApiIntegrationTestSupport {
     void last_position_rejects_unknown_unit_and_preparing_course() throws Exception {
         Tokens tokens = loginDefaultUser();
 
-        // 없는 유닛 → 404 NOT_FOUND (콘텐츠 FK가 없으므로 앱이 존재를 검증한다 — 설계/03 §4-1)
+        // 없는 유닛 → 404 NOT_FOUND (콘텐츠 FK가 없으므로 앱이 존재를 검증한다 — 작업자(AI)_문서/03 §4-1)
         mockMvc.perform(put(LAST_POSITION_URL)
                         .header(HttpHeaders.AUTHORIZATION, bearer(tokens.accessToken()))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,7 +168,7 @@ class ProgressApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"));
 
         // 준비중 코스 → 404 COURSE_PREPARING (없음과 준비중을 구분한다 — 결정기록 B-4)
-        // 대상은 CourseCatalog가 계산한다 — 입문이 열린 뒤로는 N1이 그 자리다(설계/03 §5-1)
+        // 대상은 CourseCatalog가 계산한다 — 입문이 열린 뒤로는 N1이 그 자리다(작업자(AI)_문서/03 §5-1)
         mockMvc.perform(put(LAST_POSITION_URL)
                         .header(HttpHeaders.AUTHORIZATION, bearer(tokens.accessToken()))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -196,7 +196,7 @@ class ProgressApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.unitNo").value(3))
                 .andExpect(jsonPath("$.data.completed").value(true));
 
-        // 같은 요청을 다시 보내도 200이고 행은 하나다 (UNIQUE 제약 — 설계/03 §4-1)
+        // 같은 요청을 다시 보내도 200이고 행은 하나다 (UNIQUE 제약 — 작업자(AI)_문서/03 §4-1)
         setCompleted(tokens, N5_COURSE_ID, 3, true);
 
         mockMvc.perform(get("/api/progress")

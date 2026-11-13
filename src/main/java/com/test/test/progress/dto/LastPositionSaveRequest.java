@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 마지막 위치 저장 요청 (설계/04 §6-3)
+ * 마지막 위치 저장 요청 (작업자(AI)_문서/04 §6-3)
  *
- * <p>{@code stepKey}는 서버가 스텝 구성을 알 수 없으므로 <b>형식만</b> 본다(설계/04 §6-2):
+ * <p>{@code stepKey}는 서버가 스텝 구성을 알 수 없으므로 <b>형식만</b> 본다(작업자(AI)_문서/04 §6-2):
  * 1~40자, {@code ^[a-z]+(-[0-9]{1,2})?$} — {@code grammar-0} {@code dialog} {@code summary} 등.
  * {@code updatedAt}은 받지 않는다 — 서버 시각이 기준이다.</p>
  */
@@ -22,7 +22,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LastPositionSaveRequest {
 
-    /** 스텝 식별자 형식 (설계/04 §6-2) — 프론트·병합 payload와 같은 규칙을 쓴다 */
+    /** 스텝 식별자 형식 (작업자(AI)_문서/04 §6-2) — 프론트·병합 payload와 같은 규칙을 쓴다 */
     public static final String STEP_KEY_PATTERN = "^[a-z]+(-[0-9]{1,2})?$";
 
     @NotNull(message = "courseId는 필수입니다.")

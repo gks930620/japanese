@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * ★ 표시용 id 집합 (설계/04 §6-4)
+ * ★ 표시용 id 집합 (작업자(AI)_문서/04 §6-4)
  *
  * <p>자료실 목록·상세와 유닛 학습의 ★/☆ 판정이 이 집합 하나로 끝난다 —
  * 공개 콘텐츠 응답에 {@code bookmarked} 필드를 넣으면 "콘텐츠(공개)/사용자 상태(인증)"의 경계가

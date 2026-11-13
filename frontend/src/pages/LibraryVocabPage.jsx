@@ -22,7 +22,7 @@ import { cardClass, selectClass } from "../components/ui/kitClass.js";
 
 const PLACEHOLDER = "단어·읽는 법·뜻으로 검색 (예: 建物, たてもの, 건물)";
 const EN_PLACEHOLDER = "단어·뜻으로 검색 (예: apple, 사과)";
-// 어휘 자료실 (설계/05 §7) — 표 5열 + 행 확장 아코디언, 50개/쪽. 상세 화면 없음
+// 어휘 자료실 (작업자(AI)_문서/05 §7) — 표 5열 + 행 확장 아코디언, 50개/쪽. 상세 화면 없음
 export function LibraryVocabPage({ lang = "ja" }) {
   const en = lang === "en";
   const { params, page, loading, error, reload, setParams, reset } = useLibraryList(
@@ -61,7 +61,7 @@ export function LibraryVocabPage({ lang = "ja" }) {
         {/* 영어는 제2 정렬이 없다 — 선택지 하나뿐인 셀렉트는 렌더하지 않는다(영어 §4-2) */}
         {!en && (
           <FilterGroup label="정렬">
-            {/* 정렬은 택일이라 셀렉트 — 복수 선택 언어(칩)와 섞지 않는다 (설계/05 §12) */}
+            {/* 정렬은 택일이라 셀렉트 — 복수 선택 언어(칩)와 섞지 않는다 (작업자(AI)_문서/05 §12) */}
             <select
               aria-label="정렬"
               className={selectClass()}

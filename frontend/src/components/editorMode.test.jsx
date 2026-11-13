@@ -4,10 +4,10 @@ import { apiError, apiSuccess, stubFetch } from "../test/helpers.jsx";
 import { EditorModeProvider, EditorModeBar, EditButton } from "./EditorMode.jsx";
 
 /**
- * 편집 모드 게이트 (설계/04 §9 · 기획 A1·A2·C4 — TDD Red, senior-dev 작성)
+ * 편집 모드 게이트 (작업자(AI)_문서/04 §9 · 기획 A1·A2·C4 — TDD Red, senior-dev 작성)
  *
  * 프론트의 유일한 판단 근거는 `GET /api/editor/status`다 — 200이면 켜짐, 404/실패면 꺼짐.
- * 꺼진 환경에서는 띠·[고치기]·안내가 **전부 미렌더**다(없는 기능을 사과하지 않는다 — 설계/05 §12).
+ * 꺼진 환경에서는 띠·[고치기]·안내가 **전부 미렌더**다(없는 기능을 사과하지 않는다 — 작업자(AI)_문서/05 §12).
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.
  */
@@ -33,7 +33,7 @@ describe("켜진 환경 (A2)", () => {
     renderWithStatus(apiSuccess({ enabled: true }));
 
     expect(await screen.findByText(/편집 모드/)).toBeInTheDocument();
-    // "서버를 다시 시작하면 사라진다" — 이걸 모르면 반드시 사고가 난다(설계/05 §15-4)
+    // "서버를 다시 시작하면 사라진다" — 이걸 모르면 반드시 사고가 난다(작업자(AI)_문서/05 §15-4)
     expect(screen.getByText(/다시 시작하면 사라/)).toBeInTheDocument();
   });
 

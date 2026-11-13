@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * 범위 밖 {@code page}는 서버가 0으로 보정한다 — <b>커뮤니티·댓글도 예외가 아니다</b>
  * (TDD Red — senior-dev 작성, 2026-09-03 판정 H2).
  *
- * <p>설계/04 §1-5는 이 규칙을 목록 API({@code Page}/{@code LibraryPageResponse})의 <b>공통</b> 규칙으로 못 박았고,
+ * <p>작업자(AI)_문서/04 §1-5는 이 규칙을 목록 API({@code Page}/{@code LibraryPageResponse})의 <b>공통</b> 규칙으로 못 박았고,
  * 08 B-3이 규칙을 세운 근거 시나리오가 정확히 "글이 삭제돼 총 페이지가 줄어드는 커뮤니티"였다.
  * 그런데 보정은 {@code LibraryPaging}에만 있어 {@code GET /api/communities?page=9999}가
  * {@code page: 9999, content: []}를 돌려줬다(로컬 8083 실측). 자료실은 {@code LibraryApiIntegrationTest}가 고정하고 있으니

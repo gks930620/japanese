@@ -5,7 +5,7 @@ import { coursesFixture } from "./apiFixtures.js";
 
 /**
  * GET /api/courses — 픽스처 원본은 apiFixtures 하나다(08 C-9). 여기선 앞 3개(입문·N5·N4)만 쓴다.
- * 서버가 levelCode를 주기 시작했으므로(설계/04 §2-3) 그 값도 원본에서 그대로 따라온다.
+ * 서버가 levelCode를 주기 시작했으므로(작업자(AI)_문서/04 §2-3) 그 값도 원본에서 그대로 따라온다.
  */
 export const REAL_COURSES = coursesFixture().slice(0, 3);
 
@@ -34,7 +34,7 @@ export function realKanjiItem(id, letter, meaning, onyomi = "オン", kunyomi = 
 
 /**
  * GET /api/library/grammar — 목록 항목.
- * `rules`는 상세에만 있지만 **`examples`는 목록에도 온다**(2026-09-10, 설계/04 §3-5 · 08 B-12).
+ * `rules`는 상세에만 있지만 **`examples`는 목록에도 온다**(2026-09-10, 작업자(AI)_문서/04 §3-5 · 08 B-12).
  * 기본값은 그 문법의 예문 1건 — 목록이 예문을 준다는 사실이 픽스처에서 사라지면 진단 배선이 다시 깨진다(08 C-9).
  */
 export function realGrammarItem(id, name, nameKo, hasRules = false, examples = null) {

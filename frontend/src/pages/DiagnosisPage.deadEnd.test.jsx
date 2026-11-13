@@ -5,7 +5,7 @@ import { coursesFixture } from "../test/apiFixtures.js";
 import { renderDiagnosis, resultRows, startLevel, submitLevel } from "../test/diagnosisHelpers.jsx";
 
 /**
- * 진단 — **목록의 끝에 닿았을 때** (설계/09 §3-2 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
+ * 진단 — **목록의 끝에 닿았을 때** (작업자(AI)_문서/09 §3-2 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
  *
  * 기획 D11·D14 / 인수 조건 **A34** + 예외 **E20·E21** + 2026-08-25 판정 **M4**.
  *

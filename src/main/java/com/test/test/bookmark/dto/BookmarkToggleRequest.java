@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** 담기/빼기 요청 (설계/04 §6-4) — 화면 동작이 토글 하나라 PUT + 불리언이다 */
+/** 담기/빼기 요청 (작업자(AI)_문서/04 §6-4) — 화면 동작이 토글 하나라 PUT + 불리언이다 */
 @Getter
 @Setter
 @NoArgsConstructor

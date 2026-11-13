@@ -9,7 +9,7 @@ import {
 } from "./progressView.js";
 
 /**
- * 진도 표시 계산 계약 (설계/04_API계약.md §6 (계산 규칙은 설계/01 §8))
+ * 진도 표시 계산 계약 (작업자(AI)_문서/04_API계약.md §6 (계산 규칙은 작업자(AI)_문서/01 §8))
  *
  * 홈·코스 목록·코스 상세가 같은 판정을 하므로 계산을 한 곳에 모은다.
  * 서버에 두지 않는 이유: **비로그인도 같은 계산을 localStorage 문서로** 해야 해서,
@@ -55,7 +55,7 @@ describe("progressView — 완료 판정 · 개수", () => {
     expect(completedCount(completed, 4)).toBe(0);
   });
 
-  it("진도 막대 비율은 1에서 멈춘다 (콘텐츠 축소 — 설계/05 §8)", () => {
+  it("진도 막대 비율은 1에서 멈춘다 (콘텐츠 축소 — 작업자(AI)_문서/05 §8)", () => {
     expect(progressRatio(0, 20)).toBe(0);
     expect(progressRatio(10, 20)).toBe(0.5);
     expect(progressRatio(21, 20)).toBe(1);
@@ -164,7 +164,7 @@ describe("progressView — 코스 카드 배지 (AC-P-18·19·20·21)", () => {
     expect(badges[2]).toBe("OPEN");
   });
 
-  it("마지막 위치가 준비중 코스를 가리키면 무시한다 (설계/05 §8)", () => {
+  it("마지막 위치가 준비중 코스를 가리키면 무시한다 (작업자(AI)_문서/05 §8)", () => {
     const badges = courseBadges(COURSES, {
       completedUnits: [],
       lastPosition: { courseId: 6, unitNo: 1, stepKey: "kanji", updatedAt: "2026-08-14T09:00:00" },
@@ -175,7 +175,7 @@ describe("progressView — 코스 카드 배지 (AC-P-18·19·20·21)", () => {
   });
 });
 
-describe("progressView — 스텝 복원 (설계/04 §6-2)", () => {
+describe("progressView — 스텝 복원 (작업자(AI)_문서/04 §6-2)", () => {
   const STEP_KEYS = ["grammar-0", "grammar-1", "dialog", "kanji", "vocab", "summary"];
 
   it("저장된 키의 위치를 찾는다 (AC-P-07 — '(4/7)' 표기의 근거)", () => {

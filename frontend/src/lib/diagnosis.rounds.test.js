@@ -3,9 +3,9 @@ import { nextLevelOffer, recordLevelResult, stagePlan } from "./diagnosis.js";
 import { coursesFixture } from "../test/apiFixtures.js";
 
 /**
- * 진단 — **한 판의 기록과 이어가기** (설계/09 §3-2-1 · §3-8 — TDD Red, senior-dev 2026-09-14 개편)
+ * 진단 — **한 판의 기록과 이어가기** (작업자(AI)_문서/09 §3-2-1 · §3-8 — TDD Red, senior-dev 2026-09-14 개편)
  *
- * 기획 `진행사항/기획_2026-09_진단개편.md` D11·D12·D13 / 인수 조건 **A30·A31·A33·A34·A34-1** + 예외 **E23·E24·E25**.
+ * 규칙 `작업자(AI)_문서/09 §3`(기획서는 흡수 후 폐기) / 당시 인수 조건 **A30·A31·A33·A34·A34-1** + 예외 **E23·E24·E25**.
  *
  * ★ 이 파일이 고정하는 것은 **추천이 아니다**(08 C-11). 두 계산은 입력이 다르다:
  *   · 추천(`recommend`) = **지금까지 친 전부** → `diagnosis.recommend.test.js`

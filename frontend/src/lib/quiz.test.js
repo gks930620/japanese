@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildUnitQuizSet, buildLibraryQuizSet, buildRetrySet } from "./quiz.js";
 
 /**
- * 퀴즈 생성 규칙 (설계/05 §15-1 — 스택 공용, TDD Red, senior-dev 작성)
+ * 퀴즈 생성 규칙 (작업자(AI)_문서/05 §15-1 — 스택 공용, TDD Red, senior-dev 작성)
  *
  * 전부 순수 함수 + RNG 주입이라 결정적이다(컨벤션 §6 "랜덤 의존 금지"의 해법).
  * 앱(Flutter)은 이 파일의 시나리오를 같은 규칙의 검증 벡터로 쓴다.
@@ -187,7 +187,7 @@ describe("유형별 출제 가능 조건 (Q8 · kana 계약)", () => {
   });
 });
 
-describe("오답 풀 확장 (설계/05 §15-1)", () => {
+describe("오답 풀 확장 (작업자(AI)_문서/05 §15-1)", () => {
   it("유닛 안에서 오답이 모자라면 오답 풀에서 가져온다 — 정답 대상은 제외", () => {
     const material = {
       grammars: [],

@@ -17,10 +17,10 @@ import org.springframework.test.web.servlet.MvcResult;
  * <p><b>문제</b>: {@code HomeController}가 화면 경로를 <b>열거</b>한다. 열거 밖 주소
  * ({@code /nonexistent-page} · {@code /bookmarks/zzz} · {@code /signup/x})는 시큐리티 화이트리스트에도 없어
  * <b>401 JSON 원문</b>이 화면에 그대로 보인다. 사용자는 "로그인하면 되나?"로 읽지만 실제로는 없는 주소다
- * (설계/04 §1-4 · 현재_기능현황 §9 "미매핑 화면 경로는 SPA가 받아 404 화면"). Vite dev(5103)는 200이라
+ * (작업자(AI)_문서/04 §1-4 · 현재_기능현황 §9 "미매핑 화면 경로는 SPA가 받아 404 화면"). Vite dev(5103)는 200이라
  * <b>개발 중엔 보이지 않고 배포에서만 드러난다.</b></p>
  *
- * <p><b>계약 — 무엇이 SPA로 가고 무엇이 가지 않는가</b> (설계/04 §1-7):
+ * <p><b>계약 — 무엇이 SPA로 가고 무엇이 가지 않는가</b> (작업자(AI)_문서/04 §1-7):
  * <ol>
  *   <li><b>간다</b>: 예약 네임스페이스 밖의 <b>GET</b>이면서, 마지막 경로 세그먼트에 점(확장자)이 없는 요청
  *       → 200 + {@code forward:/index.html}. 라우팅의 단일 기준은 React 라우터이고, 없는 화면은
@@ -33,10 +33,10 @@ import org.springframework.test.web.servlet.MvcResult;
  *       없는 번들에 index.html(200)을 주면 브라우저가 HTML을 JS로 파싱해 "Unexpected token '&lt;'"로 죽는다 —
  *       배포 직후 캐시된 옛 번들 요청이 정확히 이 모양이라, 404가 와야 브라우저·CDN이 "없음"을 안다.</li>
  *   <li><b>안 간다 — GET이 아닌 것</b>: 주소창 진입은 GET이다. 화면 경로로 오는 POST는 클라이언트 오류이고
- *       화이트리스트 밖이므로 <b>401</b>이 유지된다(설계/04 §1-2 "화이트리스트에 없는 메서드는 401").</li>
+ *       화이트리스트 밖이므로 <b>401</b>이 유지된다(작업자(AI)_문서/04 §1-2 "화이트리스트에 없는 메서드는 401").</li>
  * </ol>
  *
- * <p><b>보안 경계가 이 테스트의 핵심이다</b>(설계/07 §5-2 "세 곳을 항상 함께 관리한다").
+ * <p><b>보안 경계가 이 테스트의 핵심이다</b>(작업자(AI)_문서/07 §5-2 "세 곳을 항상 함께 관리한다").
  * 폴백을 넓히면서 보호 네임스페이스({@code /api/me/**} · {@code /api/progress/**} · {@code /actuator/**} ·
  * {@code /h2-console/**})가 함께 열리면, 결함 하나를 고치고 구멍 하나를 여는 것이다.
  * 아래 "가드" 테스트들은 지금 통과한다 — <b>고친 뒤에도 통과해야</b> 한다.</p>
@@ -84,7 +84,7 @@ class SpaFallbackRouteContractIntegrationTest extends ApiIntegrationTestSupport 
     @Test
     void the_api_namespace_never_becomes_the_spa() throws Exception {
         // 없는 API에 index.html(200)이 오면 클라이언트가 HTML을 JSON으로 파싱하다 엉뚱하게 실패한다.
-        // 공개 네임스페이스 아래의 미매핑은 404 JSON이다(설계/04 §1-4).
+        // 공개 네임스페이스 아래의 미매핑은 404 JSON이다(작업자(AI)_문서/04 §1-4).
         for (String path : new String[]{"/api/courses/2/zzz", "/api/library/foo", "/api/en/nope"}) {
             MvcResult result = mockMvc.perform(get(path))
                     .andExpect(status().isNotFound())
@@ -96,7 +96,7 @@ class SpaFallbackRouteContractIntegrationTest extends ApiIntegrationTestSupport 
                     .isNotEqualTo(SPA_ENTRY);
         }
 
-        // 화이트리스트 밖의 API 경로는 시큐리티가 먼저 답한다 — 401 JSON이다(설계/07 §5-1 "기본이 차단이다").
+        // 화이트리스트 밖의 API 경로는 시큐리티가 먼저 답한다 — 401 JSON이다(작업자(AI)_문서/07 §5-1 "기본이 차단이다").
         // 상태코드가 401이든 404든 <b>JSON이라는 것</b>이 계약이다. 접두사만 맞춘 폴백(/api/ 로 시작하는 것만
         // 예약)이면 마지막 줄의 "/api"가 200 index.html이 된다 — 그것도 API 네임스페이스다.
         for (String path : new String[]{"/api/nonexistent", "/api/zzz/zzz", "/api"}) {
@@ -111,7 +111,7 @@ class SpaFallbackRouteContractIntegrationTest extends ApiIntegrationTestSupport 
     }
 
     @Test
-    void protected_api_paths_are_not_opened_by_the_fallback(/* 가드 — 설계/07 §5-2 */) throws Exception {
+    void protected_api_paths_are_not_opened_by_the_fallback(/* 가드 — 작업자(AI)_문서/07 §5-2 */) throws Exception {
         for (String path : new String[]{
                 "/api/me/account", "/api/me/zzz",
                 "/api/progress", "/api/progress/zzz",

@@ -52,7 +52,7 @@ public class VocabularyEntity {
     @Column(name = "ko_approx", length = 100)
     private String koApprox;
 
-    /** 편집 모드 수정 (설계/04 §9) — 표제(word)는 시드 소관이라 받지 않는다 */
+    /** 편집 모드 수정 (작업자(AI)_문서/04 §9) — 표제(word)는 시드 소관이라 받지 않는다 */
     public void update(String meaningKo, String kana, PartOfSpeech partOfSpeech) {
         this.meaningKo = meaningKo;
         this.kana = kana;

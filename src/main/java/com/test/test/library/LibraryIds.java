@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 자료실 목록의 {@code ids} 파라미터 (설계/04 §6-7)
+ * 자료실 목록의 {@code ids} 파라미터 (작업자(AI)_문서/04 §6-7)
  *
  * <p>비로그인 보관함 목록이 "브라우저가 들고 있는 id 집합 + 자료실 뷰"이기 때문에 공개 경로에 둔다.
  * {@code ids}는 사용자 상태가 아니라 <b>콘텐츠 필터</b>라 결정기록 B-8을 어기지 않는다.</p>
@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public final class LibraryIds {
 
-    /** 게스트 보관함 상한과 같은 값 (설계/04 §6-6) */
+    /** 게스트 보관함 상한과 같은 값 (작업자(AI)_문서/04 §6-6) */
     public static final int MAX_IDS = 200;
 
     private LibraryIds() {

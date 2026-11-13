@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { badgeView, isEntryBadge } from "./badgeView.js";
 
-/** 배지 코드 → 문구·클래스·강조 매핑 (설계/05 §8). 계산은 progressView가 하고 여기는 표기만 한다. */
+/** 배지 코드 → 문구·클래스·강조 매핑 (작업자(AI)_문서/05 §8). 계산은 progressView가 하고 여기는 표기만 한다. */
 describe("badgeView — 코드 → 문구·클래스", () => {
   it("6종 코드에 정의서의 문구를 붙인다", () => {
     // CONTINUE 배지는 "이어서 학습하기"를 쓰지 않는다 — 카드는 코스 상세로 가는데 홈 버튼과 같은 말을 하면
-    // 같은 말·다른 목적지가 된다(결정_2026-09_이어서_확인문제 §1-3 · AC-R-8). 권장 문구 "학습 중인 코스"
+    // 같은 말·다른 목적지가 된다(2026-09-03 결정 · `작업자(AI)_문서/08 C-22` · AC-R-8). 권장 문구 "학습 중인 코스"
     expect(badgeView("CONTINUE").label).toBe("학습 중인 코스");
     expect(badgeView("CONTINUE").label).not.toMatch(/이어서/);
     expect(badgeView("START").label).toBe("여기서 시작하세요");

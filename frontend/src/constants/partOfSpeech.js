@@ -1,5 +1,5 @@
-// 어휘 품사 라벨 — 단일 출처 (설계/06 §8).
-// 설계/04 §3-7은 enum 코드 7종만 내려준다. 한국어 라벨은 서버에 없으므로 여기서만 정의한다.
+// 어휘 품사 라벨 — 단일 출처 (작업자(AI)_문서/06 §8).
+// 작업자(AI)_문서/04 §3-7은 enum 코드 7종만 내려준다. 한국어 라벨은 서버에 없으므로 여기서만 정의한다.
 // 필터 칩과 목록 셀이 같은 상수를 참조한다(두 곳에 문자열을 적으면 어긋난다).
 export const PART_OF_SPEECH = [
   { code: "NOUN", label: "명사" },
@@ -12,8 +12,8 @@ export const PART_OF_SPEECH = [
 ];
 
 /**
- * 영어 품사 7종 (설계/06 §11-6) — 일본어의 い·な형용사는 영어에 존재하지 않는다.
- * 라벨 한국어화는 설계/06 §11-6.
+ * 영어 품사 7종 (작업자(AI)_문서/06 §11-6) — 일본어의 い·な형용사는 영어에 존재하지 않는다.
+ * 라벨 한국어화는 작업자(AI)_문서/06 §11-6.
  */
 export const EN_PART_OF_SPEECH = [
   { code: "NOUN", label: "명사" },
@@ -25,7 +25,7 @@ export const EN_PART_OF_SPEECH = [
   { code: "PHRASE", label: "표현" },
 ];
 
-/** 언어별 품사 선택지 — 섞으면 서버가 400이다(설계/06 §11-6) */
+/** 언어별 품사 선택지 — 섞으면 서버가 400이다(작업자(AI)_문서/06 §11-6) */
 export function partOfSpeechOptions(lang = "ja") {
   return lang === "en" ? EN_PART_OF_SPEECH : PART_OF_SPEECH;
 }

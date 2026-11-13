@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-/** 회화 수정 요청 (설계/04 §9) — 대사는 <b>수정만</b>(id 일치 필수) */
+/** 회화 수정 요청 (작업자(AI)_문서/04 §9) — 대사는 <b>수정만</b>(id 일치 필수) */
 @Getter
 @Setter
 public class DialogUpdateRequest {

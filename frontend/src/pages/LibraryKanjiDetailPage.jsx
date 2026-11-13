@@ -20,7 +20,7 @@ function LoadingSkeleton() {
   );
 }
 
-// 한자 상세 (설계/05 §7)
+// 한자 상세 (작업자(AI)_문서/05 §7)
 export function LibraryKanjiDetailPage() {
   const { kanjiId } = useParams();
   const { search } = useLocation();

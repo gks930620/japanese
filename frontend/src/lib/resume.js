@@ -1,6 +1,6 @@
 import { isUnitCompleted } from "./progressView.js";
 
-// 마지막 위치 → "이어서 학습하기" 대상 (2026-09 결정 D-2 · 설계/01 §7-8).
+// 마지막 위치 → "이어서 학습하기" 대상 (2026-09 결정 D-2 · 작업자(AI)_문서/01 §7-8).
 //
 // **"이어서"는 마지막 위치(보던 곳)만 가리킨다.** 아직 안 마친 가장 앞선 유닛은 "다음 유닛"이라 부르고,
 // 그건 코스 상세의 몫이다 — 같은 말로 다른 곳에 보내지 않는다.
@@ -32,7 +32,7 @@ function nextAvailableCourse(list, course) {
  * @param {{ja: object[], en: object[]}} lists 두 과정의 코스 목록
  * @returns {{kind:"RESUME"|"NEXT_UNIT"|"COURSE_DONE", course:object, lang:"ja"|"en",
  *            unitNo:number|null, to:string, text:string, ctaLabel:string}|null}
- *          못 찾으면 null — 사라졌거나 준비중인 코스면 버튼도 문구도 만들지 않는다(설계/05 §8, 홈과 같은 규칙)
+ *          못 찾으면 null — 사라졌거나 준비중인 코스면 버튼도 문구도 만들지 않는다(작업자(AI)_문서/05 §8, 홈과 같은 규칙)
  */
 export function resumeTarget(progress, { ja = [], en = [] } = {}) {
   const { completedUnits = [], lastPosition = null } = progress ?? {};
@@ -46,7 +46,7 @@ export function resumeTarget(progress, { ja = [], en = [] } = {}) {
   const english = Boolean(inEn);
   const list = english ? en : ja;
   const base = english ? "/en/courses" : "/courses";
-  // 영어는 레벨 괄호를 쓰지 않는다 — 코스명이 곧 단계 이름이다(설계/05 §16-2)
+  // 영어는 레벨 괄호를 쓰지 않는다 — 코스명이 곧 단계 이름이다(작업자(AI)_문서/05 §16-2)
   const label = english ? course.title : `${course.title}(${course.levelLabel})`;
 
   // ① 보던 유닛이 미완료면 그대로 그 유닛으로 — 유닛 화면이 보던 스텝을 복원한다

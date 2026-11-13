@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { NAV_ITEMS, isNavItemActive, COURSE_TRACKS, activeTrack } from "./nav.js";
 
-describe("GNB 메뉴 — 채팅 제거 후 3개 (2026-08-17 사용자 결정, 설계/04 §5)", () => {
+describe("GNB 메뉴 — 채팅 제거 후 3개 (2026-08-17 사용자 결정, 작업자(AI)_문서/04 §5)", () => {
   // 채팅 메뉴 제거의 Red — frontend-dev가 NAV_ITEMS에서 채팅을 지우면 Green이 된다
   it("순서는 학습 → 자료실 → 커뮤니티 (채팅 없음)", () => {
     expect(NAV_ITEMS.map((item) => item.label)).toEqual(["학습", "자료실", "커뮤니티"]);
@@ -35,7 +35,7 @@ describe("isNavItemActive — 접두 판정 (인수 4)", () => {
   });
 });
 
-describe("과정 스위처 — 일본어 / 영어 (설계/05 §16)", () => {
+describe("과정 스위처 — 일본어 / 영어 (작업자(AI)_문서/05 §16)", () => {
   it("두 과정만 있고 각 진입점은 코스 목록이다 — GNB는 늘리지 않는다", () => {
     expect(COURSE_TRACKS.map((track) => track.label)).toEqual(["일본어", "영어"]);
     expect(COURSE_TRACKS.map((track) => track.to)).toEqual(["/courses", "/en/courses"]);

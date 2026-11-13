@@ -30,7 +30,7 @@ describe("JpSentence", () => {
   });
 });
 
-// 설계/05 §16-4 — 같은 3줄 병기 컴포넌트를 쓰되 자형만 본문 폰트로 되돌린다.
+// 작업자(AI)_문서/05 §16-4 — 같은 3줄 병기 컴포넌트를 쓰되 자형만 본문 폰트로 되돌린다.
 describe("JpSentence — latin (영어 과정)", () => {
   it("latin이면 .latin이 붙고, 음성 버튼을 만들지 않는다 (영어에는 TTS가 없다 §0-2)", () => {
     const { container } = render(

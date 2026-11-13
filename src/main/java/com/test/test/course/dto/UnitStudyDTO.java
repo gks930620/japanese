@@ -25,7 +25,7 @@ public class UnitStudyDTO {
     /**
      * ★ 그 유닛이 속한 코스의 레벨 코드({@code course.level_code}) — 확인 문제의 오답 풀을 <b>같은 레벨</b>에서
      * 뽑기 위해 화면이 쓴다(2026-08-25 판정). 코스 목록을 따로 부르지 않는 것은 "유닛 학습은 호출 한 번"(08 B-7)을
-     * 지키기 위해서다. 값은 서버가 가진 것을 <b>그대로</b> 싣는다 — courseNo·levelLabel에서 파생하지 않는다(설계/03 §1·§3).
+     * 지키기 위해서다. 값은 서버가 가진 것을 <b>그대로</b> 싣는다 — courseNo·levelLabel에서 파생하지 않는다(작업자(AI)_문서/03 §1·§3).
      */
     private String levelCode;
     private Integer unitNo;

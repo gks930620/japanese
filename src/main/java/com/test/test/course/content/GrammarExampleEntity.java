@@ -43,7 +43,7 @@ public class GrammarExampleEntity {
     @Column(name = "meaning_ko", nullable = false, length = 300)
     private String meaningKo;
 
-    /** 편집 모드 수정 (설계/04 §9) — 예문은 수정만, 행 추가·삭제 없음(id 일치는 서비스가 검증) */
+    /** 편집 모드 수정 (작업자(AI)_문서/04 §9) — 예문은 수정만, 행 추가·삭제 없음(id 일치는 서비스가 검증) */
     public void update(String jp, String kana, String meaningKo) {
         this.jp = jp;
         this.kana = kana;

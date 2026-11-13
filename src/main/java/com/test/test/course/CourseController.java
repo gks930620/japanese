@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 코스 학습 API (설계 §3) — 3개 전부 GET, 인증 불필요(permitAll).
  *
- * <p>이 경로는 <b>일본어 과정 전용</b>이다(설계/04 §8 판정 J-7). 언어를 쿼리 파라미터로 가르지 않는 이유는
+ * <p>이 경로는 <b>일본어 과정 전용</b>이다(작업자(AI)_문서/04 §8 판정 J-7). 언어를 쿼리 파라미터로 가르지 않는 이유는
  * 파라미터를 빠뜨린 요청이 조용히 일본어를 돌려주기 때문이다 — 영어는 {@code /api/en/courses}로 경로가 갈린다.</p>
  */
 @RestController

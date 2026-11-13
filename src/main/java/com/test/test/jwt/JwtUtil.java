@@ -48,7 +48,7 @@ public class JwtUtil {
 
 
     /**
-     * Access Token 생성 — `tv`(token version) 클레임을 함께 싣는다(설계/03 §4).
+     * Access Token 생성 — `tv`(token version) 클레임을 함께 싣는다(작업자(AI)_문서/03 §4).
      *
      * <p>access 토큰은 서명만으로 검증되는 무상태 JWT라 서버에 폐기 목록이 없다. 비밀번호 변경·탈퇴가
      * 다른 기기를 즉시 풀려면 <b>토큰 안에 대조할 값</b>이 있어야 한다 — 그것이 `tv`다.

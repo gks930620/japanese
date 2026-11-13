@@ -10,7 +10,7 @@ import { isEntryBadge } from "../lib/badgeView.js";
 import { Alert } from "../components/ui/Alert.jsx";
 import { btnClass } from "../components/ui/kitClass.js";
 
-// 코스 목록 (설계/05 §7 + §8) — 경로 순서(courseNo) 고정 6장 (인수 8)
+// 코스 목록 (작업자(AI)_문서/05 §7 + §8) — 경로 순서(courseNo) 고정 6장 (인수 8)
 export function CoursesPage() {
   const { data: courses, loading, error, reload } = useApiQuery("/api/courses");
   const { progress } = useUserData();
@@ -42,7 +42,7 @@ export function CoursesPage() {
         </div>
       </div>
 
-      {/* 상단 안내 띠는 한 번에 하나 (설계/05 §8 + 학습도구 판정 B — 진단 배너 병합) */}
+      {/* 상단 안내 띠는 한 번에 하나 (작업자(AI)_문서/05 §8 + 학습도구 판정 B — 진단 배너 병합) */}
       {!loading && !error && !hasProgress && entryLabel && (
         <Alert className="row-alert courses-start-notice">
           <span>✎ 처음이면 {entryLabel}부터 시작하세요 — 배운 적 있다면 아는 레벨로 바로 확인해 보세요</span>

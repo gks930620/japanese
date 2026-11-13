@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * 동시 요청에서도 멱등인가 (설계/04 §6-3 · §6-4) — qa 결함 1번의 회귀 방지. backend-dev 작성.
+ * 동시 요청에서도 멱등인가 (작업자(AI)_문서/04 §6-3 · §6-4) — qa 결함 1번의 회귀 방지. backend-dev 작성.
  *
  * <p>별·완료 토글의 가장 자연스러운 조작이 <b>더블클릭</b>이다. "조회 후 없으면 삽입"은 경합에서 깨져
  * 한쪽이 UNIQUE 제약에 걸리고, 화면은 실패로 받아 ★를 되돌린다 — <b>서버엔 담겼는데 화면엔 안 담긴</b>
@@ -82,7 +82,7 @@ class UserDataConcurrencyIntegrationTest {
                         .content("{ \"completed\": true }"))
                 .andReturn().getResponse().getStatus());
 
-        assertThat(statuses).as("완료 토글 연타는 전건 200이어야 한다 (설계/04 §6-3 멱등)").containsOnly(200);
+        assertThat(statuses).as("완료 토글 연타는 전건 200이어야 한다 (작업자(AI)_문서/04 §6-3 멱등)").containsOnly(200);
 
         JsonNode progress = readData(get("/api/progress").header(HttpHeaders.AUTHORIZATION, bearer()));
         assertThat(progress.path("completedUnits")).hasSize(1);
@@ -95,7 +95,7 @@ class UserDataConcurrencyIntegrationTest {
         login();
 
         // 스텝 이동은 자동 저장이라 빠른 연속 조작이 겹치기 쉽다. 마지막 위치는 사용자당 1행(UNIQUE(user_id))이므로
-        // 첫 저장이 겹치면 한쪽이 제약에 걸린다 — 설계/04 §6-3의 upsert는 그때도 성립해야 한다.
+        // 첫 저장이 겹치면 한쪽이 제약에 걸린다 — 작업자(AI)_문서/04 §6-3의 upsert는 그때도 성립해야 한다.
         List<Integer> statuses = fireConcurrently(() -> mockMvc.perform(put("/api/progress/last-position")
                         .header(HttpHeaders.AUTHORIZATION, bearer())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -103,7 +103,7 @@ class UserDataConcurrencyIntegrationTest {
                                 + ", \"stepKey\": \"kanji\" }"))
                 .andReturn().getResponse().getStatus());
 
-        assertThat(statuses).as("마지막 위치 저장 연타는 전건 200이어야 한다 (설계/04 §6-3 upsert)").containsOnly(200);
+        assertThat(statuses).as("마지막 위치 저장 연타는 전건 200이어야 한다 (작업자(AI)_문서/04 §6-3 upsert)").containsOnly(200);
 
         JsonNode progress = readData(get("/api/progress").header(HttpHeaders.AUTHORIZATION, bearer()));
         assertThat(progress.path("lastPosition").path("courseId").asLong()).isEqualTo(N5_COURSE_ID);
@@ -122,7 +122,7 @@ class UserDataConcurrencyIntegrationTest {
                         .content("{ \"bookmarked\": true }"))
                 .andReturn().getResponse().getStatus());
 
-        assertThat(statuses).as("담기 연타는 전건 200이어야 한다 (설계/04 §6-4 멱등)").containsOnly(200);
+        assertThat(statuses).as("담기 연타는 전건 200이어야 한다 (작업자(AI)_문서/04 §6-4 멱등)").containsOnly(200);
 
         JsonNode summary = readData(get("/api/bookmarks/summary").header(HttpHeaders.AUTHORIZATION, bearer()));
         assertThat(summary.path("kanji").asInt()).isEqualTo(1);

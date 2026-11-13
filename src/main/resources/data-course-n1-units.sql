@@ -1,7 +1,7 @@
 -- 고급 N1(코스 5, course id=6) 유닛 25행 + 유닛-콘텐츠 매핑 — 담당: backend-dev(N1)
 -- ID 대역: course_unit / unit_grammar / unit_kanji / unit_vocabulary 모두 5000~5999
 -- 실행 순서: data-courses.sql → data-course-n1-content.sql → 이 파일
--- 유닛 제목은 실라버스 표와 한 글자도 다르지 않다(제목 일치 규칙: 설계/06 §2).
+-- 유닛 제목은 실라버스 표와 한 글자도 다르지 않다(제목 일치 규칙: 작업자(AI)_문서/06 §2).
 
 -- 유닛 25행 (course_id=6, unit_no 1~25, dialog_id = 5000+unit_no)
 INSERT INTO course_unit (id, course_id, unit_no, title, dialog_id) VALUES

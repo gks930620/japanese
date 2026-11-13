@@ -14,14 +14,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 영어 유닛 학습 DTO (설계/04 §8-1) — 일본어 {@code UnitStudyDTO}와 <b>3번째 자리만</b> 다르다:
+ * 영어 유닛 학습 DTO (작업자(AI)_문서/04 §8-1) — 일본어 {@code UnitStudyDTO}와 <b>3번째 자리만</b> 다르다:
  * {@code kanjis[]} → {@code expressions[]}. 스텝 진행·칩 바 로직을 그대로 재사용하기 위한 의도된 대칭이다.
  *
  * <p>{@code kanjis} 필드는 <b>없다</b>(빈 배열이 아니라 부재다) — 영어 유닛에 한자 스텝은 존재하지 않는다.
  * 입문 코스의 {@code kanjis: []}(한자가 0자인 <i>일본어</i> 유닛)와 구별되는 지점이다.</p>
  *
  * <p>{@code review}(§7-11-A)의 {@code unitNo % 5 == 0} 규칙은 그대로 적용된다 —
- * 다만 맛보기가 2유닛뿐이라 이번 범위에서는 발동하지 않는다(설계/06 §11-4).</p>
+ * 다만 맛보기가 2유닛뿐이라 이번 범위에서는 발동하지 않는다(작업자(AI)_문서/06 §11-4).</p>
  */
 @Getter
 @Builder
@@ -34,14 +34,14 @@ public class EnUnitStudyDTO {
     /**
      * ★ 그 유닛이 속한 코스의 레벨 코드({@code course.level_code}) — 확인 문제의 오답 풀을 <b>같은 레벨</b>에서
      * 뽑기 위해 화면이 쓴다(2026-08-25 판정). 코스 목록을 따로 부르지 않는 것은 "유닛 학습은 호출 한 번"(08 B-7)을
-     * 지키기 위해서다. 값은 서버가 가진 것을 <b>그대로</b> 싣는다 — courseNo·levelLabel에서 파생하지 않는다(설계/03 §1·§3).
+     * 지키기 위해서다. 값은 서버가 가진 것을 <b>그대로</b> 싣는다 — courseNo·levelLabel에서 파생하지 않는다(작업자(AI)_문서/03 §1·§3).
      */
     private String levelCode;
     private Integer unitNo;
     private String title;
     private Integer totalUnits;
     /**
-     * 계획 유닛 수(설계/04 §2-3-A) — <b>일본어와 완전히 같은 필드·같은 규칙</b>이다(언어 전용 분기가 아니다).
+     * 계획 유닛 수(작업자(AI)_문서/04 §2-3-A) — <b>일본어와 완전히 같은 필드·같은 규칙</b>이다(언어 전용 분기가 아니다).
      * E1은 15유닛 계획 중 열린 만큼만 {@code totalUnits}에 잡히므로 열린 마지막 유닛은 <b>완주가 아니다</b>.
      *
      * <p>★ {@code totalUnits}에서 파생하지 않고, {@code null}이어도 키는 항상 직렬화한다

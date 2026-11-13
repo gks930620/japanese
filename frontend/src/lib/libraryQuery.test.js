@@ -9,7 +9,7 @@ import {
   toggleValue,
 } from "./libraryQuery.js";
 
-describe("parseLibraryParams — 주소가 목록 상태의 단일 출처 (설계/05 §9)", () => {
+describe("parseLibraryParams — 주소가 목록 상태의 단일 출처 (작업자(AI)_문서/05 §9)", () => {
   it("쿼리가 없으면 기본값", () => {
     expect(parseLibraryParams("")).toEqual({
       q: "",
@@ -21,7 +21,7 @@ describe("parseLibraryParams — 주소가 목록 상태의 단일 출처 (설�
     });
   });
 
-  it("레벨·품사는 콤마 구분 복수로 읽고, 허용 밖 값은 버린다 (설계/04 §3-1)", () => {
+  it("레벨·품사는 콤마 구분 복수로 읽고, 허용 밖 값은 버린다 (작업자(AI)_문서/04 §3-1)", () => {
     const parsed = parseLibraryParams("?level=N5,N9,N3&pos=VERB,UNKNOWN");
     expect(parsed.levels).toEqual(["N5", "N3"]);
     expect(parsed.pos).toEqual(["VERB"]);
@@ -43,7 +43,7 @@ describe("parseLibraryParams — 주소가 목록 상태의 단일 출처 (설�
     expect(parseLibraryParams("?sort=WHATEVER").sort).toBe("LEARNING");
   });
 
-  it("hasRules는 true일 때만 적용 (설계/04 §3-5)", () => {
+  it("hasRules는 true일 때만 적용 (작업자(AI)_문서/04 §3-5)", () => {
     expect(parseLibraryParams("?hasRules=true").hasRules).toBe(true);
     expect(parseLibraryParams("?hasRules=false").hasRules).toBe(false);
   });
@@ -110,7 +110,7 @@ describe("toggleValue — 필터 칩 복수 선택", () => {
   });
 });
 
-// 설계/05 §16-2 — 코드는 그대로 두고 **문구만** 사람 말로 바꾼다(단방향).
+// 작업자(AI)_문서/05 §16-2 — 코드는 그대로 두고 **문구만** 사람 말로 바꾼다(단방향).
 describe("레벨 표기와 자료실별 선택지 (§5)", () => {
   it("표시 맵은 코드 → 문구 한 방향이다", () => {
     expect(levelText("INTRO")).toBe("입문");

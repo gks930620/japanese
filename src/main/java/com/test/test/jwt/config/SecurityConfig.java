@@ -58,7 +58,7 @@ public class SecurityConfig {
     private boolean h2ConsoleEnabled;
 
     /**
-     * 화면·정적 자원 요청인가 — 화이트리스트가 쓰는 {@code RequestMatcher} (설계/04 §1-7).
+     * 화면·정적 자원 요청인가 — 화이트리스트가 쓰는 {@code RequestMatcher} (작업자(AI)_문서/04 §1-7).
      *
      * <p>판정 자체는 {@link SpaRoutes}에 있다. 폴백(forward)과 <b>같은 함수</b>를 봐야 두 곳이 갈리지 않는다.</p>
      */
@@ -93,9 +93,9 @@ public class SecurityConfig {
                 .logoutSuccessHandler(customLogoutSuccessHandler));
 
         http.authorizeHttpRequests(auth -> auth
-                // 화면·정적 자원 = 예약 네임스페이스의 여집합인 GET·HEAD (설계/04 §1-7 · 08 C-25).
+                // 화면·정적 자원 = 예약 네임스페이스의 여집합인 GET·HEAD (작업자(AI)_문서/04 §1-7 · 08 C-25).
                 // 판정은 SpaRoutes 하나다 — 폴백(GlobalExceptionHandler)과 같은 규칙을 쓰지 않으면 곧 갈리고,
-                // 갈리는 순간 화면에 401 JSON이 보이거나 보호 네임스페이스가 함께 열린다(설계/07 §5-2).
+                // 갈리는 순간 화면에 401 JSON이 보이거나 보호 네임스페이스가 함께 열린다(작업자(AI)_문서/07 §5-2).
                 // 이 매처는 /api·/actuator·/h2-console 등 예약 네임스페이스를 절대 포섭하지 않으며,
                 // 화면 경로로 오는 POST 등 GET·HEAD가 아닌 요청도 포섭하지 않는다(401 유지).
                 .requestMatchers(SecurityConfig::isScreenRequest).permitAll()
@@ -115,7 +115,7 @@ public class SecurityConfig {
                         "/api/users",
                         "/api/tokens/refresh",
                         "/api/oauth2/**",
-                        // 편집 모드(설계/04 §9) — 로그인 무관(설계/04 §9 확정). B-9의 문서화된 예외:
+                        // 편집 모드(작업자(AI)_문서/04 §9) — 로그인 무관(작업자(AI)_문서/04 §9 확정). B-9의 문서화된 예외:
                         // 꺼진 환경에선 컨트롤러 빈이 없어 미매핑 404라 아무것도 노출되지 않고,
                         // prod는 RailwayDeploymentValidator가 enabled=true 기동을 거부한다.
                         "/api/editor/**"
@@ -127,7 +127,7 @@ public class SecurityConfig {
                         // 두 접두사 아래에는 GET 공개 핸들러만 존재하므로 새로 노출되는 것은 없다.
                         "/api/courses", "/api/courses/**",
                         "/api/library/**",
-                        // 영어 과정 API (설계/04 §8) — 공개 정책은 일본어와 동일하다.
+                        // 영어 과정 API (작업자(AI)_문서/04 §8) — 공개 정책은 일본어와 동일하다.
                         // 이 접두사 아래에도 GET 공개 핸들러만 존재하므로 새로 노출되는 것은 없고,
                         // 없는 하위 경로(/api/en/library/kanji)는 401이 아니라 404로 드러나야 한다(§7-17 ②).
                         "/api/en/**",
@@ -141,9 +141,9 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/api/logout",
                         "/api/users/me",
-                        // 사용자 학습 데이터(진도·보관함·병합)는 전부 인증 필요 (설계/04 §6 · 설계/07 §5-4).
+                        // 사용자 학습 데이터(진도·보관함·병합)는 전부 인증 필요 (작업자(AI)_문서/04 §6 · 작업자(AI)_문서/07 §5-4).
                         // anyRequest().authenticated()가 이미 막고 있지만 명시한다 —
-                        // 나중에 누가 permitAll을 넓힐 때 이 줄과 충돌해 눈에 보이게 하기 위해서다(설계/07 §5-2).
+                        // 나중에 누가 permitAll을 넓힐 때 이 줄과 충돌해 눈에 보이게 하기 위해서다(작업자(AI)_문서/07 §5-2).
                         "/api/progress", "/api/progress/**",
                         "/api/bookmarks", "/api/bookmarks/**",
                         "/api/me", "/api/me/**"

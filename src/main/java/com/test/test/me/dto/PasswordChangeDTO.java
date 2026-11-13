@@ -6,11 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 비밀번호 변경 결과 (설계/04 §4-1).
+ * 비밀번호 변경 결과 (작업자(AI)_문서/04 §4-1).
  *
  * <p>토큰 두 값은 <b>앱(Authorization: Bearer)</b> 경로에서만 채워지고 웹(쿠키)에서는 null이다 —
  * 분기 기준은 /api/tokens/refresh와 완전히 같다. @JsonInclude를 걸지 않는다: 두 필드는 항상 내려간다
- * (설계/04 §1-3 — 프론트가 필드 유무로 분기하지 않는다).</p>
+ * (작업자(AI)_문서/04 §1-3 — 프론트가 필드 유무로 분기하지 않는다).</p>
  */
 @Getter
 @Builder

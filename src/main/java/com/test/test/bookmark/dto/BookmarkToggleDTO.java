@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 담기/빼기 결과 (설계/04 §6-4)
+ * 담기/빼기 결과 (작업자(AI)_문서/04 §6-4)
  *
  * <p>{@code targetId}는 <b>정규화된 값</b>이다 — 어휘는 클라이언트가 member id(3024)를 보내도
  * 표제어 대표 id(1217)가 돌아온다. 프론트는 요청값이 아니라 응답값으로 상태를 갱신한다.</p>

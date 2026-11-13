@@ -5,13 +5,13 @@ import { describe, expect, it, vi } from "vitest";
 import { QuizRunner } from "../components/QuizRunner.jsx";
 
 /**
- * 공용 문제·결과 화면 (설계/05 §15-1 · 기획 Q9~Q17·Q23 — TDD Red, senior-dev 작성)
+ * 공용 문제·결과 화면 (작업자(AI)_문서/05 §15-1 · 기획 Q9~Q17·Q23 — TDD Red, senior-dev 작성)
  *
  * 유닛 확인 문제·자료실 퀴즈가 공유하는 컴포넌트다. 문제 세트는 밖(lib/quiz.js)에서 만들어 props로 받는다 —
  * 생성 규칙은 lib 테스트가, 이 파일은 "푸는 동작"만 고정한다.
  *
  * props 계약: { questions, newTabLinks?: boolean, onRestart, footerActions? }
- * 각 question은 설계/05 §15-1의 모양이고 libraryHref를 포함한다(결과 목록의 자료실 링크 — Q17).
+ * 각 question은 작업자(AI)_문서/05 §15-1의 모양이고 libraryHref를 포함한다(결과 목록의 자료실 링크 — Q17).
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.
  */

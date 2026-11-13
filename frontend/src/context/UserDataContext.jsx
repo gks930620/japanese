@@ -7,7 +7,7 @@ import * as userData from "../lib/userData.js";
  * 진도·보관함 상태의 단일 보관처.
  * 게스트/회원 분기는 lib/userData.js가 이미 가두고 있고, 여기서는 **화면이 공유하는 상태**만 다룬다:
  *   - 진도(완료 유닛·마지막 위치) · ★ id 집합 · 종류별 개수
- *   - ★ / 완료 토글의 낙관적 갱신과 실패 되돌림 (설계/05 §8)
+ *   - ★ / 완료 토글의 낙관적 갱신과 실패 되돌림 (작업자(AI)_문서/05 §8)
  *   - 인라인 알림 1개(§4-3) · 병합 배너 상태(§4-4)
  *
  * 조회 실패는 조용히 "기록 없음"으로 떨어진다 — 진도 때문에 에러 카드를 만들지 않는다(AC-P-28).
@@ -84,7 +84,7 @@ export function UserDataProvider({ children }) {
    * - **게스트**: 저장이 동기라 낙관적 갱신이 필요 없다. `userData.toggleBookmark`가 돌려준
    *   `ids`를 그대로 세팅한다 — 상한(200) 판정이 guestStore 한 곳에만 남고 깜빡임도 없다(AC-G-06).
    * - **회원**: 낙관적으로 즉시 바꾸고, 실패하면 되돌린 뒤 인라인 알림을 띄운다(AC-B-24).
-   *   성공 응답의 `targetId`는 **서버가 정규화한 값**이므로 요청값이 아니라 응답값으로 갱신한다(설계/04 §6-4).
+   *   성공 응답의 `targetId`는 **서버가 정규화한 값**이므로 요청값이 아니라 응답값으로 갱신한다(작업자(AI)_문서/04 §6-4).
    */
   const toggleBookmark = useCallback(
     async (type, targetId, nextOn) => {
@@ -119,7 +119,7 @@ export function UserDataProvider({ children }) {
         return result;
       }
 
-      // 어휘는 서버가 대표 id로 정규화한다(설계/04 §6-4) — 요청한 3024가 1217로 돌아올 수 있다
+      // 어휘는 서버가 대표 id로 정규화한다(작업자(AI)_문서/04 §6-4) — 요청한 3024가 1217로 돌아올 수 있다
       const savedId = result.data?.targetId ?? targetId;
       if (savedId !== targetId) {
         const withoutRequested = optimistic[type].filter((id) => id !== targetId && id !== savedId);

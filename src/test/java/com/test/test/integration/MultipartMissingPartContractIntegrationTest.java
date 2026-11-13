@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * <p><b>문제</b>: {@code POST /api/files}에 {@code files} 파트 없이 보내면 <b>500</b>이다.
  * {@code MissingServletRequestPartException}에 핸들러가 없어 최후의 {@code Exception} 핸들러가 받는다.
  * 파트 누락은 <b>요청을 고쳐야 회복되는 클라이언트 잘못</b>이라 재시도로 낫지 않는데, 500이면
- * 모니터링에 서버 장애로 잡히고 프론트는 "잠시 후 다시 시도"를 띄운다(설계/04 §1-2 · 컨벤션 §2).
+ * 모니터링에 서버 장애로 잡히고 프론트는 "잠시 후 다시 시도"를 띄운다(작업자(AI)_문서/04 §1-2 · 컨벤션 §2).
  * 415·413·405를 이미 같은 이유로 고쳤다 — 그때 빠진 나머지다.</p>
  *
  * <p><b>계약</b>: 필수 파트 누락은 쿼리 파라미터 누락과 <b>같은 답</b>이다 —

@@ -9,14 +9,14 @@ import { Empty } from "../ui/Empty.jsx";
 import { Input } from "../ui/Field.jsx";
 import { btnClass } from "../ui/kitClass.js";
 
-/** 자료실 3탭 — 현재 탭만 강조, 전환 시 조건은 넘기지 않는다 (설계/05 §3-2·§9) */
+/** 자료실 3탭 — 현재 탭만 강조, 전환 시 조건은 넘기지 않는다 (작업자(AI)_문서/05 §3-2·§9) */
 const TABS = [
   { to: "/library/kanji", label: "한자" },
   { to: "/library/grammar", label: "문법" },
   { to: "/library/vocabulary", label: "어휘" },
 ];
 
-/** 영어 자료실 3탭 — 한자 탭이 없고 기본이 표현이다 (설계/05 §16-3) */
+/** 영어 자료실 3탭 — 한자 탭이 없고 기본이 표현이다 (작업자(AI)_문서/05 §16-3) */
 const EN_TABS = [
   { to: "/en/library/expressions", label: "표현" },
   { to: "/en/library/grammar", label: "문법" },
@@ -57,7 +57,7 @@ export function LibraryTabs({ current, lang = "ja" }) {
         </Link>
       ))}
       {/* 보관함 진입 — 4번째 탭으로 오해되지 않게 톤을 달리한다. 0이면 숫자를 생략(§3-2).
-          영어 보관함은 아직 없다(설계/05 §16-3) — 탭 줄은 칩 3개뿐이다 */}
+          영어 보관함은 아직 없다(작업자(AI)_문서/05 §16-3) — 탭 줄은 칩 3개뿐이다 */}
       {!en && (
         <Link className="bm-entry" to="/bookmarks">
           ★ 내 보관함{bookmarkCounts.total > 0 ? ` ${bookmarkCounts.total}` : ""}
@@ -67,12 +67,12 @@ export function LibraryTabs({ current, lang = "ja" }) {
   );
 }
 
-/** 레벨 배지 — 레벨별 색 구분 없음(단색). 3종 공통 (설계/05 §12) */
+/** 레벨 배지 — 레벨별 색 구분 없음(단색). 3종 공통 (작업자(AI)_문서/05 §12) */
 export function LevelBadge({ level }) {
   return <span className="k-badge lv-badge">{levelText(level)}</span>;
 }
 
-/** 검색창 — 버튼 없이 300ms 디바운스로 주소를 replace 갱신 (설계/05 §9) */
+/** 검색창 — 버튼 없이 300ms 디바운스로 주소를 replace 갱신 (작업자(AI)_문서/05 §9) */
 export function LibrarySearchInput({ value, placeholder, onChange }) {
   const [text, setText] = useState(value);
   const [syncedValue, setSyncedValue] = useState(value);
@@ -125,7 +125,7 @@ export function FilterGroup({ label, children }) {
 
 /**
  * 레벨 필터 — 복수 선택(그룹 안 OR), 선택 상태는 클래스가 아니라 aria-pressed 다.
- * 선택지·그룹 라벨은 자료실마다 다르다(설계/05 §16-2: 영어는 "코스 1~5", 그룹 라벨도 "코스").
+ * 선택지·그룹 라벨은 자료실마다 다르다(작업자(AI)_문서/05 §16-2: 영어는 "코스 1~5", 그룹 라벨도 "코스").
  */
 export function LevelFilter({ selected, onChange, options = LEVELS, label = "레벨" }) {
   return (
@@ -145,7 +145,7 @@ export function LevelFilter({ selected, onChange, options = LEVELS, label = "레
 export { FilterChip };
 
 /**
- * 툴바 — 검색창 + 필터. 모바일(≤768px)에서는 필터가 접힌 상태로 시작한다 (설계/05 §10).
+ * 툴바 — 검색창 + 필터. 모바일(≤768px)에서는 필터가 접힌 상태로 시작한다 (작업자(AI)_문서/05 §10).
  * 어떤 상태에서도 사라지지 않는다(오류·0건에서도 조건을 고쳐 빠져나갈 수 있어야 한다).
  */
 export function LibraryToolbar({ params, placeholder, onSearch, children }) {
@@ -170,7 +170,7 @@ export function LibraryToolbar({ params, placeholder, onSearch, children }) {
 
 /**
  * 결과 개수 + 적용 칩 + [초기화].
- * 숫자는 전부 API 값이다 — 고정 문구 금지 (인수 27). totalAll은 설계/04 §3-2 공통 규약.
+ * 숫자는 전부 API 값이다 — 고정 문구 금지 (인수 27). totalAll은 작업자(AI)_문서/04 §3-2 공통 규약.
  */
 export function ResultBar({ page, unit, sortLabel, chips, onReset, totalPrefix = "총" }) {
   const total = page?.totalAll ?? page?.totalElements ?? 0;
@@ -209,8 +209,8 @@ export function ResultBar({ page, unit, sortLabel, chips, onReset, totalPrefix =
 }
 
 /**
- * 0건 (설계/05 §8) — 검색어가 있을 때와 필터만 걸렸을 때 문구가 갈린다.
- * 조건이 하나도 없는데 0건이면 "아직 없는 것"이지 "못 찾은 것"이 아니다(설계/05 §8).
+ * 0건 (작업자(AI)_문서/05 §8) — 검색어가 있을 때와 필터만 걸렸을 때 문구가 갈린다.
+ * 조건이 하나도 없는데 0건이면 "아직 없는 것"이지 "못 찾은 것"이 아니다(작업자(AI)_문서/05 §8).
  */
 export function EmptyBlock({ query, hint, conditionText, onReset, notReady = null }) {
   const searched = Boolean(query);
@@ -254,7 +254,7 @@ export function RefTopbar({ backTo, caption }) {
   );
 }
 
-/** "어디서 배우나" — 첫 줄만 primary, 나머지는 텍스트 링크 (설계/05 §3-2) */
+/** "어디서 배우나" — 첫 줄만 primary, 나머지는 텍스트 링크 (작업자(AI)_문서/05 §3-2) */
 export function WhereLearn({ entries, lang = "ja" }) {
   const en = lang === "en";
   const unitBase = en ? "/en/courses" : "/courses";

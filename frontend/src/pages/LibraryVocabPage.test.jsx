@@ -15,7 +15,7 @@ function rowOf(word) {
   return screen.getByRole("button", { name: `${word} 자세히 보기` });
 }
 
-describe("LibraryVocabPage — 표 (설계/05 §7)", () => {
+describe("LibraryVocabPage — 표 (작업자(AI)_문서/05 §7)", () => {
   it("단어·읽기·뜻·품사·레벨 배지를 보여준다 (인수 20·21·25)", async () => {
     render(libraryPage([vocabItem()]));
 
@@ -54,7 +54,7 @@ describe("LibraryVocabPage — 표 (설계/05 §7)", () => {
   });
 });
 
-describe("LibraryVocabPage — 아코디언 (설계/05 §11)", () => {
+describe("LibraryVocabPage — 아코디언 (작업자(AI)_문서/05 §11)", () => {
   it("행을 누르면 펼쳐지고 뜻별 출처와 '배우기'가 나온다 (인수 26·28)", async () => {
     const user = userEvent.setup();
     render(libraryPage([vocabItem()]));

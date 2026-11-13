@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 /**
- * 범위 밖 {@code page} 보정 — 목록 API의 <b>공통</b> 규칙(설계/04 §1-5 · 08 B-3)의 <b>단일 출처</b>.
+ * 범위 밖 {@code page} 보정 — 목록 API의 <b>공통</b> 규칙(작업자(AI)_문서/04 §1-5 · 08 B-3)의 <b>단일 출처</b>.
  *
  * <p>규칙: 음수 → 0, 총 페이지 수 이상 → <b>0페이지 내용 + 응답 {@code page: 0}</b>. 404도 빈 배열도 아니다.
  * 근거 시나리오는 커뮤니티다 — "마지막 페이지를 보던 중 글이 삭제돼 총 페이지가 줄면" 사용자는

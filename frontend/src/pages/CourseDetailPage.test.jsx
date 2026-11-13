@@ -35,7 +35,7 @@ describe("CourseDetailPage — 상태 분기", () => {
     expect(unitLink).toHaveAttribute("href", "/courses/2/units/1");
   });
 
-  it("PREPARING은 200 응답이지만 준비중 안내로 분기한다 (설계/04 §2-2)", async () => {
+  it("PREPARING은 200 응답이지만 준비중 안내로 분기한다 (작업자(AI)_문서/04 §2-2)", async () => {
     stubFetch(() =>
       apiSuccess(courseDetail({ id: 1, title: "입문", levelLabel: "문자", status: "PREPARING", units: [], description: null })),
     );

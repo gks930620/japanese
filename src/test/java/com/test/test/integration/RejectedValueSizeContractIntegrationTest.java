@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * 긴 본문·긴 제목도 같다 — 에러 응답이 요청 크기에 비례하는 <b>증폭기</b>가 된다(50MB 요청 = 50MB 응답).
  * 그 값은 로그·개발자도구·에러 수집기에 한 번 더 남는다.</p>
  *
- * <p><b>계약 (설계/04 §1-2에 추가)</b>: {@code errors[].rejectedValue}는 <b>요청을 고치는 데 도움이 되는
+ * <p><b>계약 (작업자(AI)_문서/04 §1-2에 추가)</b>: {@code errors[].rejectedValue}는 <b>요청을 고치는 데 도움이 되는
  * 짧은 스칼라 값</b>일 때만 싣는다. 마스킹 방식은 기존과 같다 — <b>키 생략</b>(판정 D-13).
  * <ul>
  *   <li>싣는다: 100자 이하 문자열 · 숫자 · 불리언 · null</li>

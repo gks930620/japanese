@@ -1,9 +1,9 @@
-// 게스트 / 회원 분기의 **유일한 자리** (설계/04 §6-6).
+// 게스트 / 회원 분기의 **유일한 자리** (작업자(AI)_문서/04 §6-6).
 // 화면 컴포넌트는 이 모듈만 보고, 기록이 서버에 있는지 localStorage에 있는지 알지 못한다.
 //
 // 규칙 두 가지가 여기서 강제된다:
 //   ① 로그인 상태에서는 localStorage에 쓰지 않는다 (§7-3 — 쓰면 로그아웃 후 남의 기록이 되살아난다)
-//   ② 자동 저장 실패는 조용히 삼키고, 손으로 누른 완료 토글 실패만 호출자에게 알린다 (설계/05 §8·AC-P-27)
+//   ② 자동 저장 실패는 조용히 삼키고, 손으로 누른 완료 토글 실패만 호출자에게 알린다 (작업자(AI)_문서/05 §8·AC-P-27)
 import { callApi, callPublicApi } from "./http.js";
 import {
   GUEST_BOOKMARK_LIMIT,
@@ -68,7 +68,7 @@ export async function saveLastPosition(isAuthenticated, { courseId, unitNo, step
 
 /**
  * 완료 켜기/끄기 — **손으로 누른 동작**이라 실패를 그대로 돌려준다(화면이 토글을 되돌린다).
- * 정리 스텝 도달 자동 완료도 이 함수를 쓰되, 호출은 **도달 전환 시점 1회**여야 한다(설계/04 §6-3).
+ * 정리 스텝 도달 자동 완료도 이 함수를 쓰되, 호출은 **도달 전환 시점 1회**여야 한다(작업자(AI)_문서/04 §6-3).
  */
 export async function setUnitCompleted(isAuthenticated, courseId, unitNo, completed) {
   if (!isAuthenticated) {
@@ -104,9 +104,9 @@ export async function clearProgress(isAuthenticated) {
 /* ── 보관함 ───────────────────────────────────── */
 
 /* 개수(summary)는 별도로 조회하지 않는다 — ids 길이와 담기/빼기 응답의 counts로 유지된다.
-   같은 사실의 두 번째 출처를 두면 두 값이 어긋난다(설계/04 §6-4가 counts를 함께 내리는 이유). */
+   같은 사실의 두 번째 출처를 두면 두 값이 어긋난다(작업자(AI)_문서/04 §6-4가 counts를 함께 내리는 이유). */
 
-/** ★ 판정용 id 집합 3종 — 화면은 `ids[type].includes(id)` 하나로 판정한다(설계/04 §6-4). */
+/** ★ 판정용 id 집합 3종 — 화면은 `ids[type].includes(id)` 하나로 판정한다(작업자(AI)_문서/04 §6-4). */
 export async function fetchBookmarkIds(isAuthenticated) {
   if (!isAuthenticated) return readGuestBookmarks();
   const body = await quiet(() => callApi("/api/bookmarks/ids"), null);
@@ -151,11 +151,11 @@ export async function clearBookmarks(isAuthenticated, type) {
 }
 
 /**
- * 보관함 목록 — 회원은 `/api/bookmarks/{type}`, 게스트는 **자료실 + ids 필터**(설계/04 §6-7).
+ * 보관함 목록 — 회원은 `/api/bookmarks/{type}`, 게스트는 **자료실 + ids 필터**(작업자(AI)_문서/04 §6-7).
  * 게스트의 "최근 담은 순"은 저장 순서(맨 앞이 최근)라 `sort=GIVEN`으로 매핑한다.
  *
  * ⚠️ **여기만 예외를 그대로 올린다.** 진도 조회는 조용히 실패해야 하지만(AC-P-28),
- * 보관함 목록은 실패를 **에러 카드 + [다시 시도]** 로 알려야 한다(AC-B-25 · 설계/05 §8).
+ * 보관함 목록은 실패를 **에러 카드 + [다시 시도]** 로 알려야 한다(AC-B-25 · 작업자(AI)_문서/05 §8).
  * 삼키면 34개를 담아 둔 사용자가 "아직 담은 것이 없어요"를 보고 기록이 사라진 줄 안다.
  *
  * @param {{page?: number, size: number, sort?: "RECENT"|"LEARNING", q?: string, levels?: string[]}} params
@@ -219,7 +219,7 @@ export function hasGuestRecord() {
   return storeHasGuestRecord();
 }
 
-/** 병합 배너 문구의 숫자 — 호출 전 localStorage 값(설계/04 §6-5). 서버에 미리 묻지 않는다. */
+/** 병합 배너 문구의 숫자 — 호출 전 localStorage 값(작업자(AI)_문서/04 §6-5). 서버에 미리 묻지 않는다. */
 export function guestCounts() {
   return guestRecordCounts();
 }

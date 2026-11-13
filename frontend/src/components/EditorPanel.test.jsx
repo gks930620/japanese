@@ -1,4 +1,4 @@
-// frontend-dev 작성 — 관리자 편집 패널(설계/05 §15-4). editorMode.test(게이트)가 덮지 않는 부분.
+// frontend-dev 작성 — 관리자 편집 패널(작업자(AI)_문서/05 §15-4). editorMode.test(게이트)가 덮지 않는 부분.
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -65,7 +65,7 @@ describe("한자 폼 (A3·A4·A5)", () => {
     expect(screen.queryByRole("button", { name: /행 추가/ })).not.toBeInTheDocument();
   });
 
-  it("저장하면 PUT 페이로드가 설계/04 §9 모양이고 변경 요약이 보인다 (A9·A11)", async () => {
+  it("저장하면 PUT 페이로드가 작업자(AI)_문서/04 §9 모양이고 변경 요약이 보인다 (A9·A11)", async () => {
     const fetchMock = renderLauncher({ kind: "kanji", target: KANJI, title: "한자 고치기 — 遵" });
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: /고치기/ }));

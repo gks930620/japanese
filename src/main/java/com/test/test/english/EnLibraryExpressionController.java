@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 영어 표현 자료실 API (설계/04 §8-2 — 3탭 중 기본 탭) — GET 2개, 인증 불필요(permitAll).
+ * 영어 표현 자료실 API (작업자(AI)_문서/04 §8-2 — 3탭 중 기본 탭) — GET 2개, 인증 불필요(permitAll).
  * 일본어의 한자 탭 자리이며, <b>영어에는 한자 탭이 없다</b>({@code /api/en/library/kanji}는 미매핑 404).
  */
 @RestController

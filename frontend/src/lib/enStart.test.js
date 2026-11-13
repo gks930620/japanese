@@ -1,6 +1,6 @@
-// frontend-dev 작성 — 영어 자가진단의 선택지 계산 (설계/06 §11-12).
+// frontend-dev 작성 — 영어 자가진단의 선택지 계산 (작업자(AI)_문서/06 §11-12).
 // 채점이 아니라 자기 선택이므로 규칙은 "코스 5개를 학습 순서대로 문장에 붙인다"가 전부다.
-// **levelCode만 쓴다** — levelLabel을 가공하지 않는다(설계/05 §16-2).
+// **levelCode만 쓴다** — levelLabel을 가공하지 않는다(작업자(AI)_문서/05 §16-2).
 import { describe, expect, it } from "vitest";
 import { enCoursesFixture, coursesFixture } from "../test/apiFixtures.js";
 import { canDoChoices } from "./enStart.js";

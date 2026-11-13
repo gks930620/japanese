@@ -34,7 +34,7 @@ public class DialogDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LineDTO {
-        // 편집 패널이 PUT /api/editor/dialogs의 lines[].id를 이 값으로 조립한다(설계/04 §9)
+        // 편집 패널이 PUT /api/editor/dialogs의 lines[].id를 이 값으로 조립한다(작업자(AI)_문서/04 §9)
         private Long id;
         private String speaker;
         private String jp;

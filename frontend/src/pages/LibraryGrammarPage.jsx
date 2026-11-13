@@ -23,8 +23,8 @@ const PLACEHOLDER = "문법 명칭·한국어 뜻으로 검색 (예: てから, 
 // 영어 탭의 예시는 영어여야 한다 — 가나 예시는 그 탭에서 검색되지 않는다(A-M4, 어휘 탭 선례)
 const EN_PLACEHOLDER = "문법 명칭·한국어 뜻으로 검색 (예: be going to, 예정)";
 
-// 문법 자료실 목록 (설계/05 §7) — 행 리스트, 20개/쪽.
-// 영어 과정은 같은 화면을 쓴다(설계/05 §16-3): 경로·탭·필터 문구만 갈린다.
+// 문법 자료실 목록 (작업자(AI)_문서/05 §7) — 행 리스트, 20개/쪽.
+// 영어 과정은 같은 화면을 쓴다(작업자(AI)_문서/05 §16-3): 경로·탭·필터 문구만 갈린다.
 export function LibraryGrammarPage({ lang = "ja" }) {
   const en = lang === "en";
   const base = en ? "/en/library/grammar" : "/library/grammar";
@@ -52,7 +52,7 @@ export function LibraryGrammarPage({ lang = "ja" }) {
         {/* 영어에는 활용 개념 자체가 없어 **구조적으로 0건**이다 — 한자 탭의 INTRO 칩과 같은 판정(A-L4) */}
         {!en && (
           <FilterGroup label="기타">
-            {/* 단일 토글 칩 — 필터바 안에 조작 언어를 하나만 유지한다 (설계/05 §12) */}
+            {/* 단일 토글 칩 — 필터바 안에 조작 언어를 하나만 유지한다 (작업자(AI)_문서/05 §12) */}
             <FilterChip
               label="활용표 있는 것만"
               selected={params.hasRules}
@@ -63,7 +63,7 @@ export function LibraryGrammarPage({ lang = "ja" }) {
       </LibraryToolbar>
 
       <ResultBar chips={chips} page={page} sortLabel="학습 순서" unit="개" onReset={reset} />
-      {/* 영어 퀴즈는 아직 없다(설계/05 §16-1) */}
+      {/* 영어 퀴즈는 아직 없다(작업자(AI)_문서/05 §16-1) */}
       {!en && <QuizEntry params={params} totalElements={page?.totalElements ?? 0} type="grammar" />}
 
       <InlineAlert />

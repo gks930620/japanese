@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "course",
-        // course_no는 언어 안에서만 유일하다 — 일본어 1(N5)과 영어 1(E1)이 공존한다(설계/03 §3).
+        // course_no는 언어 안에서만 유일하다 — 일본어 1(N5)과 영어 1(E1)이 공존한다(작업자(AI)_문서/03 §3).
         uniqueConstraints = @UniqueConstraint(name = "uk_course_language_no", columnNames = {"language", "course_no"}))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,19 +32,19 @@ public class CourseEntity {
     private Integer courseNo;
 
     /**
-     * ★ 필터에 쓰는 <b>코드</b>(INTRO·N5~N1·E1~E5) — 표시 문구(levelLabel)와 DB에서부터 가른다(설계/03 §1·§3).
+     * ★ 필터에 쓰는 <b>코드</b>(INTRO·N5~N1·E1~E5) — 표시 문구(levelLabel)와 DB에서부터 가른다(작업자(AI)_문서/03 §1·§3).
      * courseNo 파생을 폐기한 이유: 언어가 둘이 되는 순간 파생이 언어에 종속된다
      * (일본어 courseNo 1 = N5, 영어 courseNo 1 = E1). 입문은 라벨이 "문자"라 문자열로 코드를 만들 수도 없다.
      */
     @Column(name = "level_code", nullable = false, length = 10)
     private String levelCode;
 
-    /** 표시 문구 — 화면이 그대로 쓴다. 영어 과정은 코스명이 단계 이름이라 화면에서 쓰지 않는다(설계/06 §11-2) */
+    /** 표시 문구 — 화면이 그대로 쓴다. 영어 과정은 코스명이 단계 이름이라 화면에서 쓰지 않는다(작업자(AI)_문서/06 §11-2) */
     @Column(name = "level_label", nullable = false, length = 30)
     private String levelLabel;
 
     /**
-     * 과정 언어 — {@code JA}(일본어) | {@code EN}(영어). <b>DEFAULT 'JA'</b>라 기존 시드·기존 쿼리가 한 줄도 안 바뀐다(설계/03 §3).
+     * 과정 언어 — {@code JA}(일본어) | {@code EN}(영어). <b>DEFAULT 'JA'</b>라 기존 시드·기존 쿼리가 한 줄도 안 바뀐다(작업자(AI)_문서/03 §3).
      * 언어 분리는 조회 조건 하나로 끝난다 — 코스·유닛·콘텐츠 테이블을 복제하지 않는다.
      */
     @Column(nullable = false, length = 2, columnDefinition = "varchar(2) default 'JA'")
@@ -70,7 +70,7 @@ public class CourseEntity {
     private CourseStatus status;
 
     /**
-     * 계획 유닛 수 (설계/03 §1 · 04 §2-3-A · 08 C-29) — 그 코스가 <b>최종적으로 갖게 될</b> 유닛 수.
+     * 계획 유닛 수 (작업자(AI)_문서/03 §1 · 04 §2-3-A · 08 C-29) — 그 코스가 <b>최종적으로 갖게 될</b> 유닛 수.
      *
      * <p><b>NULL = 계획값 없음 = 지금 있는 유닛이 전부.</b> 일본어 전 코스가 여기 해당해 동작이 한 줄도 바뀌지 않는다.
      * 앞에서부터 유닛을 채워 나가는 코스(E1 = 15)만 값을 갖는다.

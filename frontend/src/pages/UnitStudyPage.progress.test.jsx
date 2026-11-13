@@ -63,7 +63,7 @@ describe("UnitStudyPage — 스텝 복원 (AC-P-08·10)", () => {
 
     expect(await screen.findByText("이 유닛은 마쳤어요")).toBeInTheDocument();
     expect(screen.getByText("스텝 1 / 6")).toBeInTheDocument();
-    // 두 안내 띠가 겹치지 않는다 (설계/05 §8의 전제)
+    // 두 안내 띠가 겹치지 않는다 (작업자(AI)_문서/05 §8의 전제)
     expect(screen.queryByText(/보던 곳부터 이어서 보고 있어요/)).toBeNull();
   });
 });

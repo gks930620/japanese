@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserUnitCompletionRepository extends JpaRepository<UserUnitCompletionEntity, Long> {
 
-    // 응답 정렬은 courseId → unitNo 오름차순이 계약이다 (설계/04 §6-3 — 결정적 응답)
+    // 응답 정렬은 courseId → unitNo 오름차순이 계약이다 (작업자(AI)_문서/04 §6-3 — 결정적 응답)
     List<UserUnitCompletionEntity> findByUserIdOrderByCourseIdAscUnitNoAsc(Long userId);
 
     Optional<UserUnitCompletionEntity> findByUserIdAndCourseIdAndUnitNo(Long userId, Long courseId, Integer unitNo);
@@ -19,7 +19,7 @@ public interface UserUnitCompletionRepository extends JpaRepository<UserUnitComp
 
     /**
      * 완료 1건 삭제 — 엔티티를 읽어 지우는 대신 벌크 삭제를 쓴다.
-     * 같은 유닛을 동시에 두 번 꺼도 "이미 사라진 행"을 지웠다는 이유로 실패하면 안 된다(설계/04 §6-3 멱등).
+     * 같은 유닛을 동시에 두 번 꺼도 "이미 사라진 행"을 지웠다는 이유로 실패하면 안 된다(작업자(AI)_문서/04 §6-3 멱등).
      */
     @Modifying
     @Query("delete from UserUnitCompletionEntity c "

@@ -3,11 +3,11 @@ package com.test.test.common.exception;
 import org.springframework.http.HttpStatus;
 
 /**
- * 계정 도메인의 규칙 위반 (설계/04 §1-2).
+ * 계정 도메인의 규칙 위반 (작업자(AI)_문서/04 §1-2).
  *
  * <p>비밀번호 변경의 400을 <b>세 코드로 쪼갠 이유</b>: 셋은 화면 동작이 다르다
  * (어느 칸 아래에 문구가 붙는가 / 어느 칸을 비우는가). 하나로 뭉치면 프론트가 {@code message} 문자열을
- * 비교하게 되는데, message는 로그성 문구라 분기 근거가 될 수 없다(설계/04 §1-1).</p>
+ * 비교하게 되는데, message는 로그성 문구라 분기 근거가 될 수 없다(작업자(AI)_문서/04 §1-1).</p>
  */
 public class AccountRuleException extends BusinessException {
 
@@ -39,7 +39,7 @@ public class AccountRuleException extends BusinessException {
                 "PASSWORD_NOT_SUPPORTED");
     }
 
-    /** 탈퇴 확인 문구 불일치 (설계/04 §4-1) */
+    /** 탈퇴 확인 문구 불일치 (작업자(AI)_문서/04 §4-1) */
     public static AccountRuleException confirmTextMismatch() {
         return new AccountRuleException("확인 문구가 일치하지 않습니다.", HttpStatus.BAD_REQUEST,
                 "CONFIRM_TEXT_MISMATCH");

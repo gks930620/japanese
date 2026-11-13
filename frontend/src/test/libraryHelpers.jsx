@@ -15,7 +15,7 @@ export function renderLibrary(element, { path, route }) {
   );
 }
 
-/** LibraryPageResponse (설계/04 §3-2 공통 규약 — totalAll 포함) */
+/** LibraryPageResponse (작업자(AI)_문서/04 §3-2 공통 규약 — totalAll 포함) */
 export function libraryPage(content, overrides = {}) {
   const totalElements = overrides.totalElements ?? content.length;
   return {
@@ -41,7 +41,7 @@ export function grammarItem(overrides = {}) {
 
 export function vocabItem(overrides = {}) {
   return {
-    // 실데이터 형태(설계/04 §3-7): 応援은 N4·N3에서 "응원", N2에서 "지원"으로 나온다.
+    // 실데이터 형태(작업자(AI)_문서/04 §3-7): 応援은 N4·N3에서 "응원", N2에서 "지원"으로 나온다.
     // senses는 뜻 기준으로 합쳐지고 출처(learnedIn)는 배열이다 — 같은 뜻이 여러 곳에서 나올 수 있다.
     id: 1217,
     word: "応援",

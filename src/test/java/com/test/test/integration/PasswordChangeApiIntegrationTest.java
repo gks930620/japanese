@@ -16,11 +16,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 비밀번호 변경 API 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: `설계/04_API계약.md` §4-1 (PUT /api/me/password — token_version 상승·refresh 전량 삭제)
+ * <p>계약 문서: `작업자(AI)_문서/04_API계약.md` §4-1 (PUT /api/me/password — token_version 상승·refresh 전량 삭제)
  * 인수 조건: AC-A-21 ~ AC-A-29
  *
  * <p>이 화면의 400은 <b>세 가지가 서로 다른 화면 동작</b>을 낳는다(어느 칸을 비우는가 / 어느 칸 아래에 문구를 다는가).
- * 그래서 errorCode를 셋으로 쪼갰다 — 프론트가 `message` 문자열을 비교하게 만들지 않기 위해서다(설계/04 §1-1).
+ * 그래서 errorCode를 셋으로 쪼갰다 — 프론트가 `message` 문자열을 비교하게 만들지 않기 위해서다(작업자(AI)_문서/04 §1-1).
  *
  * <p>이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유 (CLAUDE.md TDD 규칙 2).
  */
@@ -146,7 +146,7 @@ class PasswordChangeApiIntegrationTest extends ApiIntegrationTestSupport {
                         .content(changeBody(SEED_PASSWORD, NEW_PASSWORD, NEW_PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.changed").value(true))
-                // 헤더 인증(앱 경로)에는 새 토큰을 바디로 준다 — /api/tokens/refresh와 같은 분기(설계/04 §4-1)
+                // 헤더 인증(앱 경로)에는 새 토큰을 바디로 준다 — /api/tokens/refresh와 같은 분기(작업자(AI)_문서/04 §4-1)
                 .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.data.refreshToken").isNotEmpty())
                 .andReturn();

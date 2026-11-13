@@ -23,7 +23,7 @@ import { Table, TableWrap } from "../components/ui/Table.jsx";
 import { btnClass, cardClass } from "../components/ui/kitClass.js";
 
 const STEP_NUMERALS = ["①", "②", "③", "④", "⑤"];
-const LOGIN_HINT_AT = 3; // 완료 유닛 3개째의 정리 스텝에서 한 번 (설계/01 §6)
+const LOGIN_HINT_AT = 3; // 완료 유닛 3개째의 정리 스텝에서 한 번 (작업자(AI)_문서/01 §6)
 
 function grammarLabel(index, count) {
   if (count <= 1) return "문법";
@@ -31,7 +31,7 @@ function grammarLabel(index, count) {
 }
 
 /**
- * 자료실로 나가는 링크 — 웹·모바일 모두 새 탭 (설계/05 §11).
+ * 자료실로 나가는 링크 — 웹·모바일 모두 새 탭 (작업자(AI)_문서/05 §11).
  * 유닛 학습에는 진도 저장이 없어 되돌아오면 첫 스텝으로 리셋되기 때문이다.
  */
 function ExternalLink({ to, label, className, children }) {
@@ -117,9 +117,9 @@ function DialogStep({ dialog, onEdited, latin = false }) {
           const speakerIndex = Math.min(speakers.indexOf(line.speaker), 2);
           return (
             <div key={i} className={`dialog-line${playingLine === i ? " playing" : ""}`}>
-              {/* 같은 화자 연속이면 배지 생략(들여쓰기 유지) — 설계/05 §8.
+              {/* 같은 화자 연속이면 배지 생략(들여쓰기 유지) — 작업자(AI)_문서/05 §8.
                   배지에 CSS가 --font-jp를 직접 박아 두어 영어 화자 이름(Mina·Ben)의 첫 글자까지
-                  일본어 자형으로 찍힌다 → latin으로 되돌린다(설계/05 §16-4) */}
+                  일본어 자형으로 찍힌다 → latin으로 되돌린다(작업자(AI)_문서/05 §16-4) */}
               <span
                 className={`speaker-badge sp-${speakerIndex}${latin ? " latin" : ""}${sameAsPrev ? " hide" : ""}`}
                 title={sameAsPrev ? undefined : line.speaker}
@@ -136,7 +136,7 @@ function DialogStep({ dialog, onEdited, latin = false }) {
 }
 
 /**
- * 표현 스텝 (설계/05 §16-4) — 세로 1열 스택.
+ * 표현 스텝 (작업자(AI)_문서/05 §16-4) — 세로 1열 스택.
  * 한자 카드로 대신하지 않는다: 표현은 가로로 긴 덩어리라 큰 글자 배지 자리가 빈다.
  * 값이 없는 줄(발음·용법·예문)은 **줄째 만들지 않는다**(빈 블록 금지).
  */
@@ -174,7 +174,7 @@ function KanjiStep({ kanjis, bookmark, onEdited }) {
       {kanjis.map((kanji) => (
         <div key={kanji.id} className="kanji-card">
           <div className="kanji-head">
-            {/* 큰 글자 자체가 자료실 한자 상세로 나가는 링크 (설계/05 §11, 인수 29) */}
+            {/* 큰 글자 자체가 자료실 한자 상세로 나가는 링크 (작업자(AI)_문서/05 §11, 인수 29) */}
             <ExternalLink className="kanji-glyph-link" label={`${kanji.letter} 자료실에서 보기`} to={`/library/kanji/${kanji.id}`}>
               <span className="kanji-glyph">{kanji.letter}</span>
             </ExternalLink>
@@ -186,7 +186,7 @@ function KanjiStep({ kanjis, bookmark, onEdited }) {
             />
             <EditorLauncher kind="kanji" target={kanji} title={`한자 고치기 — ${kanji.letter}`} onSaved={onEdited} />
           </div>
-          {/* 음독·훈독 중 없는 것은 행 생략 (설계/05 §8) */}
+          {/* 음독·훈독 중 없는 것은 행 생략 (작업자(AI)_문서/05 §8) */}
           {kanji.onyomi != null && (
             <div className="kanji-read">
               <span className="label">음독</span>
@@ -226,7 +226,7 @@ function VocabStep({ vocabularies, bookmark, onEdited, latin = false }) {
   const readingHeader = latin ? "발음" : "읽기";
   return (
     <>
-      {/* 셀 안에는 ↗를 넣지 않는다 — 표는 조용해야 한다 (설계/05 §11) */}
+      {/* 셀 안에는 ↗를 넣지 않는다 — 표는 조용해야 한다 (작업자(AI)_문서/05 §11) */}
       <p className="table-caption">단어를 누르면 자료실에서 열려요</p>
       <TableWrap>
         <Table className={`vocab-table${latin ? " latin" : ""}`}>
@@ -242,7 +242,7 @@ function VocabStep({ vocabularies, bookmark, onEdited, latin = false }) {
           </thead>
           <tbody>
             {vocabularies.map((vocab) => {
-              // ★의 대상 id는 자료실 표제어 대표 id(entryId)다 — 유닛과 자료실이 같은 항목을 가리켜야 한다(설계/04 §6-1)
+              // ★의 대상 id는 자료실 표제어 대표 id(entryId)다 — 유닛과 자료실이 같은 항목을 가리켜야 한다(작업자(AI)_문서/04 §6-1)
               const entryId = vocab.entryId ?? vocab.id;
               return (
                 <tr key={vocab.id}>
@@ -310,7 +310,7 @@ function VocabStep({ vocabularies, bookmark, onEdited, latin = false }) {
 }
 
 /**
- * 부분 공개 코스 판정 (설계/04 §2-3-A · 08 C-29) — **"다음이 없다"는 "끝냈다"가 아니다.**
+ * 부분 공개 코스 판정 (작업자(AI)_문서/04 §2-3-A · 08 C-29) — **"다음이 없다"는 "끝냈다"가 아니다.**
  * 유닛을 앞에서부터 채워 나가는 코스는 열린 마지막 유닛도 `nextUnitNo: null`이라 두 상태가 겹친다.
  * 가르는 유일한 근거는 응답의 `coursePlannedUnits`다 — 화면이 지어내지 않는다.
  * 언어와 무관한 일반 규칙이다(일본어 코스도 부분 공개할 수 있다).
@@ -320,12 +320,12 @@ function isMoreUnitsComing(data) {
   return data.coursePlannedUnits != null && data.totalUnits < data.coursePlannedUnits;
 }
 
-/** 지금 열린 데까지의 끝 — 완주 축하가 서던 자리에 중립 안내가 선다(설계/05 §8 "끝은 두 종류다") */
+/** 지금 열린 데까지의 끝 — 완주 축하가 서던 자리에 중립 안내가 선다(작업자(AI)_문서/05 §8 "끝은 두 종류다") */
 function isOpenEnd(data) {
   return data.nextUnitNo == null && isMoreUnitsComing(data);
 }
 
-/** 정리 스텝 — 요약 → 복습 → 완료 토글 → 완주 축하 / 열린 끝 안내 → (비로그인) 로그인 유도 (설계/05 §8) */
+/** 정리 스텝 — 요약 → 복습 → 완료 토글 → 완주 축하 / 열린 끝 안내 → (비로그인) 로그인 유도 (작업자(AI)_문서/05 §8) */
 function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHint, onDismissHint, latin = false, loginFrom = "/" }) {
   // 마지막 유닛 → 코스 완료 분기 (인수 18). 단, 계획 유닛이 아직 다 열리지 않았으면 완주가 아니다(§2-3-A)
   const completedCourse = data.nextUnitNo == null && !isMoreUnitsComing(data);
@@ -370,7 +370,7 @@ function SummaryStep({ data, completed, onToggleCompleted, toggleError, loginHin
         </div>
       </div>
 
-      {/* 복습 블록 — 설계/04 §2-3: 5의 배수 유닛에서만 값, 그 외 null (설계/05 §7 규격) */}
+      {/* 복습 블록 — 작업자(AI)_문서/04 §2-3: 5의 배수 유닛에서만 값, 그 외 null (작업자(AI)_문서/05 §7 규격) */}
       {data.review != null && (
         <div className="review-block">
           <div className="review-caption">지금까지 배운 것</div>
@@ -465,7 +465,7 @@ function AdvanceLink({ data, className, pathBase = "/courses", latin = false }) 
     );
   }
   // 열린 데까지의 끝이면 **다음 코스보다 먼저** 판정한다 — 부분 공개 코스에서 다음 코스로 내보내면
-  // "이 코스는 끝났다"고 말하는 것과 같다. 참인 행선지는 그 코스의 유닛 목록뿐이다(설계/05 §8)
+  // "이 코스는 끝났다"고 말하는 것과 같다. 참인 행선지는 그 코스의 유닛 목록뿐이다(작업자(AI)_문서/05 §8)
   if (isOpenEnd(data)) {
     return (
       // 열린 끝에서 유일하게 참인 행선지는 **그 코스 안**이다 — 다음 코스로 내보내면 이 코스가
@@ -490,7 +490,7 @@ function AdvanceLink({ data, className, pathBase = "/courses", latin = false }) 
   );
 }
 
-/** 유닛 확인 문제 스텝 (설계/05 §15-1) — 시작 → 문제 → 결과. 상태는 부모(UnitStudy)가 든다(Q22) */
+/** 유닛 확인 문제 스텝 (작업자(AI)_문서/05 §15-1) — 시작 → 문제 → 결과. 상태는 부모(UnitStudy)가 든다(Q22) */
 function QuizStep({ data, quizSet, started, onStart, onRestart, onNext, visible }) {
   if (quizSet.questions.length === 0) {
     // 재료 극단 부족 — 결핍을 사과하지 않는다(05 §12)
@@ -547,7 +547,7 @@ function QuizStep({ data, quizSet, started, onStart, onRestart, onNext, visible 
   );
 }
 
-/* ── 유닛 학습 화면 (설계/05 §7 + §8) ── */
+/* ── 유닛 학습 화면 (작업자(AI)_문서/05 §7 + §8) ── */
 
 export function UnitStudyPage({ lang = "ja" }) {
   const { courseId, unitNo } = useParams();
@@ -556,7 +556,7 @@ export function UnitStudyPage({ lang = "ja" }) {
 }
 
 /**
- * 영어 과정은 같은 화면의 한 자리를 갈아 끼운다(설계/05 §16):
+ * 영어 과정은 같은 화면의 한 자리를 갈아 끼운다(작업자(AI)_문서/05 §16):
  * 한자 스텝 → 표현 스텝, 확인 문제·음성·편집·★ 없음, 자형은 본문 폰트(latin).
  * 스텝 진행·진도 저장·완료 전송은 과정과 무관하게 같은 코드를 쓴다.
  */
@@ -584,7 +584,7 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
       grammar,
       order: i,
     }));
-    // 입문 코스는 한자가 0자다 — 칩도 빈 카드도 만들지 않는다(없는 것을 사과하지 않는다, 설계/06 §6).
+    // 입문 코스는 한자가 0자다 — 칩도 빈 카드도 만들지 않는다(없는 것을 사과하지 않는다, 작업자(AI)_문서/06 §6).
     // 영어는 그 자리가 표현이고, 표현 0개도 같은 규칙으로 스텝을 만들지 않는다(영어 §3 상태별 UI).
     const middleSteps = en
       ? (data.expressions?.length ?? 0) > 0
@@ -593,7 +593,7 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
       : (data.kanjis?.length ?? 0) > 0
         ? [{ key: "kanji", label: "한자", type: "kanji" }]
         : [];
-    // 영어에는 확인 문제가 없다(설계/05 §16-1 · 설계/06 §11-9 · 08 C-14):
+    // 영어에는 확인 문제가 없다(작업자(AI)_문서/05 §16-1 · 작업자(AI)_문서/06 §11-9 · 08 C-14):
     // 지금 켜면 일본어 조판·ja 음성·빈 근거 상자를 영어 학습자에게 제품으로 보여주게 된다
     const quizSteps = en ? [] : [{ key: "quiz", label: "확인 문제", type: "quiz" }];
     return [
@@ -601,7 +601,7 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
       { key: "dialog", label: "회화", type: "dialog" },
       ...middleSteps,
       { key: "vocab", label: "어휘", type: "vocab" },
-      // 확인 문제는 정리 **앞** — [다음 ›]만 눌러도 만난다. 정리는 언제나 마지막 스텝이고 [다음 유닛]은 거기에만(2026-09 결정 D-3 · 설계/09 §2-1)
+      // 확인 문제는 정리 **앞** — [다음 ›]만 눌러도 만난다. 정리는 언제나 마지막 스텝이고 [다음 유닛]은 거기에만(2026-09 결정 D-3 · 작업자(AI)_문서/09 §2-1)
       ...quizSteps,
       { key: "summary", label: "정리", type: "summary" },
     ];
@@ -610,9 +610,9 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
 
   const completed = data ? isUnitCompleted(progress.completedUnits, data.courseId, data.unitNo) : false;
 
-  // 저장된 스텝 복원 — 없는 키(콘텐츠 개편)면 0이 되어 첫 스텝으로 열린다(설계/04 §6-2).
+  // 저장된 스텝 복원 — 없는 키(콘텐츠 개편)면 0이 되어 첫 스텝으로 열린다(작업자(AI)_문서/04 §6-2).
   // **완료한 유닛은 복원하지 않고 1번 스텝으로 연다**(AC-P-10) — 마지막 위치가 summary인 채로
-  // 복원하면 다시 열 때마다 정리 스텝만 뜨고, 두 안내 띠(이어보기·완료)도 겹친다(설계/05 §8).
+  // 복원하면 다시 열 때마다 정리 스텝만 뜨고, 두 안내 띠(이어보기·완료)도 겹친다(작업자(AI)_문서/05 §8).
   // 사용자가 스텝을 한 번이라도 누르면(userStep != null) 진도가 늦게 도착해도 덮어쓰지 않는다.
   const restoredIndex = useMemo(() => {
     const last = progress.lastPosition;
@@ -633,7 +633,7 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
     return saved ? { ...item, ...saved } : item;
   };
 
-  // 오답 풀 — 유닛 문법은 2~3개뿐이라 유닛 안에서는 보기 4개를 못 채운다(설계/09 §1-3).
+  // 오답 풀 — 유닛 문법은 2~3개뿐이라 유닛 안에서는 보기 4개를 못 채운다(작업자(AI)_문서/09 §1-3).
   // **정답과 같은 레벨에서 먼저 채운다**(감사 높음 2): 레벨 필터 없이 첫 페이지를 가져오면
   // 학습 순서 정렬이라 낮은 레벨만 담기고, N1 유닛의 보기가 레벨만 봐도 풀린다.
   // 같은 레벨로 보기 4개를 못 채울 때에 한해 필터를 풀어 넓힌다(조용히 낮은 레벨로 채우지 않는다).
@@ -881,7 +881,7 @@ function UnitStudy({ courseId, unitNo, lang = "ja" }) {
             다음 ›
           </Button>
         )}
-        {/* 코스 완료 — nextCourse 분기 (설계/04 §2-3): AVAILABLE이면 다음 코스 상세로, 그 외는 코스 목록으로 */}
+        {/* 코스 완료 — nextCourse 분기 (작업자(AI)_문서/04 §2-3): AVAILABLE이면 다음 코스 상세로, 그 외는 코스 목록으로 */}
         {isSummary && <AdvanceLink className={btnClass({ variant: "primary" })} data={data} latin={en} pathBase={pathBase} />}
       </div>
     </section>

@@ -6,11 +6,11 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * 어휘 품사 (설계/06 §8 — 일본어 7종 / 설계/06 §11-6 — 영어 7종)
+ * 어휘 품사 (작업자(AI)_문서/06 §8 — 일본어 7종 / 작업자(AI)_문서/06 §11-6 — 영어 7종)
  * 자료실 어휘 사전의 필터 값이자 유닛 학습 어휘의 표시 근거.
  * 한국어 라벨은 서버가 내려주지 않는다 — 표시 문구는 프론트 상수로 매핑한다.
  *
- * <p><b>컬럼은 공유하되 허용 집합이 언어별로 다르다</b>(설계/06 §11-6). {@code I_ADJECTIVE}·{@code NA_ADJECTIVE}는
+ * <p><b>컬럼은 공유하되 허용 집합이 언어별로 다르다</b>(작업자(AI)_문서/06 §11-6). {@code I_ADJECTIVE}·{@code NA_ADJECTIVE}는
  * 영어에 존재하지 않고, {@code ADJECTIVE}·{@code PREPOSITION}·{@code PHRASE}는 일본어에 존재하지 않는다.
  * 값을 하나의 enum에 모아 두고 <b>검증만 언어별로</b> 하는 이유: 어휘 테이블이 하나라 컬럼도 하나이고,
  * enum을 둘로 쪼개면 {@code vocabulary.part_of_speech} 하나를 두 타입으로 읽어야 한다.</p>
@@ -24,7 +24,7 @@ import java.util.Set;
  * - CONJUNCTION: 접속사 でも, それから, しかし
  * - EXPRESSION: 인사·정형 표현·구(句) 등 위 6종에 안 들어가는 것 こんにちは
  *
- * <p>영어 7종 (설계/06 §11-6)</p>
+ * <p>영어 7종 (작업자(AI)_문서/06 §11-6)</p>
  * - NOUN / VERB / ADJECTIVE / ADVERB / PREPOSITION / CONJUNCTION / PHRASE
  *
  * 판단 규칙: 애매하면 EXPRESSION(영어는 PHRASE)으로 몰지 말고 어간의 품사를 우선한다(お祝い = NOUN).
@@ -38,7 +38,7 @@ public enum PartOfSpeech {
     ADVERB,
     CONJUNCTION,
     EXPRESSION,
-    // ── 영어 전용 (설계/06 §11-6) ───────────────────────────────────────────
+    // ── 영어 전용 (작업자(AI)_문서/06 §11-6) ───────────────────────────────────────────
     ADJECTIVE,
     PREPOSITION,
     PHRASE;
@@ -63,7 +63,7 @@ public enum PartOfSpeech {
 
     /**
      * 파라미터 문자열 1개를 그 과정의 품사로 변환한다. 없는 코드도, <b>다른 과정의 코드도</b> 여기서 걸린다
-     * (설계/06 §11-6 — 섞이면 400).
+     * (작업자(AI)_문서/06 §11-6 — 섞이면 400).
      */
     public static PartOfSpeech of(String code, CourseLanguage language) {
         PartOfSpeech parsed;

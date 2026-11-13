@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 한자 자료실 (설계 §4-B-1·§4-B-2) — 읽기 전용, <b>일본어 전용</b>이다.
  *
- * <p>영어 과정에는 한자 탭이 없다(설계/04 §8-2 — 표현이 그 자리다). 그래서 언어를 파라미터로 받지 않고
+ * <p>영어 과정에는 한자 탭이 없다(작업자(AI)_문서/04 §8-2 — 표현이 그 자리다). 그래서 언어를 파라미터로 받지 않고
  * {@code CourseLanguage.JA}로 고정한다 — 열려 있지 않은 축을 만들지 않는다.</p>
  *
- * <p>{@code ids} 필터(설계/04 §6-7)가 여기 있는 덕분에 <b>보관함 목록은 목록 로직을 복제하지 않는다</b> —
- * 회원 보관함은 {@code getKanjiListByIds}를, 게스트 보관함은 같은 경로의 공개 API를 호출한다(설계/04 §6-4).</p>
+ * <p>{@code ids} 필터(작업자(AI)_문서/04 §6-7)가 여기 있는 덕분에 <b>보관함 목록은 목록 로직을 복제하지 않는다</b> —
+ * 회원 보관함은 {@code getKanjiListByIds}를, 게스트 보관함은 같은 경로의 공개 API를 호출한다(작업자(AI)_문서/04 §6-4).</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class LibraryKanjiService {
     }
 
     /**
-     * 보관함 경로 — id 집합은 이미 서버가 들고 있다(개수 상한 없음: 회원은 무제한 — 설계/04 §6-4).
+     * 보관함 경로 — id 집합은 이미 서버가 들고 있다(개수 상한 없음: 회원은 무제한 — 작업자(AI)_문서/04 §6-4).
      *
      * @param ids null이면 필터 미적용, 빈 목록이면 "담은 것이 없음"(빈 페이지)
      */
@@ -55,7 +55,7 @@ public class LibraryKanjiService {
         return getKanjiList(ids, sort, page, size, q, level, CourseLanguage.JA);
     }
 
-    /** 지금 존재하는(유닛에 매핑된) id만 남긴다 — 보관함 개수·★ 집합의 읽기 필터(설계/03 §4-1) */
+    /** 지금 존재하는(유닛에 매핑된) id만 남긴다 — 보관함 개수·★ 집합의 읽기 필터(작업자(AI)_문서/03 §4-1) */
     public List<Long> filterExistingIds(List<Long> ids) {
         return libraryKanjiQueryRepository.findExistingIds(ids);
     }
@@ -97,7 +97,7 @@ public class LibraryKanjiService {
         }
 
         long totalElements = matched.size();
-        // totalAll = ids 적용 후·검색/필터 미적용 개수 ("담은 34자 중 12자" — 설계/04 §6-4·§6-7)
+        // totalAll = ids 적용 후·검색/필터 미적용 개수 ("담은 34자 중 12자" — 작업자(AI)_문서/04 §6-4·§6-7)
         long totalAll = libraryKanjiQueryRepository.count(List.of(), language, null, ids);
         int pageNumber = LibraryPaging.resolvePage(page, totalElements, pageSize);
 

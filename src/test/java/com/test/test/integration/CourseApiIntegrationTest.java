@@ -19,9 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 코스 학습 API 통합테스트 (TDD Red — senior-dev 작성)
  *
- * 계약 문서: 설계/04_API계약.md §2 (학습)
+ * 계약 문서: 작업자(AI)_문서/04_API계약.md §2 (학습)
  * - 3개 API 전부 비로그인(GET, permitAll) — 모든 요청에 인증 헤더 없음이 곧 계약 검증이다.
- * - 코스별 기대치는 {@link CourseCatalog}가 단일 출처다(설계/03 §5-1) — 숫자를 이 파일에 하드코딩하지 않는다.
+ * - 코스별 기대치는 {@link CourseCatalog}가 단일 출처다(작업자(AI)_문서/03 §5-1) — 숫자를 이 파일에 하드코딩하지 않는다.
  * - 2026-08-22 N1 개통: 일본어 코스 6개가 전부 AVAILABLE이다. 준비중 계약은 영어 경로에서 검증한다.
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유 (CLAUDE.md TDD 규칙 2).
@@ -37,7 +37,7 @@ class CourseApiIntegrationTest extends ApiIntegrationTestSupport {
     // ── 코스 목록 ────────────────────────────────────────────────────────────
 
     /**
-     * 코스 목록 — <b>숫자를 하드코딩하지 않고 기대치 표에서 파생</b>한다(설계/03 §5-1).
+     * 코스 목록 — <b>숫자를 하드코딩하지 않고 기대치 표에서 파생</b>한다(작업자(AI)_문서/03 §5-1).
      * 코스가 열릴 때마다 이 테스트를 고치는 것이 아니라 {@link CourseCatalog} 한 줄을 고친다.
      */
     @Test
@@ -234,7 +234,7 @@ class CourseApiIntegrationTest extends ApiIntegrationTestSupport {
     /**
      * 마지막 유닛(20): {@code nextUnitNo=null} → 프론트 "코스 완료" 분기 (인수 18).
      *
-     * <p><b>2026-09-21 보강</b> — {@code coursePlannedUnits}(설계/04 §2-3-A)는 일본어에서도 <b>키가 있고 값만 null</b>이다.
+     * <p><b>2026-09-21 보강</b> — {@code coursePlannedUnits}(작업자(AI)_문서/04 §2-3-A)는 일본어에서도 <b>키가 있고 값만 null</b>이다.
      * 값이 아니라 <b>키의 존재</b>를 고정하는 이유: 필드가 통째로 빠져도 프론트의 판정
      * ({@code coursePlannedUnits != null && totalUnits < coursePlannedUnits})은 false가 되어 <b>지금과 똑같이 동작한다</b> —
      * 즉 빠진 것을 화면이 알려주지 않는다. 나중에 일본어 코스를 부분 공개해 값을 넣는 날
@@ -253,7 +253,7 @@ class CourseApiIntegrationTest extends ApiIntegrationTestSupport {
 
         JsonNode data = objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
         assertThat(data.has("coursePlannedUnits"))
-                .as("coursePlannedUnits는 계획값이 없어도 키가 실려야 한다(설계/04 §2-3-A). "
+                .as("coursePlannedUnits는 계획값이 없어도 키가 실려야 한다(작업자(AI)_문서/04 §2-3-A). "
                         + "지금 빠져 있으면 일본어를 부분 공개하는 날 이 결함이 조용히 재발한다")
                 .isTrue();
         assertThat(data.path("coursePlannedUnits").isNull())
@@ -439,7 +439,7 @@ class CourseApiIntegrationTest extends ApiIntegrationTestSupport {
 
     // ── 코스 확장 (설계 §7-8) — 유닛 콘텐츠·한자 누적·다음 코스 연결 ────────
 
-    /** 회화 최소 대사 수 — 설계/06 §5: 입문·N5·N4 2줄 / N3·N2 4줄 / N1 5줄 */
+    /** 회화 최소 대사 수 — 작업자(AI)_문서/06 §5: 입문·N5·N4 2줄 / N3·N2 4줄 / N1 5줄 */
     private static int minDialogLinesOf(CourseCatalog.Course course) {
         return switch (course.levelCode) {
             case "N3", "N2" -> 4;

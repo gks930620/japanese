@@ -48,12 +48,12 @@ public class CommunityService {
     }
 
     /**
-     * 게시글 목록 조회 / 검색 (페이징) — <b>본문을 싣지 않는 목록 전용 DTO</b>로 돌려준다(설계/04 §5 · 08 C-27).
+     * 게시글 목록 조회 / 검색 (페이징) — <b>본문을 싣지 않는 목록 전용 DTO</b>로 돌려준다(작업자(AI)_문서/04 §5 · 08 C-27).
      * 화면이 목록에서 본문을 쓰지 않는데 긴 글 10건이면 한 페이지가 수백 KB가 된다. 상세는 본문이 본체라 그대로다.
      */
     public Page<CommunityListItemDTO> getCommunityList(String searchType, String keyword, Pageable pageable) {
         // Repository에서 직접 DTO로 조회 (카운트 쿼리 최적화 포함)
-        // 범위 밖 page는 0페이지로 보정 — 공통 규칙의 단일 출처는 PageClamp(설계/04 §1-5 · 2026-09 판정 H2)
+        // 범위 밖 page는 0페이지로 보정 — 공통 규칙의 단일 출처는 PageClamp(작업자(AI)_문서/04 §1-5 · 2026-09 판정 H2)
         return PageClamp.query(pageable, p -> communityRepository.searchCommunity(searchType, keyword, p));
     }
 

@@ -52,7 +52,7 @@ public abstract class ApiIntegrationTestSupport {
         return login(DEFAULT_USERNAME, SEED_PASSWORD);
     }
 
-    /** 소유자가 아닌 다른 사용자 — 인가(403) 음성 케이스에 쓴다(설계/07 §5-3 체크리스트) */
+    /** 소유자가 아닌 다른 사용자 — 인가(403) 음성 케이스에 쓴다(작업자(AI)_문서/07 §5-3 체크리스트) */
     protected Tokens loginOtherUser() throws Exception {
         return login(OTHER_USERNAME, SEED_PASSWORD);
     }

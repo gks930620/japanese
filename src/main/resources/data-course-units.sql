@@ -25,7 +25,7 @@ INSERT INTO course_unit (id, course_id, unit_no, title, dialog_id) VALUES
 (19, 2, 19, '입어 봐도 돼요?', 19),
 (20, 2, 20, 'N5 총정리', 20);
 
--- 유닛-문법 매핑 44행 (유닛1·2=3개, 유닛3~18=2개, 유닛19·20=3개 — 설계/06 §2)
+-- 유닛-문법 매핑 44행 (유닛1·2=3개, 유닛3~18=2개, 유닛19·20=3개 — 작업자(AI)_문서/06 §2)
 INSERT INTO unit_grammar (id, unit_id, grammar_point_id, sort_order) VALUES
 (1, 1, 1, 1), (2, 1, 2, 2), (3, 1, 3, 3),
 (4, 2, 4, 1), (5, 2, 5, 2), (6, 2, 6, 3),

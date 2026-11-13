@@ -16,7 +16,7 @@ import {
 } from "./guestStore.js";
 
 /**
- * 게스트 저장소 계약 (설계/04_API계약.md §6-6)
+ * 게스트 저장소 계약 (작업자(AI)_문서/04_API계약.md §6-6)
  *
  * 비로그인 기록은 서버가 아니라 **이 브라우저**에 있다. 그래서 계약의 절반이 여기 있다.
  * 저장 형식은 서버 응답(GET /api/progress, GET /api/bookmarks/ids)과 **같은 모양**이어야 한다 —
@@ -26,7 +26,7 @@ import {
  */
 
 const STORAGE_KEY = "jp.guest.v1";
-// 저장되는 updatedAt은 **오프셋 없는 로컬 벽시계 문자열**이다(설계/04 §6-6) —
+// 저장되는 updatedAt은 **오프셋 없는 로컬 벽시계 문자열**이다(작업자(AI)_문서/04 §6-6) —
 // 서버가 LocalDateTime으로 읽기 때문에 toISOString()(UTC+Z)을 저장하면 병합의 "더 최근" 판정이 뒤집힌다.
 const NOW = new Date(2026, 7, 14, 9, 0, 0);
 const LATER = new Date(2026, 7, 14, 10, 0, 0);

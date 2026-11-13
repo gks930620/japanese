@@ -18,10 +18,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 유닛-표현 매핑 (설계/03 §3 {@code unit_expression}) — 매핑 3종({@code unit_grammar}·{@code unit_kanji}·
+ * 유닛-표현 매핑 (작업자(AI)_문서/03 §3 {@code unit_expression}) — 매핑 3종({@code unit_grammar}·{@code unit_kanji}·
  * {@code unit_vocabulary})과 같은 형태다. sort_order = 표현 카드 순서.
  *
- * <p>UNIQUE (unit_id, expression_id)가 <b>코스 내부 중복 금지</b>의 1차 방어다(설계/03 §3) —
+ * <p>UNIQUE (unit_id, expression_id)가 <b>코스 내부 중복 금지</b>의 1차 방어다(작업자(AI)_문서/03 §3) —
  * 유닛을 넘는 중복은 시드 규칙·테스트가 잡는다.</p>
  */
 @Entity

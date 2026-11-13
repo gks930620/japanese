@@ -1,4 +1,4 @@
-// frontend-dev 작성 — 자료실 퀴즈 진입·화면(설계/05 §15-1). 선작성 테스트가 덮지 않는 부분.
+// frontend-dev 작성 — 자료실 퀴즈 진입·화면(작업자(AI)_문서/05 §15-1). 선작성 테스트가 덮지 않는 부분.
 import { render as rtlRender, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";

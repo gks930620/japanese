@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 소셜 계정 분기 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: `설계/04_API계약.md` §4-1 (소셜 계정 분기 · 탈퇴 익명화)
+ * <p>계약 문서: `작업자(AI)_문서/04_API계약.md` §4-1 (소셜 계정 분기 · 탈퇴 익명화)
  * 인수 조건: AC-A-14 ~ AC-A-19
  *
  * <p>소셜 계정은 <b>비밀번호가 없다.</b> 그래서 화면은 메뉴를 숨기고(AC-A-14) 서버는 403으로 막는다 —
@@ -101,7 +101,7 @@ class SocialAccountApiIntegrationTest extends ApiIntegrationTestSupport {
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.nickname").value("카카오닉네임"))
-                // 400이 아니라 "무시하고 현재 값을 응답"이다 — 읽기 전용 칸이 현재 값을 되돌려 보내기 때문(설계/04 §4-1).
+                // 400이 아니라 "무시하고 현재 값을 응답"이다 — 읽기 전용 칸이 현재 값을 되돌려 보내기 때문(작업자(AI)_문서/04 §4-1).
                 // 프론트는 요청값이 아니라 응답값으로 상태를 갱신한다.
                 .andExpect(jsonPath("$.data.email").value(SEED_SOCIAL_EMAIL));
     }
@@ -168,7 +168,7 @@ class SocialAccountApiIntegrationTest extends ApiIntegrationTestSupport {
     }
 
     /**
-     * ★ 재가입 판정(설계/04 §4-1)의 핵심 검증.
+     * ★ 재가입 판정(작업자(AI)_문서/04 §4-1)의 핵심 검증.
      *
      * <p>소셜 로그인은 `provider + 제공자 식별자`를 username으로 삼아 <b>기존 행을 찾아 재사용</b>한다.
      * 탈퇴하면서 그 연결을 끊지 않으면, 같은 카카오 계정으로 다시 로그인하는 순간

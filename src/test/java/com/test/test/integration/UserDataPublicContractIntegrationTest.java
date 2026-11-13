@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 진도·보관함이 요구하는 <b>공개 API 추가분</b> 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: 설계/04_API계약.md §6-1·§6-7
+ * <p>계약 문서: 작업자(AI)_문서/04_API계약.md §6-1·§6-7
  *
  * <p>여기 있는 것은 전부 <b>비로그인도 필요한 콘텐츠 사실</b>이다. 사용자 상태(bookmarked·completed)는
  * 공개 응답에 넣지 않는다 — 그러면 B-8이 나눠 놓은 "콘텐츠(공개)/사용자 상태(인증)" 경계가 본문에서 무너진다.
@@ -38,7 +38,7 @@ class UserDataPublicContractIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data", hasSize(CourseCatalog.courseCount())))
                 .andReturn();
 
-        // 분모는 CourseCatalog에서 파생한다 — 코스가 열릴 때마다 이 테스트를 고치지 않는다(설계/03 §5-1).
+        // 분모는 CourseCatalog에서 파생한다 — 코스가 열릴 때마다 이 테스트를 고치지 않는다(작업자(AI)_문서/03 §5-1).
         // 준비중 코스는 0이라 진도 막대를 그리지 않는다(AC-P-21).
         com.fasterxml.jackson.databind.JsonNode data =
                 objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
@@ -70,7 +70,7 @@ class UserDataPublicContractIntegrationTest extends ApiIntegrationTestSupport {
 
         org.assertj.core.api.Assertions.assertThat(target.path("word").asText()).isEqualTo("応援");
         org.assertj.core.api.Assertions.assertThat(target.has("entryId"))
-                .as("유닛 학습 어휘에는 entryId가 있어야 한다 (설계/04 §6-1)").isTrue();
+                .as("유닛 학습 어휘에는 entryId가 있어야 한다 (작업자(AI)_문서/04 §6-1)").isTrue();
         org.assertj.core.api.Assertions.assertThat(target.path("entryId").asLong()).isEqualTo(VOCAB_ENTRY_ID);
     }
 

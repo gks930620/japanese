@@ -1,4 +1,4 @@
-// frontend-dev 작성 — 영어 코스 상세 (설계/05 §16-2).
+// frontend-dev 작성 — 영어 코스 상세 (작업자(AI)_문서/05 §16-2).
 // 일본어 상세와 갈리는 지점만 본다: 레벨 괄호 없음 · 한자 자리가 표현 · 진행 안내(course.notice).
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";

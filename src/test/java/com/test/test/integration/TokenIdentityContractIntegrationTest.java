@@ -64,7 +64,7 @@ class TokenIdentityContractIntegrationTest extends ApiIntegrationTestSupport {
 
         assertThat(access.getSubject()).isEqualTo(DEFAULT_USERNAME);
         assertThat(access.get("token_type", String.class)).isEqualTo("access");
-        assertThat(access.get("tv", Number.class)).as("토큰 버전(설계/03 §4)").isNotNull();
+        assertThat(access.get("tv", Number.class)).as("토큰 버전(작업자(AI)_문서/03 §4)").isNotNull();
     }
 
     private Claims claimsOf(String token) {

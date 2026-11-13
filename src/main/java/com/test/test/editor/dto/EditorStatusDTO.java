@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 편집 모드 상태 (설계/04 §9) — 프론트의 <b>유일한</b> 판단 근거.
+ * 편집 모드 상태 (작업자(AI)_문서/04 §9) — 프론트의 <b>유일한</b> 판단 근거.
  * 꺼진 환경에서는 이 엔드포인트 자체가 없어 404가 난다(빈 미등록) — 그래서 값은 항상 true다.
  */
 @Getter

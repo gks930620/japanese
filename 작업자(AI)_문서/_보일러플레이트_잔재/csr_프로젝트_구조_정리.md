@@ -2,7 +2,7 @@
 
 > Spring Boot(REST API) + React(Vite) SPA 단일서버 + JWT + OAuth2 + WebSocket 채팅  
 > `HomeController`가 페이지 URL을 `forward:/index.html`로 넘기면 React Router가 렌더링, 데이터는 `lib/http.js`에서 REST API 호출 (CSR 방식)
-> ※ `templates/` Thymeleaf 파일은 이전 버전 잔재로 남아 있으나 현재 렌더링 경로는 React SPA. 화면 전환 상세는 `설계/기존대비_react전환_변경요약.md` 참고
+> ※ `templates/` Thymeleaf 파일은 이전 버전 잔재로 남아 있으나 현재 렌더링 경로는 React SPA. 화면 전환 상세는 `기존대비_react전환_변경요약.md` 참고
 
 ---
 
@@ -279,7 +279,7 @@ authenticated() → /api/logout, /api/users/me, /api/rooms, /api/rooms/**,
                   POST/PUT/DELETE /api/communities/**, /api/comments/**,
                   POST /api/files, DELETE /api/files/**  (파일 업로드/삭제만 인증 필요)
 anyRequest()    → authenticated() (화이트리스트 방식: 공개 경로만 위에 명시하고 나머지는 전부 인증 필요)
-                  ※ 상세/전환 체크리스트는 `설계/security_참고사항.md` 참고
+                  ※ 상세/전환 체크리스트는 `security_참고사항.md` 참고
 ```
 
 ### 보안 개선사항 (적용됨)
@@ -371,7 +371,7 @@ HomeController (@Controller)
   → React Router(App.jsx)가 실제 페이지 컴포넌트 렌더링
   → 컴포넌트가 lib/http.js로 fetch('/api/communities') → JSON → state 렌더링
 ```
-- 서버 forward 경로 ↔ React 라우트 ↔ SecurityConfig permitAll 은 **항상 같이 관리** (`설계/security_참고사항.md`)
+- 서버 forward 경로 ↔ React 라우트 ↔ SecurityConfig permitAll 은 **항상 같이 관리** (`security_참고사항.md`)
 
 ### 공통 API 유틸 (`frontend/src/lib/http.js`)
 

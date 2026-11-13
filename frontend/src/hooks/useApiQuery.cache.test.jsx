@@ -3,7 +3,7 @@
 // **조회 훅의 캐시 계약 — stale-while-revalidate.**
 // 뒤로가기·재방문에서 같은 주소가 다시 마운트되면 "스켈레톤 → 데이터"를 또 겪는 것이 SSR 사이트와 다르게
 // 느껴지는 첫 번째 원인이다. 캐시가 있으면 **첫 렌더에서 곧바로 데이터**를 내고, 뒤에서 조용히 다시 불러
-// 결과로 갈아끼운다(설계/05 §8 "부분 교체" — 캐시된 화면 위에 스켈레톤·흐림을 얹지 않는다).
+// 결과로 갈아끼운다(작업자(AI)_문서/05 §8 "부분 교체" — 캐시된 화면 위에 스켈레톤·흐림을 얹지 않는다).
 //
 // 캐시는 "무엇이 참인가"가 아니라 "무엇을 먼저 보여줄까"만 정한다 — 마운트마다 재요청하므로
 // 낡은 값은 한 왕복 안에 스스로 고쳐진다(08 C-1의 우려였던 무효화 규칙이 거의 필요 없는 이유).
@@ -100,7 +100,7 @@ describe("useApiQuery — 캐시 히트 (재방문·뒤로가기)", () => {
   });
 });
 
-describe("useApiQuery — 옵션 keepPreviousData (목록의 갱신 로딩, 설계/05 §8)", () => {
+describe("useApiQuery — 옵션 keepPreviousData (목록의 갱신 로딩, 작업자(AI)_문서/05 §8)", () => {
   it("URL이 바뀌고 캐시가 없으면 이전 데이터를 유지한 채 loading=true — 스켈레톤으로 갈아끼우지 않는다", async () => {
     let release = null;
     stubFetch((url) => {
@@ -146,7 +146,7 @@ describe("useApiQuery — 무효화·초기화·상한", () => {
 
     act(() => invalidateQueries("/api/communities"));
 
-    // 다시 부르는 동안에도 화면은 비지 않는다 — 부분 교체(설계/05 §8)
+    // 다시 부르는 동안에도 화면은 비지 않는다 — 부분 교체(작업자(AI)_문서/05 §8)
     expect(result.current.data).toEqual({ version: 1 });
     expect(result.current.loading).toBe(false);
     await waitFor(() => expect(result.current.data).toEqual({ version: 2 }));

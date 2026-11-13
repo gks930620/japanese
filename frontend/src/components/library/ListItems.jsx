@@ -13,8 +13,8 @@ import { Table, TableWrap } from "../ui/Table.jsx";
 import { btnClass } from "../ui/kitClass.js";
 
 /**
- * 자료실 목록의 항목 렌더러 — **자료실과 보관함이 공유한다**(설계/05 §7-1).
- * 응답 DTO가 같으므로(설계/04 §6-4) 목록 컴포넌트를 두 벌 만들지 않는다.
+ * 자료실 목록의 항목 렌더러 — **자료실과 보관함이 공유한다**(작업자(AI)_문서/05 §7-1).
+ * 응답 DTO가 같으므로(작업자(AI)_문서/04 §6-4) 목록 컴포넌트를 두 벌 만들지 않는다.
  */
 
 /** ★ — 기본 동작은 담기/빼기 토글. 보관함은 onToggle로 되돌리기 자리표시자를 끼워 넣는다 */
@@ -37,14 +37,14 @@ export function KanjiTile({ kanji, to, onStar }) {
       <ItemStar id={kanji.id} name={kanji.letter} onToggle={onStar} type="kanji" />
       <span className="tile-glyph">{kanji.letter}</span>
       <span className="tile-meaning">{kanji.meaningKo}</span>
-      {/* 음독·훈독은 각각 없으면 그 줄 생략 (설계/05 §8) */}
+      {/* 음독·훈독은 각각 없으면 그 줄 생략 (작업자(AI)_문서/05 §8) */}
       {kanji.onyomi != null && <span className="tile-on">{kanji.onyomi}</span>}
       {kanji.kunyomi != null && <span className="tile-kun">{kanji.kunyomi}</span>}
     </Link>
   );
 }
 
-/** 표현 목록 행 (설계/05 §16-3) — 별·음성이 없다(영어 범위 밖) */
+/** 표현 목록 행 (작업자(AI)_문서/05 §16-3) — 별·음성이 없다(영어 범위 밖) */
 export function ExpressionRow({ expression, to }) {
   const pron = [expression.ipa, expression.koApprox].filter(Boolean).join(" · ");
   return (
@@ -79,7 +79,7 @@ export function GrammarRow({ grammar, to, onStar, latin = false }) {
   );
 }
 
-/** 목록 줄의 뜻 — 서버가 뜻 기준으로 이미 합쳐 준다(설계/04 §3-7). 프론트에서 dedupe하지 않는다 */
+/** 목록 줄의 뜻 — 서버가 뜻 기준으로 이미 합쳐 준다(작업자(AI)_문서/04 §3-7). 프론트에서 dedupe하지 않는다 */
 function meaningSummary(senses) {
   const meanings = senses.map((sense) => sense.meaningKo);
   return meanings.length > 2 ? `${meanings.slice(0, 2).join(" · ")} …` : meanings.join(" · ");
@@ -132,7 +132,7 @@ function VocabRow({ item, expanded, onToggle, onStar, renderRow, onEdited, latin
         </td>
         <td className="pos">{posLabel}</td>
         <td className="lv">
-          {/* levels는 항상 학습 순서 — 필터에 따라 배지 순서가 흔들리지 않는다 (설계/04 §3-7) */}
+          {/* levels는 항상 학습 순서 — 필터에 따라 배지 순서가 흔들리지 않는다 (작업자(AI)_문서/04 §3-7) */}
           {item.levels.map((level) => (
             <LevelBadge key={level} level={level} />
           ))}
@@ -158,8 +158,8 @@ function VocabRow({ item, expanded, onToggle, onStar, renderRow, onEdited, latin
               <div key={sense.vocabularyIds?.join("-") ?? `${sense.meaningKo}-${i}`} className="sense-item">
                 {/* 뜻이 1개면 목록 줄에 이미 보이는 뜻을 반복하지 않는다 */}
                 {item.senses.length > 1 && <div className="sense-meaning">{sense.meaningKo}</div>}
-                {/* 한 뜻이 여러 곳에서 나오면 출처를 전부 나열한다 (설계/04 §3-7 learnedIn[]) */}
-                {/* vocabularyIds와 learnedIn은 같은 소스·같은 순서다(설계/04 §3-7) — 줄 인덱스로 짝짓는다 */}
+                {/* 한 뜻이 여러 곳에서 나오면 출처를 전부 나열한다 (작업자(AI)_문서/04 §3-7 learnedIn[]) */}
+                {/* vocabularyIds와 learnedIn은 같은 소스·같은 순서다(작업자(AI)_문서/04 §3-7) — 줄 인덱스로 짝짓는다 */}
                 {sense.learnedIn.map((learned, li) => {
                   // 그 줄의 원본 어휘 id를 모르면 편집 버튼을 아예 그리지 않는다 —
                   // 표제어 id로 폴백하면 다른 대역의 행을 고칠 수 있다(QA 낮음 5)
@@ -203,7 +203,7 @@ function VocabRow({ item, expanded, onToggle, onStar, renderRow, onEdited, latin
 
 /**
  * 어휘 표 + 행 확장 아코디언.
- * 펼침은 주소에 넣지 않는 순간 상태이므로 목록(listKey)이 바뀌면 전부 접는다(설계/05 §9).
+ * 펼침은 주소에 넣지 않는 순간 상태이므로 목록(listKey)이 바뀌면 전부 접는다(작업자(AI)_문서/05 §9).
  */
 export function VocabTable({ items, listKey, onStar, renderRow, onEdited, latin = false }) {
   const [opened, setOpened] = useState({ listKey, ids: [] });

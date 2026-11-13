@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 문법 수정 응답 (설계/04 §9) — 저장 후 값. 활용표는 교체 후 배열 순서 그대로다 */
+/** 문법 수정 응답 (작업자(AI)_문서/04 §9) — 저장 후 값. 활용표는 교체 후 배열 순서 그대로다 */
 @Getter
 @Builder
 @NoArgsConstructor

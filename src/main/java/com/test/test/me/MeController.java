@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 내 계정 데이터 API (설계/04 §6-5) — 인증 필요.
+ * 내 계정 데이터 API (작업자(AI)_문서/04 §6-5) — 인증 필요.
  * 지금은 병합 하나뿐이다: 병합 배너의 [합치기]가 호출한다.
  */
 @RestController

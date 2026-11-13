@@ -42,7 +42,7 @@ public class KanjiWordEntity {
     @Column(name = "meaning_ko", nullable = false, length = 100)
     private String meaningKo;
 
-    /** 편집 모드 수정 (설계/04 §9) — 행 추가·삭제는 없다(id 일치는 서비스가 검증한다) */
+    /** 편집 모드 수정 (작업자(AI)_문서/04 §9) — 행 추가·삭제는 없다(id 일치는 서비스가 검증한다) */
     public void update(String word, String kana, String meaningKo) {
         this.word = word;
         this.kana = kana;

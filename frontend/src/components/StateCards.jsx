@@ -7,7 +7,7 @@ import { Empty } from "./ui/Empty.jsx";
 import { btnClass } from "./ui/kitClass.js";
 
 /**
- * 상태별 공통 UI의 중앙 카드 골격 (설계/05 §8) — 킷 `.k-card` 안에 `.k-empty`.
+ * 상태별 공통 UI의 중앙 카드 골격 (작업자(AI)_문서/05 §8) — 킷 `.k-card` 안에 `.k-empty`.
  * 카드 안 카드의 경계가 겹치지 않게 안쪽 `.k-empty`의 점선 테두리는 `.center-card`가 지운다(매핑 §8 위험 3).
  */
 function CenterCard({ glyph, title, children }) {
@@ -66,7 +66,7 @@ export function NotFoundCard({
 /**
  * §6-4 준비중 코스 안내 — 코스명 동적 삽입 (인수 11).
  *
- * "지금 볼 수 있는 코스" 링크는 과정마다 다르다(설계/05 §16-4) —
+ * "지금 볼 수 있는 코스" 링크는 과정마다 다르다(작업자(AI)_문서/05 §16-4) —
  * 영어 준비중 코스에서 일본어 왕초보로 튕기지 않도록 prop으로 받는다. 기본값은 기존 동작 그대로.
  */
 export function PreparingCard({

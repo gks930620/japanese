@@ -1,7 +1,7 @@
 package com.test.test.course;
 
 /**
- * 코스 상태 (설계/03_데이터모델.md — course.status)
+ * 코스 상태 (작업자(AI)_문서/03_데이터모델.md — course.status)
  * - AVAILABLE: 학습 가능
  * - PREPARING: 준비중
  *

@@ -18,7 +18,7 @@ export function Layout() {
   useScrollRestoration();
 
   const closeMobile = () => setMobileOpen(false);
-  const track = activeTrack(pathname); // 과정 스위처 — 메뉴를 늘리지 않고 과정만 바꾼다(설계/05 §16)
+  const track = activeTrack(pathname); // 과정 스위처 — 메뉴를 늘리지 않고 과정만 바꾼다(작업자(AI)_문서/05 §16)
   const menu = navItems(pathname); // GNB는 보고 있는 과정을 따라간다(A-H1)
 
   const handleLogout = async () => {
@@ -27,7 +27,7 @@ export function Layout() {
     navigate("/");
   };
 
-  // 세그먼트 컨트롤. 주소가 바뀌는 링크라 선택 표시는 aria-pressed가 아니라 aria-current다(설계/05 §11과 같은 논리)
+  // 세그먼트 컨트롤. 주소가 바뀌는 링크라 선택 표시는 aria-pressed가 아니라 aria-current다(작업자(AI)_문서/05 §11과 같은 논리)
   const trackSwitch = (pill) => (
     <div aria-label="과정 선택" className={pill ? "k-segment track-switch mobile" : "k-segment track-switch"} role="group">
       {COURSE_TRACKS.map((item) => (

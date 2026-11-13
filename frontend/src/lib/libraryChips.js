@@ -1,4 +1,4 @@
-// 적용된 조건의 "칩" 표현 — 주소를 몰라도 지금 뭐가 걸려 있는지 한 줄로 보인다 (설계/05 §8).
+// 적용된 조건의 "칩" 표현 — 주소를 몰라도 지금 뭐가 걸려 있는지 한 줄로 보인다 (작업자(AI)_문서/05 §8).
 import { partOfSpeechLabel } from "../constants/partOfSpeech.js";
 import { levelText } from "./libraryQuery.js";
 

@@ -119,7 +119,7 @@ tasks.named('test') {
 }
 
 // ── 운영 배포용 콘텐츠 시드 번들 ──────────────────────────────────────────
-// 설계/07 §1: 운영 프로파일은 `spring.sql.init.mode: never` 라 학습 콘텐츠 시드가 운영 MySQL에
+// 작업자(AI)_문서/07 §1: 운영 프로파일은 `spring.sql.init.mode: never` 라 학습 콘텐츠 시드가 운영 MySQL에
 // 자동으로 들어가지 않는다. 사람이 시드 파일을 "정확한 순서로" 하나씩 실행하던 것을 파일 하나로 묶는다.
 //   - 순서는 application.yml 에 적힌 그대로다(`*-content.sql` 이 같은 코스의 `*-units.sql` 보다 먼저).
 //   - 목록의 단일 기준도 application.yml 이다 — 여기에 목록을 다시 적지 않는다(적으면 드리프트 원인이 하나 는다).
@@ -127,7 +127,7 @@ tasks.named('test') {
 // 어떤 기존 태스크의 의존성으로도 걸지 않는다(빌드·테스트 동작을 바꾸지 않는다).
 tasks.register("prodSeedBundle") {
 	group = "distribution"
-	description = "운영 MySQL에 수동 적재할 학습 콘텐츠 시드를 build/prod-seed.sql 하나로 묶는다 (설계/07 §1)"
+	description = "운영 MySQL에 수동 적재할 학습 콘텐츠 시드를 build/prod-seed.sql 하나로 묶는다 (작업자(AI)_문서/07 §1)"
 
 	def appYml = file("${projectDir}/src/main/resources/application.yml")
 	def seedDir = file("${projectDir}/src/main/resources")

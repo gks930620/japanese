@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 탈퇴 화면이 보여줄 <b>실제 숫자</b> (설계/04 §4-1).
+ * 탈퇴 화면이 보여줄 <b>실제 숫자</b> (작업자(AI)_문서/04 §4-1).
  *
  * <p>보관 개수는 GET /api/bookmarks/summary와 <b>같은 DTO</b>를 재사용한다 —
  * 같은 사실을 두 모양으로 두면 곧 갈린다.</p>
@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WithdrawalPreviewDTO {
 
-    /** 지금 존재하는 유닛만 센다(설계/03 §4-1 읽기 시점 필터) */
+    /** 지금 존재하는 유닛만 센다(작업자(AI)_문서/03 §4-1 읽기 시점 필터) */
     private Integer completedUnitCount;
     private BookmarkCountsDTO bookmarkCounts;
     /** 삭제되지 않은 내 글 수 */

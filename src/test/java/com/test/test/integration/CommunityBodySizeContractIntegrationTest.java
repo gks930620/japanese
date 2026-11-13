@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * ({@code CommunityListPage.jsx}는 title·nickname·viewCount·commentCount·createdAt만 그린다).
  * 긴 글 10건이면 목록 한 페이지가 수백 KB다.
  *
- * <p><b>계약 (판정 2026-09-21 — 설계/04 §5)</b>
+ * <p><b>계약 (판정 2026-09-21 — 작업자(AI)_문서/04 §5)</b>
  * <ul>
  *   <li>게시글 본문 <b>15,000자</b>, 댓글 본문 <b>2,000자</b>. 초과는 400 {@code VALIDATION_ERROR}.
  *       15,000을 고른 근거: 전부 4바이트 문자여도 60,000바이트로 TEXT 한계 안이다 —

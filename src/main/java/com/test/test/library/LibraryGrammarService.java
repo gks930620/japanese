@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 문법 자료실 (설계 §4-B-3·§4-B-4) — 읽기 전용.
  *
- * <p>영어 자료실({@code /api/en/library/grammar})이 <b>이 서비스를 그대로 재사용</b>한다 — 언어는 파라미터다(설계/04 §8).</p>
- * 보관함 목록은 {@code getGrammarListByIds}를 호출한다 — 목록 로직을 복제하지 않는다(설계/04 §6-4).
+ * <p>영어 자료실({@code /api/en/library/grammar})이 <b>이 서비스를 그대로 재사용</b>한다 — 언어는 파라미터다(작업자(AI)_문서/04 §8).</p>
+ * 보관함 목록은 {@code getGrammarListByIds}를 호출한다 — 목록 로직을 복제하지 않는다(작업자(AI)_문서/04 §6-4).
  */
 @Service
 @RequiredArgsConstructor
@@ -47,7 +47,7 @@ public class LibraryGrammarService {
     }
 
     /**
-     * 보관함 경로 — {@code hasRules} 필터는 지원하지 않는다(설계/04 §6-4 · AC-B-14).
+     * 보관함 경로 — {@code hasRules} 필터는 지원하지 않는다(작업자(AI)_문서/04 §6-4 · AC-B-14).
      *
      * @param ids null이면 필터 미적용, 빈 목록이면 "담은 것이 없음"(빈 페이지)
      */
@@ -56,7 +56,7 @@ public class LibraryGrammarService {
         return getGrammarList(ids, sort, page, size, q, level, null, CourseLanguage.JA);
     }
 
-    /** 지금 존재하는(유닛에 매핑된) id만 남긴다 (설계/03 §4-1) */
+    /** 지금 존재하는(유닛에 매핑된) id만 남긴다 (작업자(AI)_문서/03 §4-1) */
     public List<Long> filterExistingIds(List<Long> ids) {
         return libraryGrammarQueryRepository.findExistingIds(ids);
     }
@@ -64,7 +64,7 @@ public class LibraryGrammarService {
     public GrammarDetailDTO getGrammarDetail(Long grammarId, CourseLanguage language) {
         GrammarPointEntity grammar = libraryGrammarQueryRepository.findGrammar(grammarId)
                 .orElseThrow(() -> EntityNotFoundException.of("문법", grammarId));
-        // 다른 과정의 문법 id는 없는 것으로 취급한다(설계/04 §8-2) — 배우는 유닛이 그 언어에 없으면 404다
+        // 다른 과정의 문법 id는 없는 것으로 취급한다(작업자(AI)_문서/04 §8-2) — 배우는 유닛이 그 언어에 없으면 404다
         CourseUnitEntity unit = libraryGrammarQueryRepository.findLearnedInUnit(grammarId, language)
                 .orElseThrow(() -> EntityNotFoundException.of("문법을 배우는 유닛", grammarId));
 
@@ -113,7 +113,7 @@ public class LibraryGrammarService {
     }
 
     /**
-     * 행 → 목록 항목. 예문은 <b>페이지 전체를 한 번에</b> 읽어 채운다(설계/04 §3-5 · 08 B-12).
+     * 행 → 목록 항목. 예문은 <b>페이지 전체를 한 번에</b> 읽어 채운다(작업자(AI)_문서/04 §3-5 · 08 B-12).
      *
      * <p>항목마다 예문을 조회하면 그것이 정확히 이 계약이 없애려던 N+1이다 — 진단 한 단계가
      * 문법 수만큼(N1이면 69번) 왕복하던 것을 한 번으로 줄이는 것이 목적이기 때문이다.

@@ -1,4 +1,4 @@
-// 진도 표시 계산 — 순수 함수만 (네트워크·저장소 접근 없음). 설계/05 §8.
+// 진도 표시 계산 — 순수 함수만 (네트워크·저장소 접근 없음). 작업자(AI)_문서/05 §8.
 //
 // 홈·코스 목록·코스 상세가 같은 판정을 하므로 계산을 한 곳에 모은다.
 // 서버에 두지 않는 이유: 비로그인도 localStorage 문서로 **같은 계산**을 하기 때문이다(두 벌이 되면 갈린다).
@@ -15,7 +15,7 @@ export function completedCount(completedUnits, courseId) {
   return (completedUnits ?? []).filter((unit) => unit.courseId === courseId).length;
 }
 
-/** 진도 막대 비율 0~1 — 콘텐츠가 줄어 완료 수가 총 유닛보다 커도 1에서 멈춘다(설계/05 §8) */
+/** 진도 막대 비율 0~1 — 콘텐츠가 줄어 완료 수가 총 유닛보다 커도 1에서 멈춘다(작업자(AI)_문서/05 §8) */
 export function progressRatio(completed, total) {
   if (!total || total <= 0) return 0;
   return Math.min(1, completed / total);
@@ -32,7 +32,7 @@ export function nextUnitNo(completedUnits, courseId, unitCount) {
   return null;
 }
 
-/** 저장된 스텝 키의 현재 위치. 없는 키(콘텐츠 개편으로 사라진 스텝)면 첫 스텝으로 되돌린다(설계/04 §6-2). */
+/** 저장된 스텝 키의 현재 위치. 없는 키(콘텐츠 개편으로 사라진 스텝)면 첫 스텝으로 되돌린다(작업자(AI)_문서/04 §6-2). */
 export function resolveStepIndex(stepKeys, stepKey) {
   const index = (stepKeys ?? []).indexOf(stepKey);
   return index >= 0 ? index : 0;
@@ -43,7 +43,7 @@ function minByCourseNo(best, course) {
 }
 
 /**
- * 코스 카드 배지 판정 (설계/05 §8 판정 순서).
+ * 코스 카드 배지 판정 (작업자(AI)_문서/05 §8 판정 순서).
  * 반환은 `{ [courseId]: "CONTINUE"|"START"|"NEXT"|"DONE"|"OPEN"|"PREPARING" }`.
  * **강조(CONTINUE·START·NEXT)는 어느 상태에서도 최대 한 장**이다 (AC-P-20).
  */

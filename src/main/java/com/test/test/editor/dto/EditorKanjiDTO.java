@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 한자 수정 응답 (설계/04 §9) — <b>저장 후 값</b>이다. 화면은 이 값으로 즉시 갱신한다(A9) */
+/** 한자 수정 응답 (작업자(AI)_문서/04 §9) — <b>저장 후 값</b>이다. 화면은 이 값으로 즉시 갱신한다(A9) */
 @Getter
 @Builder
 @NoArgsConstructor

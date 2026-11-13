@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { loginMethodLabel, providerLabel } from "./useAccount.js";
 
 /**
- * 소셜 분기의 근거는 `passwordChangeable`·`emailEditable` 플래그이고(설계/04 §4-1),
+ * 소셜 분기의 근거는 `passwordChangeable`·`emailEditable` 플래그이고(작업자(AI)_문서/04 §4-1),
  * `provider` 문자열은 **문구를 고를 때만** 쓴다. 이 파일은 그 문구 함수만 고정한다.
  */
 describe("providerLabel — 문구 전용", () => {

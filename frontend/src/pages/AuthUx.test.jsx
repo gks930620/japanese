@@ -18,7 +18,7 @@ import { UnitStudyPage } from "./UnitStudyPage.jsx";
  *
  * - B-M1: 닉네임을 바꾸면 서버는 정상인데 헤더 배지만 옛 이름이다. `AuthContext.refreshUser`가 정의돼 있고
  *   부르는 곳이 0곳이다. 탈퇴 화면의 [내가 쓴 글 찾기]도 옛 닉네임으로 검색된다(AC-A-41 훼손).
- * - B-M2: 로그인 유도를 눌러 로그인하면 원래 자리로 안 돌아온다(설계/01 §6 위반).
+ * - B-M2: 로그인 유도를 눌러 로그인하면 원래 자리로 안 돌아온다(작업자(AI)_문서/01 §6 위반).
  *   `LoginPage.jsx:22`가 `location.state?.from ?? "/"`이므로 **`state.from`을 주는 쪽의 책임**이다.
  *   올바른 선례가 저장소에 둘 있다(`ProtectedRoute.jsx:13` · `CommunityDetailPage.jsx:76`).
  * - B-L5: 가입 실패 문구가 "username: 아이디는 4~20자여야 합니다"로 나온다. 필드 변수명은 사용자의 말이 아니다.
@@ -125,7 +125,7 @@ describe("로그인 후 원래 자리로 (B-M2)", () => {
   });
 
   it("유닛 정리 스텝의 로그인 띠는 그 유닛으로 되돌아온다", async () => {
-    // 완료 3개째의 정리 스텝에서만 뜨는 띠다(설계/05 §8) — 게스트 진도를 그 상태로 만든다
+    // 완료 3개째의 정리 스텝에서만 뜨는 띠다(작업자(AI)_문서/05 §8) — 게스트 진도를 그 상태로 만든다
     window.localStorage.setItem(
       "jp.guest.v1",
       JSON.stringify({

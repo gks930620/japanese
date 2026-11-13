@@ -1,4 +1,4 @@
-// 진단 화면 테스트 하네스 — **DOM 계약과 재료 픽스처를 한 곳에만** 둔다 (설계/09 §3-7).
+// 진단 화면 테스트 하네스 — **DOM 계약과 재료 픽스처를 한 곳에만** 둔다 (작업자(AI)_문서/09 §3-7).
 //
 // 계약: 레벨 선택 = `<fieldset class="diag-levels">` 안의 라디오 · 문항 카드 = `<fieldset class="diag-question" role="radiogroup">`(2026-09-20, 09 §3-7) ·
 //       지문 = `.quiz-prompt` · 보기 = 한 문항당 같은 `name`을 가진 `<input type="radio">` 5개(마지막이 [모르겠어요]) ·

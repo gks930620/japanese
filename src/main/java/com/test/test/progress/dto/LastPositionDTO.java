@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 마지막으로 보던 위치 (설계/04 §6-3)
+ * 마지막으로 보던 위치 (작업자(AI)_문서/04 §6-3)
  * {@code updatedAt}은 항상 서버 시각이다 — 클라이언트가 보내지 않는다(조작 여지·시계 어긋남 제거).
  */
 @Getter

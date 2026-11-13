@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 계정 정보 + <b>이 계정이 무엇을 할 수 있는가</b> (설계/04 §4-1).
+ * 계정 정보 + <b>이 계정이 무엇을 할 수 있는가</b> (작업자(AI)_문서/04 §4-1).
  *
  * <p>social이 있는데 emailEditable·passwordChangeable을 또 주는 이유: 세 스택이 각자 provider 문자열을
  * 해석하면 규칙이 세 벌이 되고, <b>서버가 실제로 강제하는 규칙</b>(§2-3의 403)과 화면의 판단이 갈릴 수 있다.

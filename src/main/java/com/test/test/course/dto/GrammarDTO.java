@@ -43,7 +43,7 @@ public class GrammarDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ExampleDTO {
-        // 편집 패널이 PUT /api/editor/grammar의 examples[].id를 이 값으로 조립한다(설계/04 §9)
+        // 편집 패널이 PUT /api/editor/grammar의 examples[].id를 이 값으로 조립한다(작업자(AI)_문서/04 §9)
         private Long id;
         private String jp;
         private String kana;

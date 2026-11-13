@@ -3,7 +3,7 @@ import { recommend, stagePlan } from "./diagnosis.js";
 import { coursesFixture } from "../test/apiFixtures.js";
 
 /**
- * 진단 추천 — **통과한 레벨 기준** (설계/09 §3-2 — TDD Red, senior-dev 2026-09-14 개편)
+ * 진단 추천 — **통과한 레벨 기준** (작업자(AI)_문서/09 §3-2 — TDD Red, senior-dev 2026-09-14 개편)
  *
  * 기획 D14 / 인수 조건 **A37·A38**.
  *

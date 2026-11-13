@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 영어 표현 예문 (설계/03 §3 {@code expression_example}) — 표현당 1~2행.
+ * 영어 표현 예문 (작업자(AI)_문서/03 §3 {@code expression_example}) — 표현당 1~2행.
  * 문법 예문(grammar_example)과 같은 형태이며, 필드 이름만 {@code jp} → {@code en}이다.
  */
 @Entity

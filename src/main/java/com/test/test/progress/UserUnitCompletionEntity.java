@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 완료한 유닛 (설계/03 §4-1)
+ * 완료한 유닛 (작업자(AI)_문서/03 §4-1)
  *
  * <p><b>행 존재 = 완료</b>다. 완료 취소는 행 삭제이며 {@code is_completed} 불리언 컬럼을 두지 않는다 —
  * 취소한 완료를 남길 이유가 없고, 남기면 조회마다 조건이 하나 늘어난다.

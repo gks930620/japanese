@@ -33,7 +33,7 @@ public class RailwayDeploymentValidator {
     @Value("${app.bucket.name:}")
     private String bucketName;
 
-    // 편집 모드(설계/04 §9) — prod에서 켜져 있으면 기동을 거부한다. 인증 없는 콘텐츠 쓰기가
+    // 편집 모드(작업자(AI)_문서/04 §9) — prod에서 켜져 있으면 기동을 거부한다. 인증 없는 콘텐츠 쓰기가
     // 운영에 열리는 사고는 설정 실수로도 일어나면 안 된다(fail-fast가 세 겹 방어의 마지막 겹이다).
     @Value("${app.editor.enabled:false}")
     private boolean editorEnabled;
@@ -60,7 +60,7 @@ public class RailwayDeploymentValidator {
 
         if (editorEnabled) {
             throw new IllegalStateException(
-                    "운영(prod)에서 편집 모드(app.editor.enabled=true)를 켤 수 없습니다 — 편집은 로컬 전용입니다(설계/04 §9).");
+                    "운영(prod)에서 편집 모드(app.editor.enabled=true)를 켤 수 없습니다 — 편집은 로컬 전용입니다(작업자(AI)_문서/04 §9).");
         }
 
         if (h2ConsoleEnabled) {

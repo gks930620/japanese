@@ -1,4 +1,4 @@
-// frontend-dev 작성 — 게스트/회원 분기의 유일한 자리(설계/04 §6-6)를 고정하는 테스트.
+// frontend-dev 작성 — 게스트/회원 분기의 유일한 자리(작업자(AI)_문서/04 §6-6)를 고정하는 테스트.
 // senior-dev의 guestStore.test.js·progressView.test.js와 달리 이 파일은 내 구현 세부 계약이다.
 import { beforeEach, describe, expect, it } from "vitest";
 import { apiError, apiSuccess, stubFetch } from "../test/helpers.jsx";
@@ -14,7 +14,7 @@ import {
   toggleBookmark,
 } from "./userData.js";
 
-// 설계/04 §6-6: 게스트 updatedAt은 오프셋 없는 **로컬 벽시계** 문자열이다(서버가 LocalDateTime으로 읽는다)
+// 작업자(AI)_문서/04 §6-6: 게스트 updatedAt은 오프셋 없는 **로컬 벽시계** 문자열이다(서버가 LocalDateTime으로 읽는다)
 const NOW = new Date(2026, 7, 14, 9, 0, 0);
 const NOW_LOCAL = "2026-08-14T09:00:00";
 const GUEST = false;

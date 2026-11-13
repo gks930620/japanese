@@ -41,7 +41,7 @@ public class KanjiDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class WordDTO {
-        // 편집 패널이 PUT /api/editor/kanji의 words[].id를 이 값으로 조립한다(설계/04 §9) — 추가 필드라 기존 화면은 무해
+        // 편집 패널이 PUT /api/editor/kanji의 words[].id를 이 값으로 조립한다(작업자(AI)_문서/04 §9) — 추가 필드라 기존 화면은 무해
         private Long id;
         private String word;
         private String kana;

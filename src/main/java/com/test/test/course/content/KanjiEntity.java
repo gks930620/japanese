@@ -46,7 +46,7 @@ public class KanjiEntity {
     @OrderBy("sortOrder ASC")
     private List<KanjiWordEntity> words = new ArrayList<>();
 
-    // ── 편집 모드 도메인 메서드 (설계/04 §9) ─────────────────────────────────
+    // ── 편집 모드 도메인 메서드 (작업자(AI)_문서/04 §9) ─────────────────────────────────
     // setter를 열지 않는 이유: 무엇이 고쳐질 수 있는가(훈음·읽기)와 없는가(letter)가 메서드 서명으로 드러난다.
 
     /** 훈음·읽기 수정 — 표제(letter)는 시드 소관이라 받지 않는다. 빈 읽기는 null로 저장한다(시드와 같은 규칙) */

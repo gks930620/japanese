@@ -48,7 +48,7 @@ public class KanjiDetailDTO {
     @AllArgsConstructor
     public static class WordDTO {
 
-        // 편집 패널이 PUT /api/editor/kanji의 words[].id를 <b>지금 보고 있는 응답</b>에서 조립한다(설계/04 §9).
+        // 편집 패널이 PUT /api/editor/kanji의 words[].id를 <b>지금 보고 있는 응답</b>에서 조립한다(작업자(AI)_문서/04 §9).
         // 유닛 학습 DTO에만 넣고 여기서 빠뜨리면 자료실에서 연 편집은 항상 400이 된다.
         private Long id;
         private String word;

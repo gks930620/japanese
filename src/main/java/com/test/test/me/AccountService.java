@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 계정 관리 (설계/04 §4-1) — 조회 · 회원정보 수정 · 비밀번호 변경 · 탈퇴.
+ * 계정 관리 (작업자(AI)_문서/04 §4-1) — 조회 · 회원정보 수정 · 비밀번호 변경 · 탈퇴.
  *
  * <p><b>사용자는 언제나 토큰에서 온다.</b> 이 서비스의 어떤 메서드도 "대상 사용자"를 인자로 받는 요청 값이 없다 —
  * userId는 컨트롤러가 Principal에서 꺼내 넘긴 값이다(컨벤션 §4-1). 되돌릴 수 없는 탈퇴에서 특히 중요하다.</p>
@@ -41,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AccountService {
 
-    /** 소셜 계정의 탈퇴 확인 문구 — 서버가 검증하는 상수다(설계/04 §4-1). 응답에는 싣지 않는다 */
+    /** 소셜 계정의 탈퇴 확인 문구 — 서버가 검증하는 상수다(작업자(AI)_문서/04 §4-1). 응답에는 싣지 않는다 */
     private static final String WITHDRAWAL_CONFIRM_TEXT = "탈퇴합니다";
 
     private final UserRepository userRepository;
@@ -56,17 +56,17 @@ public class AccountService {
     private final CommunityRepository communityRepository;
     private final CommentRepository commentRepository;
 
-    /** 계정 화면 4개가 공유하는 정보 (설계/04 §4-1) */
+    /** 계정 화면 4개가 공유하는 정보 (작업자(AI)_문서/04 §4-1) */
     public AccountDTO getAccount(Long userId) {
         return AccountDTO.from(requireUser(userId));
     }
 
     /**
-     * 회원정보 수정 (설계/04 §4-1) — 응답이 진실이다. 화면은 요청값이 아니라 응답값으로 상태를 갱신한다.
+     * 회원정보 수정 (작업자(AI)_문서/04 §4-1) — 응답이 진실이다. 화면은 요청값이 아니라 응답값으로 상태를 갱신한다.
      *
-     * <p>이메일 중복 검사는 <b>값이 바뀔 때만</b>, <b>로컬 계정끼리만</b> 한다(가입과 같은 조건 — 설계/04 §4-1).
+     * <p>이메일 중복 검사는 <b>값이 바뀔 때만</b>, <b>로컬 계정끼리만</b> 한다(가입과 같은 조건 — 작업자(AI)_문서/04 §4-1).
      * 소셜 계정의 이메일은 제공자가 준 값이라 소유권 주장 대상이 아니다. 시드에 중복 이메일이 실재하므로(id 2·3)
-     * 무조건 검사하면 "아무것도 안 고치고 저장했는데 409"가 나 설계/04 §4-1("그냥 성공 처리")과 어긋난다.
+     * 무조건 검사하면 "아무것도 안 고치고 저장했는데 409"가 나 작업자(AI)_문서/04 §4-1("그냥 성공 처리")과 어긋난다.
      * 닉네임 중복은 막지 않는다 — 현행 가입 정책과 같다(미결 §9-3).</p>
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -89,7 +89,7 @@ public class AccountService {
     }
 
     /**
-     * 비밀번호 변경 (설계/04 §4-1) — 검사 순서를 못 박는다: <b>소셜 → 형식(@Valid) → 확인 불일치 → 현재 비밀번호 → 현재와 동일</b>.
+     * 비밀번호 변경 (작업자(AI)_문서/04 §4-1) — 검사 순서를 못 박는다: <b>소셜 → 형식(@Valid) → 확인 불일치 → 현재 비밀번호 → 현재와 동일</b>.
      *
      * <p>현재 비밀번호를 가장 늦게 보는 이유: 앞의 셋은 입력만 보고 판정되는데, 여기서 먼저 틀리면 화면이
      * "현재 비밀번호 칸 비우기"를 해버려 사용자는 정작 자기가 오타 낸 새 비밀번호를 보지 못한다.</p>
@@ -121,7 +121,7 @@ public class AccountService {
         return PasswordChangeDTO.withTokens(issueAccessToken(user), issueRefreshToken(user));
     }
 
-    /** 탈퇴 화면이 보여줄 실제 숫자 (설계/04 §4-1) — 하드코딩 없이 전부 집계에서 온다 */
+    /** 탈퇴 화면이 보여줄 실제 숫자 (작업자(AI)_문서/04 §4-1) — 하드코딩 없이 전부 집계에서 온다 */
     public WithdrawalPreviewDTO getWithdrawalPreview(Long userId) {
         UserEntity user = requireUser(userId);
         return WithdrawalPreviewDTO.of(
@@ -133,7 +133,7 @@ public class AccountService {
     }
 
     /**
-     * 회원 탈퇴 (설계/04 §4-1) — <b>되돌릴 수 없다.</b> 순서를 지킨다:
+     * 회원 탈퇴 (작업자(AI)_문서/04 §4-1) — <b>되돌릴 수 없다.</b> 순서를 지킨다:
      * ① 사용자 행 잠금 → ② 본인 확인 → ③ 벌크 삭제 → ④ refresh 전량 삭제 → ⑤ users 행 익명화.
      *
      * <p>②를 ③보다 <b>먼저</b> 두는 이유: 확인 실패가 롤백에 기대지 않게 하기 위해서다 —
@@ -160,7 +160,7 @@ public class AccountService {
         return WithdrawalDTO.withdrawn();
     }
 
-    /** 본인 확인 — 로컬은 비밀번호, 소셜은 확인 문구다(설계/04 §4-1). 값이 없으면 불일치와 같게 다룬다 */
+    /** 본인 확인 — 로컬은 비밀번호, 소셜은 확인 문구다(작업자(AI)_문서/04 §4-1). 값이 없으면 불일치와 같게 다룬다 */
     private void verifyOwner(UserEntity user, WithdrawalRequest request) {
         if (user.isSocial()) {
             String confirmText = request.getConfirmText() == null ? "" : request.getConfirmText().trim();
@@ -176,7 +176,7 @@ public class AccountService {
     }
 
     /**
-     * 소셜 계정의 provider 식별자 연결을 끊는다 (설계/04 §4-1).
+     * 소셜 계정의 provider 식별자 연결을 끊는다 (작업자(AI)_문서/04 §4-1).
      *
      * <p>소셜 로그인은 {@code provider + 제공자 식별자}를 username으로 삼아 <b>기존 행을 찾아 재사용</b>한다.
      * 그대로 두면 같은 계정으로 다시 로그인하는 순간 탈퇴한 계정이 <b>그대로 되살아난다</b>.

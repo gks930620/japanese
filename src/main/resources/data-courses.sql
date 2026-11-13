@@ -2,7 +2,7 @@
 -- 2026-08-06 코스 확장(설계 §7-8): N4(3)·N3(4)·N2(5) AVAILABLE 전환 + 카드 문구를 확장 기획서 확정 문구로 교체.
 -- 준비중은 입문(1)·N1(6)만. AVAILABLE 코스의 description은 각 코스 시드 파일(data-course-n*-content.sql)에서 UPDATE로 채운다.
 -- ⚠️ 이 파일은 공용(senior-dev 관리) — 코스별 backend-dev는 이 파일을 수정하지 않는다 (병렬 작업 충돌 방지).
--- 2026-08-21 4단계(설계/03 §1·§3): level_code(필터 코드)·language(과정 언어) 열 추가. 일본어는 전부 'JA'.
+-- 2026-08-21 4단계(작업자(AI)_문서/03 §1·§3): level_code(필터 코드)·language(과정 언어) 열 추가. 일본어는 전부 'JA'.
 INSERT INTO course (id, course_no, level_code, language, level_label, title, target_audience, goal, notice, description, status) VALUES
 (1, 0, 'INTRO', 'JA', '문자', '입문', '일본어를 처음 접하는 분', '히라가나·가타카나를 읽고 첫 인사를 할 수 있어요', NULL, NULL, 'PREPARING'),
 (2, 1, 'N5', 'JA', 'JLPT N5', '왕초보', '히라가나부터 시작하는 왕초보', '일상 기초 문장을 읽고 말할 수 있어요', '모든 문장에 읽는 법이 함께 있어, 히라가나가 서툴러도 시작할 수 있어요', '히라가나만 겨우 읽어도 괜찮아요. 20개 유닛을 따라가면 일상 기초 문장을 읽고, 묻고, 답할 수 있게 됩니다.', 'AVAILABLE'),

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 브라우저 기록 → 계정 병합 (설계/04 §6-5)
+ * 브라우저 기록 → 계정 병합 (작업자(AI)_문서/04 §6-5)
  *
  * <p><b>전체가 한 트랜잭션</b>이다 — AC-X-03이 "진도와 보관함이 함께 합쳐진다(한쪽만 합쳐지지 않는다)"를
  * 요구한다. 프론트가 기존 API를 반복 호출하면 최대 600여 회의 요청이 되고, 중간 실패 시

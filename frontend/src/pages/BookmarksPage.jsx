@@ -26,7 +26,7 @@ function defaultTab(counts) {
   return TABS.reduce((best, tab) => ((counts[tab.key] ?? 0) > (counts[best.key] ?? 0) ? tab : best), TABS[0]).key;
 }
 
-// 보관함 (설계/05 §8) — 자료실 툴바·항목·페이지네이션을 그대로 재사용한다
+// 보관함 (작업자(AI)_문서/05 §8) — 자료실 툴바·항목·페이지네이션을 그대로 재사용한다
 export function BookmarksPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();

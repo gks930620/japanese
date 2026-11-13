@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 영어 문법 자료실 API (설계/04 §8-2) — <b>일본어 서비스를 그대로 쓴다</b>(복제 금지 — 설계/04 §8).
+ * 영어 문법 자료실 API (작업자(AI)_문서/04 §8-2) — <b>일본어 서비스를 그대로 쓴다</b>(복제 금지 — 작업자(AI)_문서/04 §8).
  * 이 클래스가 하는 일은 "언어를 EN으로 고정해 넘기는 것"뿐이고, 그것이 경로를 가른 이유다(판정 J-7).
  */
 @RestController

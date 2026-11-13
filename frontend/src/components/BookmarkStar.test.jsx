@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { BookmarkStar } from "./BookmarkStar.jsx";
 
-/** ★ 버튼 (설계/05 §8) — 담을 수 있는 9곳이 전부 이 컴포넌트 하나를 쓴다. */
+/** ★ 버튼 (작업자(AI)_문서/05 §8) — 담을 수 있는 9곳이 전부 이 컴포넌트 하나를 쓴다. */
 function renderStar(props) {
   return render(<BookmarkStar name="建" on={false} onToggle={() => {}} {...props} />);
 }

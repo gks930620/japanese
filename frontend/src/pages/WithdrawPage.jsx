@@ -9,7 +9,7 @@ import { btnClass, cardClass, fieldClass, helpClass, inputClass } from "../compo
 const CONFIRM_TEXT = "탈퇴합니다"; // 계약 상수 — 서버가 검증하는 값과 화면 문구가 같아야 한다
 
 /**
- * 회원 탈퇴 (설계/04 §4-1) — **차분한 명세 + 마지막 한 문장**.
+ * 회원 탈퇴 (작업자(AI)_문서/04 §4-1) — **차분한 명세 + 마지막 한 문장**.
  * 빨간 경고 상자·⚠️·만류 문구를 쓰지 않는다. 빨강은 `.btn-danger` 둘(화면의 [탈퇴하기], 대화상자의 [탈퇴])뿐이고,
  * 되돌릴 수 없다는 사실만 한 줄 굵게 못 박는다. 가장 정직한 경고는 **실제 숫자**다.
  */
@@ -182,7 +182,7 @@ export function WithdrawPage() {
       )}
 
       <p className="withdraw-final">탈퇴한 뒤에는 되돌릴 수 없어요.</p>
-      {/* 소셜은 다시 로그인하면 새 계정이 된다(설계/04 §4-1) — 아이디 재가입 문구는 로컬에만 */}
+      {/* 소셜은 다시 로그인하면 새 계정이 된다(작업자(AI)_문서/04 §4-1) — 아이디 재가입 문구는 로컬에만 */}
       {!isText && <p className="withdraw-final">같은 아이디로 다시 가입할 수 없어요.</p>}
 
       <div className={cardClass()}>

@@ -6,7 +6,7 @@ import { coursesFixture } from "../test/apiFixtures.js";
 import { libraryCalls, renderDiagnosis, startLevel } from "../test/diagnosisHelpers.jsx";
 
 /**
- * 실력 진단 — **레벨 고르기 화면** (설계/09 §3-1 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
+ * 실력 진단 — **레벨 고르기 화면** (작업자(AI)_문서/09 §3-1 · 05 §15-2 — TDD Red, senior-dev 2026-09-14 개편)
  *
  * 기획 D9 / 인수 조건 **A21·A22·A23** + 예외 **E11·E12·E22**.
  *

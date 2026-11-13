@@ -35,7 +35,7 @@ public class DialogEntity {
     @OrderBy("sortOrder ASC")
     private List<DialogLineEntity> lines = new ArrayList<>();
 
-    /** 편집 모드 — 장면 제목 수정 (설계/04 §9) */
+    /** 편집 모드 — 장면 제목 수정 (작업자(AI)_문서/04 §9) */
     public void rename(String title) {
         this.title = title;
     }

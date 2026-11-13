@@ -29,7 +29,7 @@ import org.springframework.stereotype.Repository;
  * 문법 자료실 조회 전용 리포지토리 (설계 §4-B-3·§4-B-4, 성능 §4-B-7)
  * 문법↔유닛 매핑은 1:1이라 조인이 행을 늘리지 않는다.
  *
- * <p>{@code onlyGrammarIds}는 {@code hasRules} 필터, {@code ids}는 설계/04 §6-7의 부분 집합 필터다 —
+ * <p>{@code onlyGrammarIds}는 {@code hasRules} 필터, {@code ids}는 작업자(AI)_문서/04 §6-7의 부분 집합 필터다 —
  * 성격이 달라 두 조건을 따로 받는다(둘 다 걸리면 교집합).</p>
  */
 @Repository
@@ -58,9 +58,9 @@ public class LibraryGrammarQueryRepository {
     }
 
     /**
-     * 문법 id 묶음 → 예문 (설계/04 §3-5) — <b>페이지 전체를 한 번에</b> 읽는다.
+     * 문법 id 묶음 → 예문 (작업자(AI)_문서/04 §3-5) — <b>페이지 전체를 한 번에</b> 읽는다.
      *
-     * <p>문법마다 상세를 부르면 N1 한 레벨이 69번의 왕복이 된다(설계/08 B-12가 없앤 것이 그것이다).
+     * <p>문법마다 상세를 부르면 N1 한 레벨이 69번의 왕복이 된다(작업자(AI)_문서/08 B-12가 없앤 것이 그것이다).
      * 정렬은 상세와 같은 {@code sortOrder ASC}라 같은 문법의 예문 순서가 두 화면에서 어긋나지 않는다.</p>
      *
      * @return 예문이 있는 문법만 담긴 맵 — 없는 문법은 키 자체가 없다(호출부가 빈 배열로 채운다)
@@ -114,7 +114,7 @@ public class LibraryGrammarQueryRepository {
         return baseQuery(levelCodes, language, keyword, onlyGrammarIds, ids).fetch();
     }
 
-    /** 지금 존재하는(유닛에 매핑된) id만 추린다 (설계/03 §4-1) */
+    /** 지금 존재하는(유닛에 매핑된) id만 추린다 (작업자(AI)_문서/03 §4-1) */
     public List<Long> findExistingIds(Collection<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return List.of();
@@ -126,7 +126,7 @@ public class LibraryGrammarQueryRepository {
                 .join(UNIT_GRAMMAR.grammarPoint, GRAMMAR)
                 .join(UNIT_GRAMMAR.unit, UNIT)
                 .join(UNIT.course, COURSE)
-                // 존재 판정 = 목록 조건(설계/08 C-21). 보관함 목록은 일본어 문법만 보여주므로 존재 판정도 일본어만 —
+                // 존재 판정 = 목록 조건(작업자(AI)_문서/08 C-21). 보관함 목록은 일본어 문법만 보여주므로 존재 판정도 일본어만 —
                 // 영어 문법(9xxx)을 200으로 받아 개수에만 남는 "유령 북마크"를 막는다(2026-09 점검 H1). 어휘는 이미 JA 고정이다.
                 .where(GRAMMAR.id.in(ids), COURSE.language.eq(CourseLanguage.JA.code()))
                 .fetch();
@@ -139,7 +139,7 @@ public class LibraryGrammarQueryRepository {
                 .fetchOne());
     }
 
-    /** 이 문법을 배우는 유닛 (역링크 learnedIn + level의 근거) — 다른 과정의 문법이면 비어 있다(설계/04 §8-2) */
+    /** 이 문법을 배우는 유닛 (역링크 learnedIn + level의 근거) — 다른 과정의 문법이면 비어 있다(작업자(AI)_문서/04 §8-2) */
     public Optional<CourseUnitEntity> findLearnedInUnit(Long grammarId, CourseLanguage language) {
         return Optional.ofNullable(queryFactory
                 .select(UNIT)
@@ -169,7 +169,7 @@ public class LibraryGrammarQueryRepository {
         return levelCodes == null || levelCodes.isEmpty() ? null : COURSE.levelCode.in(levelCodes);
     }
 
-    /** 과정 언어 — 일본어 자료실에 영어 문법이 섞이지 않는다(설계/03 §3) */
+    /** 과정 언어 — 일본어 자료실에 영어 문법이 섞이지 않는다(작업자(AI)_문서/03 §3) */
     private BooleanExpression languageCondition(CourseLanguage language) {
         return COURSE.language.eq(language.code());
     }

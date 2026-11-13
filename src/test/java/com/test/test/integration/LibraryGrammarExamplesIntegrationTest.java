@@ -14,10 +14,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 문법 목록의 예문 계약 통합테스트 (TDD Red — senior-dev 작성, 2026-09-10)
  *
- * <p>계약: `설계/04_API계약.md` §3-5 · 결정 `설계/08 §B-12`
+ * <p>계약: `작업자(AI)_문서/04_API계약.md` §3-5 · 결정 `작업자(AI)_문서/08 §B-12`
  *
  * <p><b>왜 목록에 예문이 실리는가</b>: 실력 진단의 문장 문항(입문~N3 `SENTENCE_MEANING`)과
- * N2·N1 빈칸 문항(`GRAMMAR_CLOZE`)의 재료가 <b>문법 예문</b>인데(설계/09 §1-2·§3-4),
+ * N2·N1 빈칸 문항(`GRAMMAR_CLOZE`)의 재료가 <b>문법 예문</b>인데(작업자(AI)_문서/09 §1-2·§3-4),
  * 목록 응답이 `{id, name, nameKo, level, hasRules}`뿐이라 한 단계를 만들려면 문법 수만큼
  * 상세를 불러야 했다(N1이면 69회). 한 화면의 재료는 <b>호출 한 번</b>으로 온다(08 B-7).
  *
@@ -32,7 +32,7 @@ class LibraryGrammarExamplesIntegrationTest extends ApiIntegrationTestSupport {
     /** 진단 계단이 쓰는 레벨 코드 전부 — 한 레벨이라도 재료가 없으면 그 단계가 통째로 비는 자리다 */
     private static final List<String> STAGE_LEVELS = List.of("INTRO", "N5", "N4", "N3", "N2", "N1");
 
-    /** 문장 문항 1개 = 정답 1 + 오답 3 (설계/09 §1-4) — 예문을 가진 문법이 최소 4개 필요하다 */
+    /** 문장 문항 1개 = 정답 1 + 오답 3 (작업자(AI)_문서/09 §1-4) — 예문을 가진 문법이 최소 4개 필요하다 */
     private static final int MIN_SENTENCE_MATERIAL = 4;
 
     @Test
@@ -104,7 +104,7 @@ class LibraryGrammarExamplesIntegrationTest extends ApiIntegrationTestSupport {
         }
     }
 
-    /** 영어 자료실은 같은 서비스·같은 DTO를 쓴다(설계/04 §8) — 필드가 한쪽에만 생기지 않는다 */
+    /** 영어 자료실은 같은 서비스·같은 DTO를 쓴다(작업자(AI)_문서/04 §8) — 필드가 한쪽에만 생기지 않는다 */
     @Test
     void english_grammar_list_uses_the_same_shape() throws Exception {
         mockMvc.perform(get("/api/en/library/grammar").param("level", "E1").param("size", "100"))

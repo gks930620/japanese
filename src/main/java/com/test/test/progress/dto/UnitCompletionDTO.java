@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 완료 토글 결과 (설계/04 §6-3) */
+/** 완료 토글 결과 (작업자(AI)_문서/04 §6-3) */
 @Getter
 @Builder
 @NoArgsConstructor

@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 브라우저 기록 병합 API 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: 설계/04_API계약.md §6-5
+ * <p>계약 문서: 작업자(AI)_문서/04_API계약.md §6-5
  * 인수 조건: AC-G-07·08, AC-X-03(진도와 보관함이 <b>함께</b> 합쳐진다)
  *
  * <p>비로그인 기록은 서버에 없다(localStorage). 그래서 병합은 "클라이언트가 들고 온 문서를
@@ -148,12 +148,12 @@ class UserDataMergeApiIntegrationTest extends ApiIntegrationTestSupport {
     }
 
     @Test
-    void merge_skips_items_that_no_longer_exist_instead_of_failing(/* 벌크 화해 — 설계/04 §6-5 */) throws Exception {
+    void merge_skips_items_that_no_longer_exist_instead_of_failing(/* 벌크 화해 — 작업자(AI)_문서/04 §6-5 */) throws Exception {
         Tokens tokens = loginDefaultUser();
         long kanjiId = firstIdOf(N5_COURSE_ID, 1, "kanjis");
 
         // 낡은 브라우저 기록에 사라진 유닛·항목이 섞여 있어도 나머지는 합쳐진다.
-        // "지금 없는 코스"의 대상은 표에서 계산한다 — 입문이 열렸으니 준비중은 N1이다(설계/03 §5-1)
+        // "지금 없는 코스"의 대상은 표에서 계산한다 — 입문이 열렸으니 준비중은 N1이다(작업자(AI)_문서/03 §5-1)
         mockMvc.perform(merge(tokens, """
                 {
                   "progress": {
@@ -176,7 +176,7 @@ class UserDataMergeApiIntegrationTest extends ApiIntegrationTestSupport {
     void merge_rejects_payloads_over_the_guest_limits() throws Exception {
         Tokens tokens = loginDefaultUser();
 
-        // 게스트 상한은 종류별 200이다 — 201개는 조작된 요청이다 (설계/04 §6-6)
+        // 게스트 상한은 종류별 200이다 — 201개는 조작된 요청이다 (작업자(AI)_문서/04 §6-6)
         StringBuilder ids = new StringBuilder();
         for (int i = 1; i <= 201; i++) {
             ids.append(i);

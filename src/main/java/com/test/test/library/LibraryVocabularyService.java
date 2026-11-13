@@ -32,8 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
  * ② 총 개수가 병합 후 값이어야 한다, ③ 가타카나→히라가나 정규화가 DB GROUP BY로 불가하다.
  * 1,415행 규모라 전량 로드가 안전하다.</p>
  *
- * <p><b>병합 규칙의 단일 출처</b>이기도 하다(설계/03 §4-1 · 08 A-4): 보관함의 어휘 대표 id 정규화와
- * 유닛 학습의 entryId(설계/04 §6-1)가 모두 여기의 resolveEntryIds를 쓴다 — 규칙을 두 번 구현하지 않는다.</p>
+ * <p><b>병합 규칙의 단일 출처</b>이기도 하다(작업자(AI)_문서/03 §4-1 · 08 A-4): 보관함의 어휘 대표 id 정규화와
+ * 유닛 학습의 entryId(작업자(AI)_문서/04 §6-1)가 모두 여기의 resolveEntryIds를 쓴다 — 규칙을 두 번 구현하지 않는다.</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -64,7 +64,7 @@ public class LibraryVocabularyService {
     }
 
     /**
-     * 보관함 경로 — pos(품사) 필터는 지원하지 않는다(설계/04 §6-4 · AC-B-14).
+     * 보관함 경로 — pos(품사) 필터는 지원하지 않는다(작업자(AI)_문서/04 §6-4 · AC-B-14).
      *
      * @param entryIds 표제어 대표 id. null이면 필터 미적용, 빈 목록이면 "담은 것이 없음"
      */
@@ -75,8 +75,8 @@ public class LibraryVocabularyService {
     }
 
     /**
-     * 어휘 id → <b>표제어 대표 id</b> 매핑 (설계/03 §4-1) — 자료실 목록 1행의 id와 같은 값.
-     * 그룹의 모든 행을 한 번의 쿼리로 끌어오므로 어휘 수만큼 쿼리가 늘지 않는다(N+1 금지 — 설계/03 §9).
+     * 어휘 id → <b>표제어 대표 id</b> 매핑 (작업자(AI)_문서/03 §4-1) — 자료실 목록 1행의 id와 같은 값.
+     * 그룹의 모든 행을 한 번의 쿼리로 끌어오므로 어휘 수만큼 쿼리가 늘지 않는다(N+1 금지 — 작업자(AI)_문서/03 §9).
      */
     public Map<Long, Long> resolveEntryIds(Collection<Long> vocabularyIds, CourseLanguage language) {
         Map<Long, Long> entryIdByVocabularyId = new HashMap<>();
@@ -89,7 +89,7 @@ public class LibraryVocabularyService {
     }
 
     /**
-     * 담기 1단위로 정규화한다 — 어떤 member id를 받아도 표제어 대표 id를 돌려준다(설계/03 §4-1).
+     * 담기 1단위로 정규화한다 — 어떤 member id를 받아도 표제어 대표 id를 돌려준다(작업자(AI)_문서/03 §4-1).
      * 자료실에 없는 어휘(유닛에 매핑되지 않은 행 포함)는 404.
      */
     public Long resolveEntryId(Long vocabularyId) {
@@ -100,7 +100,7 @@ public class LibraryVocabularyService {
         return entryId;
     }
 
-    /** 지금 존재하는 <b>표제어</b> id만 남긴다 — 대표가 아니게 된 id도 함께 빠진다(설계/03 §4-1) */
+    /** 지금 존재하는 <b>표제어</b> id만 남긴다 — 대표가 아니게 된 id도 함께 빠진다(작업자(AI)_문서/03 §4-1) */
     public List<Long> filterExistingEntryIds(List<Long> entryIds) {
         if (entryIds == null || entryIds.isEmpty()) {
             return List.of();
@@ -127,7 +127,7 @@ public class LibraryVocabularyService {
         List<List<VocabularyRow>> allGroups = mergeByWordAndReading(
                 libraryVocabularyQueryRepository.findAllRowsInLearningOrder(language));
         if (entryIds != null) {
-            // ids는 표제어 대표 id 기준이다(설계/04 §6-7). 없는 id는 조용히 빠진다 — 부분 집합 조회이므로 404가 아니다
+            // ids는 표제어 대표 id 기준이다(작업자(AI)_문서/04 §6-7). 없는 id는 조용히 빠진다 — 부분 집합 조회이므로 404가 아니다
             Set<Long> idFilter = Set.copyOf(entryIds);
             allGroups = allGroups.stream()
                     .filter(group -> idFilter.contains(group.get(0).getId()))
@@ -154,7 +154,7 @@ public class LibraryVocabularyService {
                 .map(group -> VocabularyEntryDTO.of(group, senseGroups(group, levelCodes)))
                 .toList();
 
-        // totalAll = (ids 적용 후) 검색·필터 미적용 개수 (설계/04 §6-4·§6-7)
+        // totalAll = (ids 적용 후) 검색·필터 미적용 개수 (작업자(AI)_문서/04 §6-4·§6-7)
         return LibraryPageResponse.of(content, pageNumber, pageSize, totalElements, allGroups.size());
     }
 
@@ -248,7 +248,7 @@ public class LibraryVocabularyService {
     /**
      * pos=VERB,NOUN 파싱 — 허용 밖 값은 400 (§7-13 ④).
      *
-     * <p>허용 집합은 <b>과정 언어별로 다르다</b>(설계/06 §11-6): 일본어 자료실에 {@code ADJECTIVE}를,
+     * <p>허용 집합은 <b>과정 언어별로 다르다</b>(작업자(AI)_문서/06 §11-6): 일본어 자료실에 {@code ADJECTIVE}를,
      * 영어 자료실에 {@code I_ADJECTIVE}를 주면 여기서 걸린다. 판정 자체는 {@link PartOfSpeech}가 갖는다 —
      * 품사 지식이 서비스로 새어 나오면 언어가 늘 때마다 여기가 붇는다.</p>
      */

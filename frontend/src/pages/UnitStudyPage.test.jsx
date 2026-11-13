@@ -17,7 +17,7 @@ async function goToSummary(user) {
   await user.click(await screen.findByRole("button", { name: "정리" }));
 }
 
-describe("UnitStudyPage — 완료 분기 (설계/04 §2-3 nextUnitNo·nextCourse)", () => {
+describe("UnitStudyPage — 완료 분기 (작업자(AI)_문서/04 §2-3 nextUnitNo·nextCourse)", () => {
   it("마지막 유닛이 아니면 '다음 유닛' 버튼이 보인다", async () => {
     const user = userEvent.setup();
     renderUnit(unitStudyPayload({ nextUnitNo: 2, nextCourse: null }));

@@ -1,5 +1,5 @@
 // senior-dev 선작성(TDD Red) — [이 조건으로 문제 풀기]가 목록의 조건을 출제 주소로 **어떻게 옮기는가**.
-// 규칙 원본: 설계/09 §2-2 (출제 범위 = 목록이 보여준 그 범위). 버튼의 자리·모양은 설계/05 §15-1.
+// 규칙 원본: 작업자(AI)_문서/09 §2-2 (출제 범위 = 목록이 보여준 그 범위). 버튼의 자리·모양은 작업자(AI)_문서/05 §15-1.
 //
 // **이 파일이 "무엇이 넘어가고 무엇이 안 넘어가는가"의 단일 출처다**(08 C-11).
 // 버튼의 배치·4개 미만 비활성·0건 미렌더는 `pages/LibraryQuizPage.test.jsx`가 이미 고정하므로 여기서 다시 세우지 않는다.
@@ -14,7 +14,7 @@ import { describe, expect, it } from "vitest";
 import { parseLibraryParams } from "../../lib/libraryQuery.js";
 import { QuizEntry } from "./QuizEntry.jsx";
 
-/** 목록 화면이 넘겨주는 것과 같은 모양으로 렌더한다 — 주소가 목록 상태의 단일 출처다(설계/05 §9) */
+/** 목록 화면이 넘겨주는 것과 같은 모양으로 렌더한다 — 주소가 목록 상태의 단일 출처다(작업자(AI)_문서/05 §9) */
 function entryHref({ type, search = "", totalElements = 21 }) {
   render(
     <MemoryRouter>
@@ -24,7 +24,7 @@ function entryHref({ type, search = "", totalElements = 21 }) {
   return screen.getByRole("link", { name: "이 조건으로 문제 풀기" }).getAttribute("href");
 }
 
-describe("QuizEntry — 목록의 조건을 출제 주소로 옮긴다 (설계/09 §2-2)", () => {
+describe("QuizEntry — 목록의 조건을 출제 주소로 옮긴다 (작업자(AI)_문서/09 §2-2)", () => {
   it("[활용표 있는 것만]은 출제 범위를 좁히는 조건이라 그대로 넘어간다", () => {
     // N4 문법은 47개, 그중 활용표가 있는 것은 21개다.
     // 목록이 21개를 보여준 자리의 버튼이 47개짜리 퀴즈로 데려가면 "이 조건"도 개수도 거짓이 된다.

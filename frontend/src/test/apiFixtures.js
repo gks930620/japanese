@@ -1,4 +1,4 @@
-// 계약 픽스처 — **실제 API 응답 shape**만 여기 있다 (설계/08 C-9).
+// 계약 픽스처 — **실제 API 응답 shape**만 여기 있다 (작업자(AI)_문서/08 C-9).
 //
 // 왜 이 파일이 있나: 3단계 qa에서 치명 3건이 전부 "lib은 정확한데 실제 응답과의 배선이 틀림"이었다.
 // 원인은 테스트가 **손으로 지어낸 평평한 모양**을 픽스처로 썼다는 것이다 —
@@ -17,7 +17,7 @@
  */
 export const LEVEL_CODE_BY_COURSE_NO = { 0: "INTRO", 1: "N5", 2: "N4", 3: "N3", 4: "N2", 5: "N1" };
 
-/** 한자 자료실의 레벨 선택지 — INTRO는 데이터가 0건이라 선택지에 없다(설계/04 §3-1 표) */
+/** 한자 자료실의 레벨 선택지 — INTRO는 데이터가 0건이라 선택지에 없다(작업자(AI)_문서/04 §3-1 표) */
 export const KANJI_LEVEL_CODES = ["N5", "N4", "N3", "N2", "N1"];
 
 /**
@@ -38,7 +38,7 @@ export function coursesFixture() {
 }
 
 /**
- * GET /api/en/courses — 영어 코스 5개 (설계/04 §8-1).
+ * GET /api/en/courses — 영어 코스 5개 (작업자(AI)_문서/04 §8-1).
  * **영어는 levelLabel을 화면에 쓰지 않는다** — 코스명이 곧 단계 이름이다(§B-4).
  * 필드는 일본어 코스와 같은 CourseDTO이므로 level_label에도 코드와 같은 값이 들어 있다.
  */
@@ -53,7 +53,7 @@ export function enCoursesFixture() {
 }
 
 /**
- * GET /api/en/courses/{id} — EnCourseDetailDTO (설계/04 §8-1).
+ * GET /api/en/courses/{id} — EnCourseDetailDTO (작업자(AI)_문서/04 §8-1).
  * 일본어 CourseDetailDTO에서 한자 집계 자리가 **표현 집계**다.
  */
 export function enCourseDetailFixture(overrides = {}) {
@@ -80,11 +80,11 @@ export function enCourseDetailFixture(overrides = {}) {
 }
 
 /**
- * GET /api/en/courses/{id}/units/{n} — EnUnitStudyDTO (설계/04 §8-1).
+ * GET /api/en/courses/{id}/units/{n} — EnUnitStudyDTO (작업자(AI)_문서/04 §8-1).
  * **`kanjis` 필드가 없다**(빈 배열이 아니라 부재) — 입문의 `kanjis: []`와 구별되는 지점이다.
  * 문장 필드 이름은 일본어와 같은 `jp`다(계약상 "원문"으로 재정의 — 기술 부채로 남긴 이름).
  *
- * `coursePlannedUnits`(2026-09-21 계약 추가, 설계/04 §2-3): 그 코스가 **최종적으로 갖게 될 유닛 수**.
+ * `coursePlannedUnits`(2026-09-21 계약 추가, 작업자(AI)_문서/04 §2-3): 그 코스가 **최종적으로 갖게 될 유닛 수**.
  * null = 계획값 없음 = 지금 있는 유닛이 전부. 부분 공개 중인 코스만 값을 갖는다(E1 = 15).
  */
 export function enUnitStudyPayload(overrides = {}) {
@@ -193,7 +193,7 @@ export function kanjiDetailFixture({ id, letter, meaningKo, onyomi = null, kunyo
 
 /**
  * GET /api/library/grammar 의 한 행.
- * ★ 2026-09-10부터 **예문이 목록에도 실린다**(설계/04 §3-5 · 08 B-12) — 없으면 `[]`이고 `null`이 아니다.
+ * ★ 2026-09-10부터 **예문이 목록에도 실린다**(작업자(AI)_문서/04 §3-5 · 08 B-12) — 없으면 `[]`이고 `null`이 아니다.
  * 진단의 문장 문항·빈칸 문항이 이 재료를 쓴다.
  */
 export function grammarListItemFixture({ id, name, nameKo, hasRules = false, examples = [] }) {
@@ -222,7 +222,7 @@ export function grammarDetailFixture({ id, name, nameKo, explanation = "설명",
   };
 }
 
-/** GET /api/en/library/expressions — ExpressionListItemDTO (설계/04 §8-2) */
+/** GET /api/en/library/expressions — ExpressionListItemDTO (작업자(AI)_문서/04 §8-2) */
 export function expressionListItemFixture({ id, text, meaningKo, ipa = null, koApprox = null, level = "E1" }) {
   return { id, text, meaningKo, ipa, koApprox, level };
 }
@@ -242,7 +242,7 @@ export function expressionDetailFixture({
   return { id, text, meaningKo, usageNote, ipa, koApprox, level, examples, learnedIn };
 }
 
-/** GET /api/en/library/vocabulary — 일본어 표제어 DTO와 같은 구조 + ipa·koApprox (설계/04 §8-2) */
+/** GET /api/en/library/vocabulary — 일본어 표제어 DTO와 같은 구조 + ipa·koApprox (작업자(AI)_문서/04 §8-2) */
 export function enVocabularyEntryFixture({ id, word, ipa = null, koApprox = null, partOfSpeech = "NOUN", meanings = ["뜻"] }) {
   return {
     id,

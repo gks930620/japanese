@@ -2,10 +2,10 @@ import { TtsButton } from "./TtsControls.jsx";
 import { speechTextOf } from "../lib/tts.js";
 
 /**
- * 3줄 병기 블록 (설계/05 §6) — 원문 / 가나 읽기 / 한국어 뜻.
+ * 3줄 병기 블록 (작업자(AI)_문서/05 §6) — 원문 / 가나 읽기 / 한국어 뜻.
  * kana가 null이면 가나 줄을 렌더링하지 않는다 (API 명세 §2 — 원문이 전부 가나면 null).
  *
- * latin=true면 자형만 본문 폰트로 되돌린다(설계/05 §16-4). 영어 데이터는 kana가 항상 null이라
+ * latin=true면 자형만 본문 폰트로 되돌린다(작업자(AI)_문서/05 §16-4). 영어 데이터는 kana가 항상 null이라
  * 가나 줄은 자동으로 사라지고 2줄 병기가 된다 — 새 분기가 필요 없다. 영어에는 음성이 없다(§0-2).
  */
 export function JpSentence({ jp, kana, meaningKo, latin = false }) {

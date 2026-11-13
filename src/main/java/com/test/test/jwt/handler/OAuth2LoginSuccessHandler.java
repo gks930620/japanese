@@ -41,7 +41,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String username = customUserAccount.getUsername();
 
         // 1. 토큰 생성
-        // tv 클레임에 현재 토큰 버전을 실는다 — 비밀번호 변경·탈퇴가 이 값을 올려 옛 토큰을 죽인다(설계/03 §4)
+        // tv 클레임에 현재 토큰 버전을 실는다 — 비밀번호 변경·탈퇴가 이 값을 올려 옛 토큰을 죽인다(작업자(AI)_문서/03 §4)
         String accessToken = jwtUtil.createAccessToken(username, customUserAccount.getUserDTO().getTokenVersion());
         String refreshToken = jwtUtil.createRefreshToken(username);
         // 2. Refresh 토큰 저장 (DB)

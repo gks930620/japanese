@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 문법 수정 요청 (설계/04 §9) — 표제 {@code name}·{@code nameKo}는 요청에 있어도 무시된다.
+ * 문법 수정 요청 (작업자(AI)_문서/04 §9) — 표제 {@code name}·{@code nameKo}는 요청에 있어도 무시된다.
  * 예문은 <b>수정만</b>(id 일치), 활용표는 <b>전체 교체</b>(행 추가·삭제 허용 — 판정 ④).
  */
 @Getter

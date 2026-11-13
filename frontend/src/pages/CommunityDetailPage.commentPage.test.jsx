@@ -1,7 +1,7 @@
 // TDD Red — senior-dev 작성 (2026-09-16, 기술설계_2026-09_SPA_상태복원 §3 전수표 — "URL로 가야 한다" 판정 1건)
 //
 // **댓글 페이지는 주소(`?cpage=`)에서 온다.** 글 상세의 댓글 3페이지에서 새로고침하면 지금은 1페이지로 돌아간다 —
-// 페이지 번호가 컴포넌트 state에만 있어서다(설계/05 §9: 페이지는 쿼리스트링에).
+// 페이지 번호가 컴포넌트 state에만 있어서다(작업자(AI)_문서/05 §9: 페이지는 쿼리스트링에).
 //
 // 다만 **replace로 쓴다**: 댓글 페이지는 "장소"가 아니라 상세 화면 안의 하위 목록이라 히스토리를 쌓지 않고,
 // replace라 스크롤 규칙(PUSH=맨 위)에도 걸리지 않아 글 본문 위로 튀지 않는다(댓글은 화면 아래에 있다).
@@ -80,7 +80,7 @@ function renderDetail(route, { me = null } = {}) {
 const commentCalls = (fetchMock) =>
   fetchMock.mock.calls.map(([url]) => String(url)).filter((url) => url.includes("/comments") && url.includes("page="));
 
-describe("댓글 페이지는 주소에서 온다 (?cpage= · 설계/05 §9)", () => {
+describe("댓글 페이지는 주소에서 온다 (?cpage= · 작업자(AI)_문서/05 §9)", () => {
   it("?cpage=2 로 열면 댓글 3페이지(0-base 2)를 조회하고 그 페이지가 보인다", async () => {
     const fetchMock = renderDetail("/community/detail?id=1004&cpage=2");
 

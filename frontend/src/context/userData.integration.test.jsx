@@ -11,7 +11,7 @@ import { BookmarkStar } from "../components/BookmarkStar.jsx";
 import { readGuestBookmarks, setGuestUnitCompleted, toggleGuestBookmark } from "../lib/guestStore.js";
 
 /**
- * 진도·보관함 상태의 분기 검증 (설계/05 §8).
+ * 진도·보관함 상태의 분기 검증 (작업자(AI)_문서/05 §8).
  * ★ 낙관적 갱신·실패 되돌림과 병합 배너 3선택은 컨텍스트가 책임진다.
  */
 function Harness() {
@@ -177,7 +177,7 @@ describe("스텁 형태", () => {
   });
 });
 
-describe("어휘 대표 id 정규화 (설계/04 §6-4, 코드리뷰 Minor 4)", () => {
+describe("어휘 대표 id 정규화 (작업자(AI)_문서/04 §6-4, 코드리뷰 Minor 4)", () => {
   function VocabHarness() {
     const { isBookmarked, toggleBookmark } = useUserData();
     return (

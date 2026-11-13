@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- * 유닛-표현 매핑 조회 (설계/04 §8-1) — {@link UnitKanjiRepository}와 같은 두 메서드다.
+ * 유닛-표현 매핑 조회 (작업자(AI)_문서/04 §8-1) — {@link UnitKanjiRepository}와 같은 두 메서드다.
  * 영어 유닛의 3번째 스텝이 한자 자리에 표현을 놓기 때문에 조회 형태도 대칭이다.
  */
 public interface UnitExpressionRepository extends JpaRepository<UnitExpressionEntity, Long> {

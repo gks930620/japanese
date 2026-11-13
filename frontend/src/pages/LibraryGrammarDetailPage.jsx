@@ -20,7 +20,7 @@ function LoadingSkeleton() {
   );
 }
 
-// 문법 상세 (설계/05 §7-1) — 본문은 유닛 학습과 같은 GrammarBody를 쓴다
+// 문법 상세 (작업자(AI)_문서/05 §7-1) — 본문은 유닛 학습과 같은 GrammarBody를 쓴다
 export function LibraryGrammarDetailPage({ lang = "ja" }) {
   const en = lang === "en";
   const base = en ? "/en/library/grammar" : "/library/grammar";

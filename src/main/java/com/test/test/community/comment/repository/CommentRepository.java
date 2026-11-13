@@ -28,7 +28,7 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     long countByCommunityIdAndIsDeletedFalse(Long communityId);
 
     /**
-     * 탈퇴 안내 화면의 "남는 것" 숫자 (설계/04 §4-1) — 삭제되지 않은 내 댓글만 센다.
+     * 탈퇴 안내 화면의 "남는 것" 숫자 (작업자(AI)_문서/04 §4-1) — 삭제되지 않은 내 댓글만 센다.
      */
     long countByUserIdAndIsDeletedFalse(Long userId);
 

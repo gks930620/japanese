@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 영어 표현 자료실 상세 (설계/04 §8-2) — {@link GrammarDetailDTO}와 같은 형태.
+ * 영어 표현 자료실 상세 (작업자(AI)_문서/04 §8-2) — {@link GrammarDetailDTO}와 같은 형태.
  * examples는 유닛 학습과 동일한 데이터다 — 자료실을 위해 콘텐츠를 두 번 만들지 않는다(01 §4).
  * examples는 없으면 빈 배열(null 아님) — 배열은 절대 null이 아니다(04 §1-3).
  */

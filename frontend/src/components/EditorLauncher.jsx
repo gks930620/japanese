@@ -10,7 +10,7 @@ import { Card } from "./ui/Card.jsx";
 import { Field as UiField, Help, Input, Label, Select, Textarea } from "./ui/Field.jsx";
 
 /**
- * [고치기] + 인라인 편집 패널 (설계/05 §15-4) — 모달이 아니라 그 블록 바로 아래로 펼쳐진다.
+ * [고치기] + 인라인 편집 패널 (작업자(AI)_문서/05 §15-4) — 모달이 아니라 그 블록 바로 아래로 펼쳐진다.
  * 원본 블록은 위에 그대로 남는다 — 변경 전 값을 보면서 고친다.
  *
  * 한 화면에 편집 패널은 1개(§6-3): 모듈 레지스트리가 이전 패널(깨끗한 것)을 닫는다.
@@ -21,7 +21,7 @@ import { Field as UiField, Help, Input, Label, Select, Textarea } from "./ui/Fie
 
 import { getCurrentClose, setCurrentClose } from "./editorPanelStore.js";
 
-/** kind → API 경로·필드 구성 (설계/04 §9) */
+/** kind → API 경로·필드 구성 (작업자(AI)_문서/04 §9) */
 const KINDS = {
   kanji: {
     endpoint: (id) => `/api/editor/kanji/${id}`,

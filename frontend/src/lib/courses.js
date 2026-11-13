@@ -1,5 +1,5 @@
 /**
- * 시작점 코스의 courseNo — AVAILABLE 중 courseNo 최솟값 (설계/05 §3-3).
+ * 시작점 코스의 courseNo — AVAILABLE 중 courseNo 최솟값 (작업자(AI)_문서/05 §3-3).
  * "N5"를 하드코딩하지 않는다: 입문(코스 0)이 열리면 자동으로 그쪽이 시작점이 된다.
  *
  * @param {Array<{courseNo: number, status: string}>|null} courses 코스 목록 응답

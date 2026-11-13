@@ -23,7 +23,7 @@ public interface CommunityRepository extends JpaRepository<CommunityEntity, Long
     boolean existsByIdAndIsDeletedFalse(Long id);
 
     /**
-     * 탈퇴 안내 화면의 "남는 것" 숫자 (설계/04 §4-1) — 삭제되지 않은 내 글만 센다.
+     * 탈퇴 안내 화면의 "남는 것" 숫자 (작업자(AI)_문서/04 §4-1) — 삭제되지 않은 내 글만 센다.
      */
     long countByUserIdAndIsDeletedFalse(Long userId);
 

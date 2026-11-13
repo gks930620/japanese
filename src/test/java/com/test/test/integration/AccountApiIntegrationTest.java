@@ -12,10 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 계정 조회 · 회원정보 수정 API 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: `설계/04_API계약.md` §4-1 (GET /api/me/account · PUT /api/me/profile)
+ * <p>계약 문서: `작업자(AI)_문서/04_API계약.md` §4-1 (GET /api/me/account · PUT /api/me/profile)
  * 인수 조건: AC-A-05 ~ AC-A-13, AC-A-20
  *
- * <p>네임스페이스 계약: 계정 API는 전부 `/api/me/**`이고 <b>인증 필요</b>다(결정기록 B-8 · 설계/07 §5-4).
+ * <p>네임스페이스 계약: 계정 API는 전부 `/api/me/**`이고 <b>인증 필요</b>다(결정기록 B-8 · 작업자(AI)_문서/07 §5-4).
  * 사용자는 <b>토큰에서만</b> 꺼낸다 — 요청 어디에도 대상 사용자를 지정하는 값이 없다(컨벤션 §4-1).
  *
  * <p>이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유 (CLAUDE.md TDD 규칙 2).
@@ -66,7 +66,7 @@ class AccountApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.nickname").value(CURRENT_NICKNAME))
                 .andExpect(jsonPath("$.data.email").value(CURRENT_EMAIL))
                 .andExpect(jsonPath("$.data.provider").value("LOCAL"))
-                // 화면 분기의 단일 출처 — 세 스택이 provider 문자열을 각자 해석하지 않는다(설계/04 §4-1)
+                // 화면 분기의 단일 출처 — 세 스택이 provider 문자열을 각자 해석하지 않는다(작업자(AI)_문서/04 §4-1)
                 .andExpect(jsonPath("$.data.social").value(false))
                 .andExpect(jsonPath("$.data.emailEditable").value(true))
                 .andExpect(jsonPath("$.data.passwordChangeable").value(true));
@@ -170,7 +170,7 @@ class AccountApiIntegrationTest extends ApiIntegrationTestSupport {
     }
 
     /**
-     * 이메일 중복 검사의 <b>대상은 활성 로컬 계정뿐</b>이다(설계/04 §4-1).
+     * 이메일 중복 검사의 <b>대상은 활성 로컬 계정뿐</b>이다(작업자(AI)_문서/04 §4-1).
      *
      * <p>소셜 계정의 이메일은 제공자가 준 값이라 우리가 관리하지 않고, 같은 사람이 소셜로도 쓰고 로컬로도
      * 가입하는 것은 정상이다. 실제로 시드에도 소셜(id 1·2)과 로컬(id 3)이 같은 주소를 공유한다.
@@ -191,8 +191,8 @@ class AccountApiIntegrationTest extends ApiIntegrationTestSupport {
 
     /**
      * ★ 함정 테스트 — 시드에는 <b>이미 중복된 이메일</b>이 있다(id 2·3이 같은 주소를 쓴다).
-     * 중복 검사를 무조건 돌리면 "아무것도 안 고치고 저장"이 409가 되어 설계/04 §4-1("그냥 성공 처리")과 어긋난다.
-     * 검사는 <b>값이 바뀔 때만</b> 한다(설계/04 §4-1).
+     * 중복 검사를 무조건 돌리면 "아무것도 안 고치고 저장"이 409가 되어 작업자(AI)_문서/04 §4-1("그냥 성공 처리")과 어긋난다.
+     * 검사는 <b>값이 바뀔 때만</b> 한다(작업자(AI)_문서/04 §4-1).
      */
     @Test
     void profile_update_succeeds_when_nothing_changed_even_if_email_is_shared() throws Exception {
@@ -207,7 +207,7 @@ class AccountApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.email").value(CURRENT_EMAIL));
     }
 
-    /** 닉네임 중복은 막지 않는다 — 현행 가입 정책과 같다(설계/04 §4-1, 미결 §9-3) */
+    /** 닉네임 중복은 막지 않는다 — 현행 가입 정책과 같다(작업자(AI)_문서/04 §4-1, 미결 §9-3) */
     @Test
     void profile_update_allows_duplicated_nickname() throws Exception {
         Tokens tokens = loginOtherUser();

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 레벨 코드 카탈로그 (설계/03 §1·§3 판정 J-4) — <b>코드의 단일 출처는 DB의 {@code course.level_code}다.</b>
+ * 레벨 코드 카탈로그 (작업자(AI)_문서/03 §1·§3 판정 J-4) — <b>코드의 단일 출처는 DB의 {@code course.level_code}다.</b>
  *
  * <p>예전에는 레벨이 {@code course_no}에서 <b>파생</b>됐다(enum {@code LibraryLevel}).
  * 언어가 둘이 되는 순간 그 파생은 성립하지 않는다 — 일본어 {@code courseNo 1}은 N5고 영어 {@code courseNo 1}은 E1이다.
@@ -40,9 +40,9 @@ public class CourseLevelCatalog {
      *
      * <p>빈 값/공백은 "필터 없음"(빈 목록)이고, 그 언어의 허용 집합 밖은 400이다(설계 §7-13 ④ —
      * 조용히 무시하지 않는다). 일본어 자료실에 {@code E1}을, 영어 자료실에 {@code N5}를 주면
-     * 여기서 걸린다(설계/03 §1·§3 — 한쪽 값으로 다른 쪽을 조회할 수 없다).</p>
+     * 여기서 걸린다(작업자(AI)_문서/03 §1·§3 — 한쪽 값으로 다른 쪽을 조회할 수 없다).</p>
      *
-     * <p>⚠️ <b>선택지에서 뺀 것과 파라미터가 거부하는 것은 다르다</b>(설계/03 §1·§3): 한자 자료실에 {@code INTRO}는
+     * <p>⚠️ <b>선택지에서 뺀 것과 파라미터가 거부하는 것은 다르다</b>(작업자(AI)_문서/03 §1·§3): 한자 자료실에 {@code INTRO}는
      * 유효한 코드이고 데이터가 0건일 뿐이라 200 + 0건이 된다. 400은 <b>없는 코드</b>의 몫이다.</p>
      */
     public List<String> parseLevelCodes(String levelParam, CourseLanguage language) {
@@ -57,7 +57,7 @@ public class CourseLevelCatalog {
                 .toList();
     }
 
-    /** 그 언어의 레벨 코드 전량 — 학습 순서(courseNo 오름차순) 고정(설계/03 §1·§3) */
+    /** 그 언어의 레벨 코드 전량 — 학습 순서(courseNo 오름차순) 고정(작업자(AI)_문서/03 §1·§3) */
     public List<String> levelCodes(CourseLanguage language) {
         return snapshot().getOrDefault(language, List.of());
     }

@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
  *
  * <p><b>계약</b>: 오류 메시지의 리소스 이름은 <b>사용자의 말</b>이다 —
  * {@code Community}→<b>게시글</b>, {@code Comment}→<b>댓글</b>, {@code User}→<b>사용자</b>.
- * 형식은 기존 그대로다: {@code 존재하지 않는 {리소스}입니다: {식별자}}(설계/04 §1-1) ·
+ * 형식은 기존 그대로다: {@code 존재하지 않는 {리소스}입니다: {식별자}}(작업자(AI)_문서/04 §1-1) ·
  * {@code 본인의 {리소스}만 수정/삭제할 수 있습니다.}
  *
  * <p>이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유 (CLAUDE.md TDD 규칙 2).

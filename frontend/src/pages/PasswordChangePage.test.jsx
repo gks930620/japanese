@@ -8,11 +8,11 @@ import { AuthProvider } from "../context/AuthContext.jsx";
 import { PasswordChangePage } from "./PasswordChangePage.jsx";
 
 /**
- * 비밀번호 변경 화면 (설계/04 §4-1) — TDD Red, senior-dev 작성.
+ * 비밀번호 변경 화면 (작업자(AI)_문서/04 §4-1) — TDD Red, senior-dev 작성.
  * 인수 조건: AC-A-17, AC-A-21 ~ AC-A-27
  *
  * 서버의 400은 errorCode로 갈린다 — 어느 칸을 비우고 어디에 문구를 붙일지가 다르기 때문이다.
- * 화면은 `message` 문자열이 아니라 `errorCode`로 분기한다(설계/04 §1-1).
+ * 화면은 `message` 문자열이 아니라 `errorCode`로 분기한다(작업자(AI)_문서/04 §1-1).
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.
  */

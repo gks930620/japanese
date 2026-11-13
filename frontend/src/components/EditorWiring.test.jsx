@@ -1,4 +1,4 @@
-// frontend-dev 작성 — [고치기] 배선(설계/05 §15-4): 붙는 자리마다
+// frontend-dev 작성 — [고치기] 배선(작업자(AI)_문서/05 §15-4): 붙는 자리마다
 // ①꺼진 환경 미렌더 ②저장 성공 시 화면이 응답값으로 갱신되는지를 고정한다.
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

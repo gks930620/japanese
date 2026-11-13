@@ -25,7 +25,7 @@ function renderCard(props) {
   );
 }
 
-describe("CourseCard — 배지 분기 (설계/05 §3-3)", () => {
+describe("CourseCard — 배지 분기 (작업자(AI)_문서/05 §3-3)", () => {
   it("첫 AVAILABLE 코스만 '여기서 시작하세요'", () => {
     renderCard({ course: course(), isEntry: true });
     expect(screen.getByText("여기서 시작하세요")).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe("CourseCard — 배지 분기 (설계/05 §3-3)", () => {
   });
 });
 
-describe("CourseCard — 진도 반영 (설계/05 §8)", () => {
+describe("CourseCard — 진도 반영 (작업자(AI)_문서/05 §8)", () => {
   it("badge 코드가 오면 그 문구를 쓰고 강조도 코드에서 파생된다", () => {
     renderCard({ course: course({ unitCount: 20 }), badge: "CONTINUE", completedCount: 7 });
 

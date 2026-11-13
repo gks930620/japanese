@@ -7,7 +7,7 @@ import { LocationProbe } from "../test/LocationProbe.jsx";
 import { EnStartPage } from "./EnStartPage.jsx";
 
 /**
- * 영어 자가진단 `/en/start` (설계/06 §11-12 — TDD Red, senior-dev 작성)
+ * 영어 자가진단 `/en/start` (작업자(AI)_문서/06 §11-12 — TDD Red, senior-dev 작성)
  *
  * **진단이 아니라 자기 선택이다** — 문제도 채점도 정답도 없다. can-do 5문장 중 하나를 고르면 그 코스로 간다.
  * 서버 엔드포인트가 없다(`GET /api/en/courses` 응답으로 계산).

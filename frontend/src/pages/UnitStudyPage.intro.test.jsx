@@ -7,7 +7,7 @@ import { UserDataProvider } from "../context/UserDataContext.jsx";
 import { UnitStudyPage } from "./UnitStudyPage.jsx";
 
 /**
- * 입문 유닛 — 한자 스텝이 없다 (설계/06 §2·§6 판정 J-1 — TDD Red, senior-dev 작성)
+ * 입문 유닛 — 한자 스텝이 없다 (작업자(AI)_문서/06 §2·§6 판정 J-1 — TDD Red, senior-dev 작성)
  *
  * 서버는 `kanjis: []`를 **필드째** 보낸다(04 §1-3 — 배열은 null이 아니다).
  * 화면은 그것을 읽어 **한자 스텝 자체를 만들지 않는다** — 칩도, 빈 카드도, "한자가 없어요" 안내도 없다.
@@ -70,7 +70,7 @@ describe("입문 유닛의 스텝 구성 (J-1)", () => {
     renderIntroUnit();
 
     // 스텝 표시가 전체 6개를 가리킨다 — 문법2 + 회화 + 어휘 + 정리 + 확인 문제.
-    // (한자 스텝이 빠진 결과. 일반 코스는 7개다 — 설계/06 §6 판정 J-1)
+    // (한자 스텝이 빠진 결과. 일반 코스는 7개다 — 작업자(AI)_문서/06 §6 판정 J-1)
     await waitFor(() => expect(screen.getByText(/스텝 1 \/ 6/)).toBeInTheDocument());
   });
 

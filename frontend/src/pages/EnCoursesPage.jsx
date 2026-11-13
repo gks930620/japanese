@@ -8,7 +8,7 @@ import { Alert } from "../components/ui/Alert.jsx";
 import { btnClass } from "../components/ui/kitClass.js";
 
 /**
- * 영어 코스 목록 (설계/05 §16·§16-2).
+ * 영어 코스 목록 (작업자(AI)_문서/05 §16·§16-2).
  *
  * 일본어 목록과 두 가지가 다르다:
  *  1. **레벨 라벨을 쓰지 않는다** — 코스명이 곧 단계 이름이다(CEFR은 내부 참고일 뿐).

@@ -20,7 +20,7 @@ import { resumeTarget } from "../lib/resume.js";
  * 히어로 CTA만 진도를 본다 — 이미 배우던 사람에게 소개를 먼저 읽히지 않는다.
  */
 
-/** 유닛 하나의 흐름 — 설계/01 §3 · 09 §2-1의 스텝 순서 그대로다 */
+/** 유닛 하나의 흐름 — 작업자(AI)_문서/01 §3 · 09 §2-1의 스텝 순서 그대로다 */
 const UNIT_FLOW = ["문법", "회화", "한자", "어휘", "확인 문제", "정리"];
 
 const STRENGTHS = [
@@ -38,7 +38,7 @@ const STRENGTHS = [
   },
 ];
 
-/** 히어로 문구·버튼 — 진도가 있으면 이어보기, 없으면 소개 문구 (설계/05 §8) */
+/** 히어로 문구·버튼 — 진도가 있으면 이어보기, 없으면 소개 문구 (작업자(AI)_문서/05 §8) */
 function heroState(resume, coursesLoaded) {
   if (resume) return { line: resume.text, ctaLabel: resume.ctaLabel, ctaTo: resume.to };
   // 마지막 위치는 있는데 코스를 아직 못 찾았다 = 목록이 안 왔다는 뜻이다.
@@ -56,7 +56,7 @@ export function HomePage() {
   // 마지막 위치가 영어 코스일 수 있다 — 두 과정 목록에서 찾는다(영어 진도를 일본어 주소에 끼우면 404다)
   const { data: enCourses } = useApiQuery("/api/en/courses");
   const { progress, ready } = useUserData();
-  const notice = useRouteNotice(); // 탈퇴 완료 등 일회성 안내 (설계/05 §8)
+  const notice = useRouteNotice(); // 탈퇴 완료 등 일회성 안내 (작업자(AI)_문서/05 §8)
 
   // 자랑에 쓰는 수치는 **살아 있는 값**이다 — 문서에서 베껴 적으면 코스가 열릴 때마다 낡는다(08 C-18).
   // 목록 API의 totalAll만 필요하므로 한 건만 받아 온다.

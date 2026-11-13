@@ -8,7 +8,7 @@ import { AuthProvider } from "../context/AuthContext.jsx";
 import { WithdrawPage } from "./WithdrawPage.jsx";
 
 /**
- * 회원 탈퇴 화면 (설계/04 §4-1) — TDD Red, senior-dev 작성.
+ * 회원 탈퇴 화면 (작업자(AI)_문서/04 §4-1) — TDD Red, senior-dev 작성.
  * 인수 조건: AC-A-18, AC-A-30 ~ AC-A-36, AC-A-41·42
  *
  * 되돌릴 수 없는 화면이다. 그래서 이 테스트가 고정하는 것은 문구가 아니라

@@ -1,4 +1,4 @@
-// frontend-dev 작성 — 영어 자료실 3탭 + 표현 상세 (설계/05 §16-3).
+// frontend-dev 작성 — 영어 자료실 3탭 + 표현 상세 (작업자(AI)_문서/05 §16-3).
 // 갈리는 지점만 본다: 탭 3개(기본 표현) · 코스 필터 문구 · 정렬 셀렉트 미렌더 ·
 // 발음 병기 · 탭 전체 0건 문구 · levelLabel 미사용.
 import { render, screen } from "@testing-library/react";

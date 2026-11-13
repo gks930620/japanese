@@ -8,8 +8,8 @@ import { btnClass, cardClass, fieldClass, helpClass, inputClass } from "../compo
 const FIELDS = { current: "current", next: "next", confirm: "confirm" };
 
 /**
- * errorCode → 화면 동작 (설계/04 §4-1). **"틀린 것만 지운다."**
- * 화면은 `message` 문자열이 아니라 **errorCode로만** 분기한다(설계/04 §1-1).
+ * errorCode → 화면 동작 (작업자(AI)_문서/04 §4-1). **"틀린 것만 지운다."**
+ * 화면은 `message` 문자열이 아니라 **errorCode로만** 분기한다(작업자(AI)_문서/04 §1-1).
  */
 const ERROR_RULES = {
   PASSWORD_MISMATCH: {
@@ -115,7 +115,7 @@ export function PasswordChangePage() {
           newPasswordConfirm: form.confirm,
         }),
       });
-      // 웹은 쿠키가 갱신되므로 화면이 토큰을 만지지 않는다(설계/04 §4-1)
+      // 웹은 쿠키가 갱신되므로 화면이 토큰을 만지지 않는다(작업자(AI)_문서/04 §4-1)
       navigate("/mypage", {
         state: { notice: "비밀번호를 변경했어요. 다른 기기에서는 다시 로그인해야 해요." },
       });

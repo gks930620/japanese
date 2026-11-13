@@ -30,10 +30,10 @@ function LoadingSkeleton() {
 }
 
 /**
- * 주 버튼 3분기 (설계/05 §8) — 어떤 분기에서도 primary는 1개다.
+ * 주 버튼 3분기 (작업자(AI)_문서/05 §8) — 어떤 분기에서도 primary는 1개다.
  *
  * 코스 상세는 **지도**다. 가리키는 곳은 "안 한 곳"(미완료 최전선)이고 그 말은 **"다음 유닛"**이지
- * "이어서"가 아니다 — "이어서"는 마지막 위치를 뜻하는 홈·마이페이지의 말이다(2026-09 결정 D-2 · 설계/01 §7-8).
+ * "이어서"가 아니다 — "이어서"는 마지막 위치를 뜻하는 홈·마이페이지의 말이다(2026-09 결정 D-2 · 작업자(AI)_문서/01 §7-8).
  */
 function ctaState(done, next) {
   if (done === 0) return { label: "유닛 1부터 시작하기", unitNo: 1, note: null };
@@ -42,9 +42,9 @@ function ctaState(done, next) {
 }
 
 /**
- * 코스 상세 — 유닛 목록 (설계/05 §7 + §8).
+ * 코스 상세 — 유닛 목록 (작업자(AI)_문서/05 §7 + §8).
  *
- * 영어 과정은 **같은 화면의 한 자리를 갈아 끼운다**(설계/05 §16):
+ * 영어 과정은 **같은 화면의 한 자리를 갈아 끼운다**(작업자(AI)_문서/05 §16):
  * 한자 집계 → 표현 집계, 레벨 괄호 없음, 진행 안내(course.notice). 진도·CTA 분기는 그대로다.
  */
 export function CourseDetailPage({ lang = "ja" }) {
@@ -87,7 +87,7 @@ export function CourseDetailPage({ lang = "ja" }) {
   }
 
   const summary = data.summary ?? {};
-  // 영어에는 레벨 글리프가 없다 — 코스 카드가 쓰는 "코스 n"과 같은 값을 세운다(설계/05 §16-2)
+  // 영어에는 레벨 글리프가 없다 — 코스 카드가 쓰는 "코스 n"과 같은 값을 세운다(작업자(AI)_문서/05 §16-2)
   const avatarGlyph = en ? String(data.courseNo) : data.levelLabel?.replace(/^JLPT\s*/, "") || "学";
   // 한자(일본어)·표현(영어)은 0이 정상일 수 있는 칸이다 — 0이면 집계줄·유닛 행에서 뺀다(08 C-12 ①)
   const middleCount = (en ? summary.expressionCount : summary.kanjiCount) ?? 0;
@@ -128,7 +128,7 @@ export function CourseDetailPage({ lang = "ja" }) {
       {/* 맛보기 안내 — 새 필드를 만들지 않고 기존 course.notice를 쓴다(§2, 영어에만) */}
       {en && data.notice && <Alert>✎ {data.notice}</Alert>}
 
-      {/* 요약 — API 집계값 (하드코딩 금지, 설계/05 §8) + 진도 막대(§8) */}
+      {/* 요약 — API 집계값 (하드코딩 금지, 작업자(AI)_문서/05 §8) + 진도 막대(§8) */}
       <div className="k-flex statusbar">
         <span className="k-badge">
           유닛 <b>{summary.unitCount}</b>

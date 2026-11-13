@@ -11,7 +11,7 @@ function render(page, route = "/library/kanji") {
   return fetchMock;
 }
 
-describe("LibraryKanjiPage — 목록 (설계/05 §7)", () => {
+describe("LibraryKanjiPage — 목록 (작업자(AI)_문서/05 §7)", () => {
   it("타일에 글자·훈음·음독·훈독·레벨이 보인다 (인수 9)", async () => {
     render(libraryPage([kanjiItem()]));
 

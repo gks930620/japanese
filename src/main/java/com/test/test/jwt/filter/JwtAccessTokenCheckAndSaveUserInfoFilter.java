@@ -55,10 +55,10 @@ public class JwtAccessTokenCheckAndSaveUserInfoFilter extends OncePerRequestFilt
             String username = jwtUtil.extractUsername(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // 토큰 버전 대조(설계/03 §4) — 비밀번호 변경·탈퇴로 users.token_version이 오르면 그 이전 토큰은 여기서 죽는다.
+            // 토큰 버전 대조(작업자(AI)_문서/03 §4) — 비밀번호 변경·탈퇴로 users.token_version이 오르면 그 이전 토큰은 여기서 죽는다.
             // 매 요청 이미 사용자를 읽고 있으므로 추가 쿼리는 0이다.
             // TOKEN_EXPIRED로 답하는 이유: 프론트 http.js가 이 코드에서만 갱신을 시도하고, 실패하면 게스트로 강등한다.
-            // 다른 코드로 답하면 "로그인된 것처럼 보이지만 아무것도 안 되는" 상태가 남는다(설계/04 §4).
+            // 다른 코드로 답하면 "로그인된 것처럼 보이지만 아무것도 안 되는" 상태가 남는다(작업자(AI)_문서/04 §4).
             if (userDetails instanceof CustomUserAccount account
                     && jwtUtil.getTokenVersion(token) != account.getUserDTO().getTokenVersion()) {
                 request.setAttribute("ERROR_CAUSE", "TOKEN_EXPIRED");

@@ -51,23 +51,23 @@ function App() {
         <Route path="/library/grammar" element={<LibraryGrammarPage />} />
         <Route path="/library/grammar/:grammarId" element={<LibraryGrammarDetailPage />} />
         <Route path="/library/vocabulary" element={<LibraryVocabPage />} />
-        {/* 실력 진단 — GNB 메뉴 아님, 배너 2곳에서만 진입(설계/05 §15-2) */}
+        {/* 실력 진단 — GNB 메뉴 아님, 배너 2곳에서만 진입(작업자(AI)_문서/05 §15-2) */}
         <Route path="/diagnosis" element={<DiagnosisPage />} />
 
-        {/* 영어 과정 (설계/05 §16) — /en 단독 홈은 만들지 않는다. 자가진단은 서버 없이 코스 목록으로 계산한다 */}
+        {/* 영어 과정 (작업자(AI)_문서/05 §16) — /en 단독 홈은 만들지 않는다. 자가진단은 서버 없이 코스 목록으로 계산한다 */}
         <Route path="/en" element={<Navigate to="/en/courses" replace />} />
         <Route path="/en/courses" element={<EnCoursesPage />} />
         <Route path="/en/courses/:courseId" element={<CourseDetailPage lang="en" />} />
         <Route path="/en/courses/:courseId/units/:unitNo" element={<UnitStudyPage lang="en" />} />
         <Route path="/en/start" element={<EnStartPage />} />
-        {/* 영어 자료실 3탭 — 기본 탭은 표현 (설계/05 §16-3) */}
+        {/* 영어 자료실 3탭 — 기본 탭은 표현 (작업자(AI)_문서/05 §16-3) */}
         <Route path="/en/library" element={<Navigate to="/en/library/expressions" replace />} />
         <Route path="/en/library/expressions" element={<EnLibraryExpressionsPage />} />
         <Route path="/en/library/expressions/:expressionId" element={<EnExpressionDetailPage />} />
         <Route path="/en/library/grammar" element={<LibraryGrammarPage lang="en" />} />
         <Route path="/en/library/grammar/:grammarId" element={<LibraryGrammarDetailPage lang="en" />} />
         <Route path="/en/library/vocabulary" element={<LibraryVocabPage lang="en" />} />
-        {/* 보관함 — 비로그인도 보는 화면(설계/04 §6-4). 탭은 ?tab= 쿼리 */}
+        {/* 보관함 — 비로그인도 보는 화면(작업자(AI)_문서/04 §6-4). 탭은 ?tab= 쿼리 */}
         <Route path="/bookmarks" element={<BookmarksPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />

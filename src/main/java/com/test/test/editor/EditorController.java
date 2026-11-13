@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 관리자 편집 API (설계/04 §9) — <b>환경 플래그로 빈 자체가 조건 등록</b>된다.
+ * 관리자 편집 API (작업자(AI)_문서/04 §9) — <b>환경 플래그로 빈 자체가 조건 등록</b>된다.
  *
  * <p>꺼진 환경(기본값·운영)에서는 이 컨트롤러가 존재하지 않아 {@code /api/editor/**}가 전부
  * <b>미매핑 404</b>다 — 다른 없는 주소와 구별할 수 없어 "흔적이 없다"(A1·C4·A14)가 코드 구조로 성립한다.
  * 403/401로 막는 방식은 경로의 존재를 노출하므로 쓰지 않는다.</p>
  *
- * <p><b>전부 로그인 불요</b>(설계/04 §9 사용자 확정 — 켜고 끄는 기준은 역할이 아니라 실행 환경이다).
+ * <p><b>전부 로그인 불요</b>(작업자(AI)_문서/04 §9 사용자 확정 — 켜고 끄는 기준은 역할이 아니라 실행 환경이다).
  * B-9(비인증 쓰기 금지)의 의도된 예외 — prod에서는 {@code RailwayDeploymentValidator}가
  * enabled=true 기동 자체를 거부해 운영 유입이 막힌다.</p>
  */

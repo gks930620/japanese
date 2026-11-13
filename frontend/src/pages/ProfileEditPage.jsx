@@ -11,7 +11,7 @@ const NICKNAME_MAX = 20;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * 회원정보 수정 (설계/04 §4-1).
+ * 회원정보 수정 (작업자(AI)_문서/04 §4-1).
  *
  * 아이디는 **입력칸으로 그리지 않는다** — 바꿀 수 없는 값을 readonly 입력칸으로 보여주면
  * "바꿀 수 있다"고 읽힌다. 이메일은 소셜에서 `disabled`가 아니라 **`readonly`**다(읽기·복사는 되게).
@@ -75,7 +75,7 @@ export function ProfileEditPage() {
 
     setSaving(true);
     try {
-      // 소셜도 email을 그대로 실어 보낸다 — 서버가 무시하고 현재 값을 되돌려 준다(설계/04 §4-1)
+      // 소셜도 email을 그대로 실어 보낸다 — 서버가 무시하고 현재 값을 되돌려 준다(작업자(AI)_문서/04 §4-1)
       const body = await callApi("/api/me/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

@@ -1,10 +1,10 @@
-// 자료실 목록의 상태 = 주소(쿼리스트링). 컴포넌트 state에 이중으로 두지 않는다 (설계/05 §9).
+// 자료실 목록의 상태 = 주소(쿼리스트링). 컴포넌트 state에 이중으로 두지 않는다 (작업자(AI)_문서/05 §9).
 // 파라미터명은 API 계약(§4-B)과 동일: q · level · pos · sort · hasRules · page.
 // 단, page는 화면 주소에서 1-base(기본 1은 생략), API는 0-base다 — 변환은 여기 한 곳에서만 한다.
 import { PART_OF_SPEECH_CODES } from "../constants/partOfSpeech.js";
 
 /**
- * 레벨 표시 맵 (설계/05 §16-2) — **코드 → 문구 한 방향뿐이다.**
+ * 레벨 표시 맵 (작업자(AI)_문서/05 §16-2) — **코드 → 문구 한 방향뿐이다.**
  * 문구에서 코드를 되만드는 함수를 만들지 않는다(3단계 치명 ①이 났던 문). 요청에는 언제나 코드가 실린다.
  */
 export const LEVEL_TEXT = {
@@ -34,7 +34,7 @@ const JA_LEVELS = ["INTRO", "N5", "N4", "N3", "N2", "N1"];
 const EN_LEVELS = ["E1", "E2", "E3", "E4", "E5"];
 
 /**
- * 자료실별 레벨 선택지 (설계/04 §3-1 · 설계/05 §16-2) — 학습 순서 고정.
+ * 자료실별 레벨 선택지 (작업자(AI)_문서/04 §3-1 · 작업자(AI)_문서/05 §16-2) — 학습 순서 고정.
  * 한자에는 입문이 없다(데이터 0건이라 고르면 항상 0건 화면이 된다). 없는 이유를 화면에 설명하지 않는다(§7-2).
  */
 export function levelOptions({ type, lang = "ja" }) {
@@ -45,7 +45,7 @@ export function levelOptions({ type, lang = "ja" }) {
 /** 일본어 기본 선택지 — 기존 호출부(한자 탭)의 기본값 */
 export const LEVELS = levelOptions({ type: "kanji" });
 
-/** 자료실별 페이지 크기 (설계/05 §9 — 화면폭에 따라 바꾸지 않는다) */
+/** 자료실별 페이지 크기 (작업자(AI)_문서/05 §9 — 화면폭에 따라 바꾸지 않는다) */
 export const PAGE_SIZE = { kanji: 60, grammar: 20, vocabulary: 50 };
 
 const DEFAULT_SORT = "LEARNING";
@@ -93,7 +93,7 @@ export function buildLibrarySearch(params) {
   return text ? `?${text}` : "";
 }
 
-/** 목록 상태 → API URL (설계/04 §3-1). page는 0-base로 변환한다. */
+/** 목록 상태 → API URL (작업자(AI)_문서/04 §3-1). page는 0-base로 변환한다. */
 export function buildLibraryApiUrl(endpoint, params, size) {
   const search = new URLSearchParams();
   search.set("page", String(Math.max(0, (params.page ?? 1) - 1)));

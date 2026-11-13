@@ -16,14 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 영어 표현 자료실 (설계/04 §8-2 — 영어 자료실 3탭 중 첫 탭) — 읽기 전용.
+ * 영어 표현 자료실 (작업자(AI)_문서/04 §8-2 — 영어 자료실 3탭 중 첫 탭) — 읽기 전용.
  *
  * <p>문법·어휘 탭은 <b>일본어 서비스를 그대로 재사용</b>하지만(언어가 파라미터다) 표현은 일본어에 대응물이 없어
  * 서비스가 새로 생긴다. 그래도 구조는 {@link LibraryGrammarService}를 그대로 따른다 —
  * 페이지 보정·{@code ids}·{@code sort}·레벨 검증이 자료실 3탭에서 같은 규칙이어야 하기 때문이다.</p>
  *
  * <p>레벨 파라미터 검증은 {@link CourseLevelCatalog}에 맡긴다 — 영어 자료실에 {@code N5}를 주면 거기서 400이 난다
- * (설계/03 §1·§3 "한쪽 값으로 다른 쪽을 조회할 수 없다").</p>
+ * (작업자(AI)_문서/03 §1·§3 "한쪽 값으로 다른 쪽을 조회할 수 없다").</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -78,7 +78,7 @@ public class LibraryExpressionService {
     public ExpressionDetailDTO getExpressionDetail(Long expressionId, CourseLanguage language) {
         ExpressionEntity expression = libraryExpressionQueryRepository.findExpression(expressionId)
                 .orElseThrow(() -> EntityNotFoundException.of("표현", expressionId));
-        // 다른 과정의 표현 id는 없는 것으로 취급한다(설계/04 §8-2) — 배우는 유닛이 그 언어에 없으면 404다
+        // 다른 과정의 표현 id는 없는 것으로 취급한다(작업자(AI)_문서/04 §8-2) — 배우는 유닛이 그 언어에 없으면 404다
         CourseUnitEntity unit = libraryExpressionQueryRepository.findLearnedInUnit(expressionId, language)
                 .orElseThrow(() -> EntityNotFoundException.of("표현을 배우는 유닛", expressionId));
 

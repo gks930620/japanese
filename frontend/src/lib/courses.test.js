@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { entryCourseNo } from "./courses.js";
 
-describe("entryCourseNo — 시작점 코스 판별 (설계/05 §3-3, 하드코딩 금지)", () => {
+describe("entryCourseNo — 시작점 코스 판별 (작업자(AI)_문서/05 §3-3, 하드코딩 금지)", () => {
   const courses = [
     { id: 1, courseNo: 0, status: "PREPARING" },
     { id: 2, courseNo: 1, status: "AVAILABLE" },

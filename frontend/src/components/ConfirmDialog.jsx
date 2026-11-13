@@ -3,7 +3,7 @@ import { Button } from "./ui/Button.jsx";
 import { Modal, ModalBody, ModalFoot, ModalHead } from "./ui/Modal.jsx";
 
 /**
- * 확인 대화상자 (설계/05 §12-1) — 되돌릴 수 없는 삭제에만 쓴다.
+ * 확인 대화상자 (작업자(AI)_문서/05 §12-1) — 되돌릴 수 없는 삭제에만 쓴다.
  * `<dialog>` 기반이라 ESC 닫기·포커스 트랩이 공짜다. 딤은 킷 `--overlay`를 `dialog::backdrop`에 칠하고
  * **backdrop-filter(유리)는 쓰지 않는다**. `.k-backdrop` div를 따로 만들지 않는다(매핑 §3-4).
  * ESC·backdrop 닫기는 onClose 하나로 받는다(onCancel과 함께 달면 두 번 호출된다).

@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * 품사 허용 집합이 <b>언어별로 다르다</b> — 설계/06 §11-6 마지막 항 ("서버가 언어별로 검증한다 — 섞이면 400").
+ * 품사 허용 집합이 <b>언어별로 다르다</b> — 작업자(AI)_문서/06 §11-6 마지막 항 ("서버가 언어별로 검증한다 — 섞이면 400").
  *
  * <p>backend-dev가 직접 추가한 테스트다(senior-dev의 {@code EnglishCourseApiIntegrationTest}는 품사를 다루지 않는다).
  * 영어 시드가 {@code ADJECTIVE}·{@code PREPOSITION}·{@code PHRASE}를 쓰려면 enum에 값을 늘려야 하는데,

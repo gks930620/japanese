@@ -42,7 +42,7 @@ async function fillPasswords() {
   await userEvent.type(screen.getByLabelText("새 비밀번호 확인"), "newpass1234");
 }
 
-describe("비밀번호 변경 — '틀린 것만 지운다' (설계/04 §4-1)", () => {
+describe("비밀번호 변경 — '틀린 것만 지운다' (작업자(AI)_문서/04 §4-1)", () => {
   const renderPassword = (changeResponse) =>
     renderPage(<PasswordChangePage />, "/mypage/password", (url) => {
       if (url.includes("/api/users/me")) return apiSuccess({ id: 3, ...LOCAL });
@@ -102,7 +102,7 @@ describe("비밀번호 변경 — '틀린 것만 지운다' (설계/04 §4-1)", 
   });
 });
 
-describe("회원 탈퇴 — 실패별 대화상자 처리 (설계/05 §12-1 · 설계/04 §4-1)", () => {
+describe("회원 탈퇴 — 실패별 대화상자 처리 (작업자(AI)_문서/05 §12-1 · 작업자(AI)_문서/04 §4-1)", () => {
   const PREVIEW = {
     completedUnitCount: 42,
     bookmarkCounts: { kanji: 12, grammar: 5, vocabulary: 30, total: 47 },

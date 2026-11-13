@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 영어 표현 목록 조회 프로젝션 (설계/04 §8-2 자료실 표현 탭) — {@link GrammarRow}와 같은 자리다.
+ * 영어 표현 목록 조회 프로젝션 (작업자(AI)_문서/04 §8-2 자료실 표현 탭) — {@link GrammarRow}와 같은 자리다.
  * 발음 두 표기(ipa·koApprox)를 목록에서 이미 싣는다 — 표현 목록의 주된 쓸모가 "소리 내어 읽어 보기"라서다.
  */
 @Getter

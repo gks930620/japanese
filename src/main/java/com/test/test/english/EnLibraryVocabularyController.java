@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 영어 어휘 자료실 API (설계/04 §8-2) — <b>일본어 서비스를 그대로 쓴다</b>(복제 금지 — 설계/04 §8).
+ * 영어 어휘 자료실 API (작업자(AI)_문서/04 §8-2) — <b>일본어 서비스를 그대로 쓴다</b>(복제 금지 — 작업자(AI)_문서/04 §8).
  * 목록 1개(상세 화면 없음)인 것도 일본어와 같다.
  */
 @RestController

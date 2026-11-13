@@ -18,7 +18,7 @@ function render(response, route = "/library/kanji/11") {
   renderLibrary(<LibraryKanjiDetailPage />, { path: "/library/kanji/:kanjiId", route });
 }
 
-describe("LibraryKanjiDetailPage (설계/05 §7)", () => {
+describe("LibraryKanjiDetailPage (작업자(AI)_문서/05 §7)", () => {
   it("큰 글자·훈음·레벨·읽기·예시 단어를 보여준다 (인수 12)", async () => {
     render(apiSuccess(detail()));
 

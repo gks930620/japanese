@@ -6,12 +6,12 @@ import { AuthProvider } from "../context/AuthContext.jsx";
 import { MyPage } from "./MyPage.jsx";
 
 /**
- * 마이페이지 허브 (설계/04 §4-1 · 설계/05 §8) — TDD Red, senior-dev 작성.
+ * 마이페이지 허브 (작업자(AI)_문서/04 §4-1 · 작업자(AI)_문서/05 §8) — TDD Red, senior-dev 작성.
  * 인수 조건: AC-A-01 ~ AC-A-04, AC-A-14·15·19·20
  *
  * 로그인 방식 분기의 근거는 `GET /api/me/account`의 `passwordChangeable`이다.
  * 화면이 `provider === "LOCAL"`을 직접 해석하지 않는다 — 서버가 강제하는 규칙과 화면이 숨기는 것이
- * 같은 출처에서 나와야 갈리지 않는다(설계/04 §4-1).
+ * 같은 출처에서 나와야 갈리지 않는다(작업자(AI)_문서/04 §4-1).
  *
  * 이 테스트를 수정하지 말 것 — 계약 변경은 senior-dev 경유.
  */

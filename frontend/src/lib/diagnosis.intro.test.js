@@ -3,7 +3,7 @@ import { STAGE_SIZE, buildStageQuestions, stagePlan } from "./diagnosis.js";
 import { coursesFixture } from "../test/apiFixtures.js";
 
 /**
- * 입문이 진단 계단에 들어온다 — **판정 J-5 폐기 가드** (설계/08 §F-13 뒤집힘 절 — TDD Red, senior-dev 2026-09-10)
+ * 입문이 진단 계단에 들어온다 — **판정 J-5 폐기 가드** (작업자(AI)_문서/08 §F-13 뒤집힘 절 — TDD Red, senior-dev 2026-09-10)
  *
  * 이 파일은 예전에 정반대를 고정하고 있었다: *"입문은 계단에서 빠진다 — 단계마다 한자 1문항이 필요한데
  * 입문은 한자가 0자다"*(2026-08 판정 J-5). 2026-09 개편으로 **한자 낱자 문항 자체가 진단에서 빠지면서**

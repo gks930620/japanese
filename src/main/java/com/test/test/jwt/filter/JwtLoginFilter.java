@@ -54,7 +54,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
             // jwt는 API서버 분리된방식.  username,password는  body에 포함되서 옴.
             // 파라미터에 포함되서 오지않음 보통.  이것때문에 재정의. UsernamePasswordAuthetnctionFilter는 parameter 를 처리함.
             Map<String, String> credentials = OBJECT_MAPPER.readValue(request.getInputStream(), new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {});
-            // 아이디는 대소문자를 구분하지 않는 식별자다(설계/04 §4 · 08 C-24) — 이후 경로는 전부 정규화된 값을 쓴다.
+            // 아이디는 대소문자를 구분하지 않는 식별자다(작업자(AI)_문서/04 §4 · 08 C-24) — 이후 경로는 전부 정규화된 값을 쓴다.
             // 시도 제한(§1-6)이 username 키라, 여기서 정규화하지 않으면 대소문자를 바꿔 부르는 것만으로 카운터가
             // 초기화돼 제한을 우회할 수 있다. 조회(CustomUserDetailsService)와 카운트가 같은 값을 봐야 한다.
             String username = IdentityNormalizer.normalize(credentials.get("username"));
@@ -91,7 +91,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         loginAttemptGuard.recordSuccess(username);
 
         // 1. 토큰 생성
-        // tv 클레임에 현재 토큰 버전을 실는다 — 비밀번호 변경·탈퇴가 이 값을 올려 옛 토큰을 죽인다(설계/03 §4)
+        // tv 클레임에 현재 토큰 버전을 실는다 — 비밀번호 변경·탈퇴가 이 값을 올려 옛 토큰을 죽인다(작업자(AI)_문서/03 §4)
         String accessToken = jwtUtil.createAccessToken(username, customUserAccount.getUserDTO().getTokenVersion());
         String refreshToken = jwtUtil.createRefreshToken(username);
 

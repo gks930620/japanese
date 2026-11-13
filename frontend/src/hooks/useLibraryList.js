@@ -4,7 +4,7 @@ import { useApiQuery } from "./useApiQuery.js";
 import { buildLibraryApiUrl, buildLibrarySearch, parseLibraryParams } from "../lib/libraryQuery.js";
 
 /**
- * 자료실 목록 공통 훅 — 주소(쿼리스트링)를 단일 출처로 삼아 목록을 조회한다 (설계/05 §9).
+ * 자료실 목록 공통 훅 — 주소(쿼리스트링)를 단일 출처로 삼아 목록을 조회한다 (작업자(AI)_문서/05 §9).
  *
  * @param {string} endpoint API 경로 (예: "/api/library/kanji")
  * @param {number} size 페이지 크기 (자료실별 고정)
@@ -20,7 +20,7 @@ export function useLibraryList(endpoint, size) {
 
   const search = searchParams.toString();
   const params = useMemo(() => parseLibraryParams(search), [search]);
-  // 페이지·필터가 바뀌어도 옛 목록을 버리지 않는다 — 새 응답이 올 때까지 흐린 채로 남는다(설계/05 §8 갱신 로딩)
+  // 페이지·필터가 바뀌어도 옛 목록을 버리지 않는다 — 새 응답이 올 때까지 흐린 채로 남는다(작업자(AI)_문서/05 §8 갱신 로딩)
   const { data, loading, error, reload } = useApiQuery(buildLibraryApiUrl(endpoint, params, size), {
     keepPreviousData: true,
   });

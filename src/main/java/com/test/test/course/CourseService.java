@@ -34,9 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 코스 학습 서비스 (설계 §3)
  *
- * <p><b>언어는 파라미터다</b>(설계/04 §8) — 영어 과정을 위해 이 서비스를 복제하지 않는다.
+ * <p><b>언어는 파라미터다</b>(작업자(AI)_문서/04 §8) — 영어 과정을 위해 이 서비스를 복제하지 않는다.
  * 경로가 언어를 정하고({@code /api/courses} = JA, {@code /api/en/**} = EN) 조회 조건 하나가 과정을 가른다.
- * 다른 언어의 리소스 id는 "다른 언어의 것"이 아니라 <b>없는 것</b>이라 404다(설계/04 §8).</p>
+ * 다른 언어의 리소스 id는 "다른 언어의 것"이 아니라 <b>없는 것</b>이라 404다(작업자(AI)_문서/04 §8).</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -55,10 +55,10 @@ public class CourseService {
 
     /**
      * 코스 목록 (설계 §3-1) — 그 언어의 코스만, courseNo 오름차순.
-     * 일본어 목록에 영어 코스가 섞이지 않는다(그 반대도 마찬가지 — 설계/04 §8).
+     * 일본어 목록에 영어 코스가 섞이지 않는다(그 반대도 마찬가지 — 작업자(AI)_문서/04 §8).
      */
     public List<CourseDTO> getCourseList(CourseLanguage language) {
-        // unitCount는 진도 막대의 분모다(설계/04 §6-1). 코스마다 세면 6번 더 조회하게 되므로 한 번의 집계로 받는다.
+        // unitCount는 진도 막대의 분모다(작업자(AI)_문서/04 §6-1). 코스마다 세면 6번 더 조회하게 되므로 한 번의 집계로 받는다.
         Map<Long, Long> unitCounts = courseUnitRepository.countGroupByCourse().stream()
                 .collect(Collectors.toMap(CourseUnitCount::getCourseId, CourseUnitCount::getCnt));
 
@@ -99,7 +99,7 @@ public class CourseService {
 
     /**
      * 유닛 학습 데이터 전체 (설계 §3-3) — 문법+예문·회화·한자·어휘·이동 정보 한 번에.
-     * 한자가 0자인 코스(입문)도 {@code kanjis: []}로 내려간다 — 필드를 빼지 않는다(설계/06 §2).
+     * 한자가 0자인 코스(입문)도 {@code kanjis: []}로 내려간다 — 필드를 빼지 않는다(작업자(AI)_문서/06 §2).
      */
     public UnitStudyDTO getUnitStudy(Long courseId, Integer unitNo) {
         UnitStudyBase base = loadUnitStudyBase(courseId, unitNo, CourseLanguage.JA);
@@ -118,7 +118,7 @@ public class CourseService {
     }
 
     /**
-     * 유닛 학습의 <b>언어 공통 부분</b> (설계/04 §8-1) — 3번째 자리(한자/표현)와 어휘 표기 형태만 호출자가 채운다.
+     * 유닛 학습의 <b>언어 공통 부분</b> (작업자(AI)_문서/04 §8-1) — 3번째 자리(한자/표현)와 어휘 표기 형태만 호출자가 채운다.
      * 영어 과정 서비스가 이 메서드를 재사용한다(복제 금지).
      */
     public UnitStudyBase loadUnitStudyBase(Long courseId, Integer unitNo, CourseLanguage language) {
@@ -135,7 +135,7 @@ public class CourseService {
         int totalUnits = courseUnitRepository.countByCourseId(courseId);
 
         // 마지막 유닛에서만 다음 코스 링크 (설계 §3-3·§7-8 — 준비중이어도 내려주고 프론트가 status로 분기).
-        // 다음 코스는 반드시 같은 언어 안에서 찾는다 — courseNo는 언어 안에서만 유일하다(설계/03 §3).
+        // 다음 코스는 반드시 같은 언어 안에서 찾는다 — courseNo는 언어 안에서만 유일하다(작업자(AI)_문서/03 §3).
         NextCourseDTO nextCourse = null;
         if (unit.getUnitNo() == totalUnits) {
             nextCourse = courseRepository.findByLanguageAndCourseNo(language.code(), course.getCourseNo() + 1)
@@ -152,7 +152,7 @@ public class CourseService {
                 unitVocabularyRepository.findWithVocabularyByUnitId(unit.getId()).stream()
                         .map(UnitVocabularyEntity::getVocabulary)
                         .toList();
-        // entryId(설계/04 §6-1)는 자료실의 병합 규칙에서 온다 — 규칙을 여기서 다시 구현하지 않고,
+        // entryId(작업자(AI)_문서/04 §6-1)는 자료실의 병합 규칙에서 온다 — 규칙을 여기서 다시 구현하지 않고,
         // 유닛 어휘 전체를 한 번의 쿼리로 그룹 조회해 채운다(어휘당 쿼리 금지 — N+1).
         Map<Long, Long> entryIds = libraryVocabularyService.resolveEntryIds(
                 unitVocabularies.stream().map(VocabularyEntity::getId).toList(), language);
@@ -171,7 +171,7 @@ public class CourseService {
     }
 
     /**
-     * 다른 언어의 코스 id는 <b>없는 것</b>으로 취급한다 — 존재를 알려주지 않는다(설계/04 §8).
+     * 다른 언어의 코스 id는 <b>없는 것</b>으로 취급한다 — 존재를 알려주지 않는다(작업자(AI)_문서/04 §8).
      * 영어 과정 서비스도 이 메서드를 쓴다 — "언어가 다르면 404"라는 판정이 두 곳에 생기지 않도록 공개한다.
      */
     public CourseEntity findCourse(Long courseId, CourseLanguage language) {

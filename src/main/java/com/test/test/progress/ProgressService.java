@@ -19,11 +19,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 진도 (설계/04 §6-3) — 완료 유닛 · 마지막 위치.
+ * 진도 (작업자(AI)_문서/04 §6-3) — 완료 유닛 · 마지막 위치.
  *
- * <p>완료는 서버가 추론하지 않는다(설계/08 B-10). 프론트가 정리 스텝 도달 시 명시적으로 보내는 값만 저장한다.
+ * <p>완료는 서버가 추론하지 않는다(작업자(AI)_문서/08 B-10). 프론트가 정리 스텝 도달 시 명시적으로 보내는 값만 저장한다.
  * 코스별 완료 수·다음 유닛·배지 판정 같은 계산은 응답을 받은 화면이 한다 — 게스트도 같은 계산을
- * localStorage 문서로 하기 때문에 계산을 서버에 두면 두 벌이 된다(설계/04 §6-3).</p>
+ * localStorage 문서로 하기 때문에 계산을 서버에 두면 두 벌이 된다(작업자(AI)_문서/04 §6-3).</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class ProgressService {
     private final CourseUnitCatalog courseUnitCatalog;
     private final UserRepository userRepository;
 
-    /** 내 진도 전체 — 지금 존재하는 유닛만 내려간다(설계/03 §4-1) */
+    /** 내 진도 전체 — 지금 존재하는 유닛만 내려간다(작업자(AI)_문서/03 §4-1) */
     public ProgressDTO getProgress(Long userId) {
         ExistingUnits existingUnits = courseUnitCatalog.existingUnits();
 
@@ -54,7 +54,7 @@ public class ProgressService {
     }
 
     /**
-     * 마지막 위치 저장 — 사용자당 1행 upsert (설계/04 §6-3).
+     * 마지막 위치 저장 — 사용자당 1행 upsert (작업자(AI)_문서/04 §6-3).
      * 스텝 이동마다 자동 저장돼 요청이 겹치기 쉬우므로 {@link #setUnitCompleted}와 같은 방식으로 줄을 세운다.
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -67,7 +67,7 @@ public class ProgressService {
     }
 
     /**
-     * 완료 켜기/끄기 — 켜기도 끄기도 <b>동시 요청에서까지</b> 멱등이다(설계/04 §6-3).
+     * 완료 켜기/끄기 — 켜기도 끄기도 <b>동시 요청에서까지</b> 멱등이다(작업자(AI)_문서/04 §6-3).
      *
      * <p>완료 토글의 가장 자연스러운 조작이 <b>더블클릭</b>이다. 두 요청이 겹치면 "조회 후 없으면 삽입"이
      * 깨져 한쪽이 UNIQUE에 걸리는데, 여기서 500을 주면 화면은 실패로 받아 표시를 되돌린다 —

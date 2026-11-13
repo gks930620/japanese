@@ -18,7 +18,7 @@ import { appliedChips } from "../lib/libraryChips.js";
 
 const PLACEHOLDER = "글자·훈음·음독·훈독으로 검색 (예: 사람, ひと, ジン, 人)";
 
-// 한자 자료실 목록 (설계/05 §7) — 타일 그리드, 60자/쪽
+// 한자 자료실 목록 (작업자(AI)_문서/05 §7) — 타일 그리드, 60자/쪽
 export function LibraryKanjiPage() {
   const { params, page, loading, error, reload, setParams, reset } = useLibraryList(
     "/api/library/kanji",

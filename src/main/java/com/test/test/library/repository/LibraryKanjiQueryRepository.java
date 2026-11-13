@@ -23,7 +23,7 @@ import org.springframework.stereotype.Repository;
  * 목록은 엔티티가 아니라 {@link KanjiRow}로 직접 프로젝션해 N+1을 구조적으로 없앤다.
  * 한자↔유닛 매핑은 1:1이라 조인이 행을 늘리지 않는다.</p>
  *
- * <p>{@code ids}(설계/04 §6-7)는 "그 id의 항목만" 보는 부분 집합 필터다. 없는 id는 조용히 빠진다 —
+ * <p>{@code ids}(작업자(AI)_문서/04 §6-7)는 "그 id의 항목만" 보는 부분 집합 필터다. 없는 id는 조용히 빠진다 —
  * 보관함(회원·게스트 공통)의 목록이 이 필터 위에 만들어진다.</p>
  */
 @Repository
@@ -72,7 +72,7 @@ public class LibraryKanjiQueryRepository {
         return baseQuery(levelCodes, language, keyword, ids).fetch();
     }
 
-    /** 지금 존재하는(유닛에 매핑된) id만 추린다 — 보관함 개수·★ 집합의 읽기 시점 필터(설계/03 §4-1) */
+    /** 지금 존재하는(유닛에 매핑된) id만 추린다 — 보관함 개수·★ 집합의 읽기 시점 필터(작업자(AI)_문서/03 §4-1) */
     public List<Long> findExistingIds(Collection<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return List.of();
@@ -123,7 +123,7 @@ public class LibraryKanjiQueryRepository {
         return levelCodes == null || levelCodes.isEmpty() ? null : COURSE.levelCode.in(levelCodes);
     }
 
-    /** 과정 언어 — 일본어 자료실에 영어 콘텐츠가 섞이지 않는다(설계/03 §3 — 분리는 조회 조건 하나로 끝난다) */
+    /** 과정 언어 — 일본어 자료실에 영어 콘텐츠가 섞이지 않는다(작업자(AI)_문서/03 §3 — 분리는 조회 조건 하나로 끝난다) */
     private BooleanExpression languageCondition(CourseLanguage language) {
         return COURSE.language.eq(language.code());
     }

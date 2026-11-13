@@ -17,9 +17,9 @@ import { hasHangul, hasJapanese, hasKanji, hasKatakana } from "./diagnosisScript
 import { coursesFixture } from "../test/apiFixtures.js";
 
 /**
- * 실력 진단 — **측정 규칙** (설계/09 §3 — TDD Red, senior-dev 작성 2026-09-10 / 2026-09-14 개정)
+ * 실력 진단 — **측정 규칙** (작업자(AI)_문서/09 §3 — TDD Red, senior-dev 작성 2026-09-10 / 2026-09-14 개정)
  *
- * 기획 `진행사항/기획_2026-09_진단개편.md` / 인수 조건 **A9·A10·A11·A12·A18·A21·A27·A42~A46** + 예외 **E15**.
+ * 규칙 `작업자(AI)_문서/09 §3`(기획서는 흡수 후 폐기) / 당시 인수 조건 **A9·A10·A11·A12·A18·A21·A27·A42~A46** + 예외 **E15**.
  * (E6·E17 "한 문항도 고르지 않고 제출"은 2026-09-16 무효 → E26. 제출 여부는 `DiagnosisPage.unanswered.test.jsx`가 맡는다.)
  *
  * ★ 2026-09-10 개편으로 이 파일의 기대값이 통째로 바뀌었다(08 §F-13 뒤집힘):
@@ -48,7 +48,7 @@ function seededRng(seed = 1) {
   };
 }
 
-/** 자료실 어휘를 평탄화한 모양(설계/09 §1-5 어댑터의 출력) */
+/** 자료실 어휘를 평탄화한 모양(작업자(AI)_문서/09 §1-5 어댑터의 출력) */
 const vocab = (id, extra = {}) => ({
   id,
   word: `たんご${id}`,
@@ -58,7 +58,7 @@ const vocab = (id, extra = {}) => ({
   ...extra,
 });
 
-/** GET /api/library/grammar 목록 항목 — 2026-09-10부터 examples가 함께 온다(설계/04 §3-5) */
+/** GET /api/library/grammar 목록 항목 — 2026-09-10부터 examples가 함께 온다(작업자(AI)_문서/04 §3-5) */
 const grammar = (id, extra = {}) => ({
   id,
   name: `〜ぶんぽう${id}`,

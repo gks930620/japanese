@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 어휘 수정 응답 (설계/04 §9) — 저장 후 값. 표제(word)는 언제나 원래 값이다 */
+/** 어휘 수정 응답 (작업자(AI)_문서/04 §9) — 저장 후 값. 표제(word)는 언제나 원래 값이다 */
 @Getter
 @Builder
 @NoArgsConstructor

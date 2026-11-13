@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 관리자 편집 API — 편집 모드 <b>꺼진</b> 환경(기본값) (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: `설계/04_API계약.md` §9 (게이팅이 계약의 일부다) / 인수 조건: A1·A14·C4
+ * <p>계약 문서: `작업자(AI)_문서/04_API계약.md` §9 (게이팅이 계약의 일부다) / 인수 조건: A1·A14·C4
  *
  * <p>꺼진 환경에서는 편집 컨트롤러 빈이 <b>등록되지 않는다</b>(@ConditionalOnProperty).
  * 그래서 응답은 "권한 없음"이 아니라 <b>미매핑 404</b>다 — 다른 없는 주소와 구별할 수 없어야

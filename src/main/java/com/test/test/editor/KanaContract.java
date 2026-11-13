@@ -4,7 +4,7 @@ import com.test.test.common.exception.BusinessRuleException;
 import java.util.regex.Pattern;
 
 /**
- * kana 표기 계약 검증기 (설계/06 §1) — <b>검증기는 이 한 곳뿐이다.</b>
+ * kana 표기 계약 검증기 (작업자(AI)_문서/06 §1) — <b>검증기는 이 한 곳뿐이다.</b>
  * 한자 예시 단어·문법 예문·어휘·회화 대사 네 군데가 같은 규칙을 공유한다 — 네 벌로 흩어지면 곧 갈린다.
  *
  * <p>규칙: kana는 "원문을 읽는 법"이다.
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  */
 public final class KanaContract {
 
-    /** 한자 판정 = CJK 한자(Script=Han) 1자 이상 (설계/06 §1) */
+    /** 한자 판정 = CJK 한자(Script=Han) 1자 이상 (작업자(AI)_문서/06 §1) */
     private static final Pattern HAN = Pattern.compile("\\p{IsHan}");
 
     private KanaContract() {

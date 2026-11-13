@@ -18,7 +18,7 @@ async function goToStep(user, label) {
   await user.click(await screen.findByRole("button", { name: label }));
 }
 
-describe("UnitStudyPage — 복습 블록 (설계/04 §2-3 review)", () => {
+describe("UnitStudyPage — 복습 블록 (작업자(AI)_문서/04 §2-3 review)", () => {
   it("review가 null이면 '지금까지 배운 것' 블록을 렌더하지 않는다", async () => {
     const user = userEvent.setup();
     renderUnit(unitStudyPayload({ review: null }));
@@ -43,7 +43,7 @@ describe("UnitStudyPage — 복습 블록 (설계/04 §2-3 review)", () => {
     expect(screen.getByText("これ・それ・あれ")).toBeInTheDocument();
   });
 
-  it("복습 블록에는 자료실 링크를 넣지 않는다 (설계/05 §8 각주)", async () => {
+  it("복습 블록에는 자료실 링크를 넣지 않는다 (작업자(AI)_문서/05 §8 각주)", async () => {
     const user = userEvent.setup();
     renderUnit(
       unitStudyPayload({ unitNo: 5, review: { fromUnitNo: 1, toUnitNo: 5, grammarNames: ["名詞+です"] } }),
@@ -55,7 +55,7 @@ describe("UnitStudyPage — 복습 블록 (설계/04 §2-3 review)", () => {
   });
 });
 
-describe("UnitStudyPage — 자료실 나가는 링크 (설계/05 §11, 인수 29~31)", () => {
+describe("UnitStudyPage — 자료실 나가는 링크 (작업자(AI)_문서/05 §11, 인수 29~31)", () => {
   it("문법 스텝: '자료실에서 보기'가 문법 상세를 새 탭으로 연다", async () => {
     renderUnit(unitStudyPayload());
 

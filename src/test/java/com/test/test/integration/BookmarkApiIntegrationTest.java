@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 보관함 API 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약 문서: 설계/04_API계약.md §6-4
+ * <p>계약 문서: 작업자(AI)_문서/04_API계약.md §6-4
  * 인수 조건: AC-B-01·02·04·05·06·07·09·11·12·13·14·15·21, AC-X-04
  *
  * <p>핵심 계약 3가지

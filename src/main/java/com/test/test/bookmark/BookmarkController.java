@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 보관함 API (설계/04 §6-4) — 5개 전부 <b>인증 필요</b>(결정기록 B-8).
+ * 보관함 API (작업자(AI)_문서/04 §6-4) — 5개 전부 <b>인증 필요</b>(결정기록 B-8).
  *
  * <p>{@code {type}}은 경로에서 소문자(자료실 경로와 맞춘다), 응답 바디의 {@code type}은 대문자 enum 코드다.
  * 모르는 종류는 404 — 존재하지 않는 주소이기 때문이다(BookmarkType.fromPath).</p>

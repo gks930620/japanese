@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ProgressBar } from "./ProgressBar.jsx";
 
-/** 진도 막대 (설계/05 §8) — 선형 바 + 숫자 라벨을 항상 함께 쓴다. */
+/** 진도 막대 (작업자(AI)_문서/05 §8) — 선형 바 + 숫자 라벨을 항상 함께 쓴다. */
 describe("ProgressBar", () => {
   it("진도 0이면 아무것도 렌더링하지 않는다 (빈 막대 금지)", () => {
     const { container } = render(<ProgressBar completed={0} total={20} />);

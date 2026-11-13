@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 유닛 좌표(코스·유닛번호) 검증 창구 (설계/03 §4-1)
+ * 유닛 좌표(코스·유닛번호) 검증 창구 (작업자(AI)_문서/03 §4-1)
  *
  * <p>진도·병합이 같은 판정을 하므로 한 곳에 둔다 — 기존 course 리포지토리를 재사용하고
- * 새 조회 경로를 만들지 않는다(설계/08 C-7).</p>
+ * 새 조회 경로를 만들지 않는다(작업자(AI)_문서/08 C-7).</p>
  */
 @Component
 @RequiredArgsConstructor

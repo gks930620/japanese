@@ -25,7 +25,7 @@ public interface RefreshRepository  extends JpaRepository<RefreshEntity,Long> {
     public RefreshEntity findByToken(String token);
 
     /**
-     * 그 사용자의 refresh 토큰 전량 삭제 — 비밀번호 변경·탈퇴가 쓴다(설계/03 §4 · 04 §4-1 ④).
+     * 그 사용자의 refresh 토큰 전량 삭제 — 비밀번호 변경·탈퇴가 쓴다(작업자(AI)_문서/03 §4 · 04 §4-1 ④).
      * username이 아니라 <b>id</b> 기준인 이유: 탈퇴는 username까지 바꾸므로(소셜) 값이 흔들리지 않는 키를 쓴다.
      * clearAutomatically를 쓰지 않는다 — 같은 트랜잭션에서 수정 중인 users 엔티티가 detach되면 익명화가 유실된다.
      */

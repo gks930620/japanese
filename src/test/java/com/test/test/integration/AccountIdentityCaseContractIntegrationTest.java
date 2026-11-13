@@ -27,7 +27,7 @@ import org.springframework.http.MediaType;
  * 구분하지 않는다. 같은 요청이 운영에서는 {@code users.username} UNIQUE 위반(500)이 되거나 엉뚱한 계정을
  * 조회한다. <b>환경이 신원을 결정하는</b> 상태이며 로컬 테스트로는 드러나지 않는다.</p>
  *
- * <p><b>계약 (판정 2026-09-21, 설계/08 C-24)</b>: 아이디·이메일은 <b>대소문자를 구분하지 않는 식별자</b>다.
+ * <p><b>계약 (판정 2026-09-21, 작업자(AI)_문서/08 C-24)</b>: 아이디·이메일은 <b>대소문자를 구분하지 않는 식별자</b>다.
  * 애플리케이션이 {@code Locale.ROOT} 소문자로 <b>정규화해 저장·대조</b>한다 — DB collation에 기대지 않는다
  * (컨벤션 §5 "환경 차이는 코드가 흡수한다").
  * <ul>
@@ -123,7 +123,7 @@ class AccountIdentityCaseContractIntegrationTest extends ApiIntegrationTestSuppo
 
     @Test
     void changing_only_the_case_of_my_own_email_is_not_a_change() throws Exception {
-        // 설계/04 §4-1 "값이 바뀔 때만 검사한다" — 대소문자만 바꾼 것은 바꾼 것이 아니다.
+        // 작업자(AI)_문서/04 §4-1 "값이 바뀔 때만 검사한다" — 대소문자만 바꾼 것은 바꾼 것이 아니다.
         // 그렇지 않으면 자기 이메일을 대문자로 저장해 "같은 주소의 두 번째 표기"를 만들 수 있다.
         Tokens tokens = loginDefaultUser();
 

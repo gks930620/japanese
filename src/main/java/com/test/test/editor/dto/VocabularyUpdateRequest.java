@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 어휘 수정 요청 (설계/04 §9) — 표제 {@code word}는 요청에 있어도 무시된다.
+ * 어휘 수정 요청 (작업자(AI)_문서/04 §9) — 표제 {@code word}는 요청에 있어도 무시된다.
  * partOfSpeech는 enum 바인딩이라 7종 밖 값은 역직렬화에서 걸린다(INVALID_JSON — 프론트는 select라 도달하지 않는다).
  */
 @Getter

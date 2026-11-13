@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 완료한 유닛 1건 (설계/04 §6-3) — 코스 제목·레벨은 복제하지 않는다(설계/03 §4-1, 이름의 출처는 공개 API 한 곳).
+ * 완료한 유닛 1건 (작업자(AI)_문서/04 §6-3) — 코스 제목·레벨은 복제하지 않는다(작업자(AI)_문서/03 §4-1, 이름의 출처는 공개 API 한 곳).
  */
 @Getter
 @Builder

@@ -9,7 +9,7 @@ import { readGuestProgress } from "../lib/guestStore.js";
 import { UnitStudyPage } from "./UnitStudyPage.jsx";
 
 /**
- * 유닛 확인 문제 스텝 (설계/05 §15-1 · 기획 Q1·Q2·Q22 — TDD Red, senior-dev 작성)
+ * 유닛 확인 문제 스텝 (작업자(AI)_문서/05 §15-1 · 기획 Q1·Q2·Q22 — TDD Red, senior-dev 작성)
  *
  * 확인 문제의 stepKey는 "quiz"다(서버 무변경 — 형식 검증만 있다).
  * 스텝 **순서**(어휘 → 확인 문제 → 정리)는 여기서 단언하지 않는다 — `UnitStudyPage.stepOrder.test.jsx` 한 곳이 고정한다(08 C-11, 2026-09-03 결정 D-3).

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 학습 기록 초기화 결과 (설계/04 §6-3) — 보관함은 건드리지 않는다(AC-P-30) */
+/** 학습 기록 초기화 결과 (작업자(AI)_문서/04 §6-3) — 보관함은 건드리지 않는다(AC-P-30) */
 @Getter
 @Builder
 @NoArgsConstructor

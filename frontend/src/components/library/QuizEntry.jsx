@@ -4,7 +4,7 @@ import { Button } from "../ui/Button.jsx";
 import { btnClass } from "../ui/kitClass.js";
 
 /**
- * [이 조건으로 문제 풀기] (설계/05 §15-1) — result-bar 오른쪽 끝.
+ * [이 조건으로 문제 풀기] (작업자(AI)_문서/05 §15-1) — result-bar 오른쪽 끝.
  * 결과 개수·적용 칩과 같은 줄에 붙어 "이 개수·이 조건이 곧 출제 범위"가 배치로 읽힌다(Q19).
  * primary가 아니다 — 목록 화면의 주인공은 목록이다.
  */

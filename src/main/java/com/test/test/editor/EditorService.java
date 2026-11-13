@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 관리자 편집 (설계/04 §9) — 로컬 편집 모드에서만 컨트롤러가 등록되므로 이 서비스는 그때만 불린다.
+ * 관리자 편집 (작업자(AI)_문서/04 §9) — 로컬 편집 모드에서만 컨트롤러가 등록되므로 이 서비스는 그때만 불린다.
  *
  * <p>규칙 요약: 표제(letter·name·word)는 무시(DTO에 필드가 없다) / 자식 배열은 <b>있는 id만 수정</b>
  * (활용표만 전체 교체 — 판정 ④) / kana 계약은 {@link KanaContract} 한 곳 / 응답 = 저장 후 값.</p>
@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 도달 경로가 없더라도 "꺼진 환경에는 편집이 존재하지 않는다"를 코드 구조로 말하는 것이 이 설계의 핵심이다.</p>
  *
  * <p>사용자 행 잠금을 쓰지 않는다 — 이 데이터는 사용자 소유가 아니고(B-11의 대상 밖),
- * 로컬 1인 사용 전제라 경합이 없다(설계/04 §9). PUT 1건 = 트랜잭션 1개.</p>
+ * 로컬 1인 사용 전제라 경합이 없다(작업자(AI)_문서/04 §9). PUT 1건 = 트랜잭션 1개.</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -64,7 +64,7 @@ public class EditorService {
         String onyomi = KanaContract.normalize(request.getOnyomi());
         String kunyomi = KanaContract.normalize(request.getKunyomi());
         if (onyomi == null && kunyomi == null) {
-            // 조건부 필수는 @Valid로 표현되지 않아 여기서 판정한다(설계/04 §9 — A7)
+            // 조건부 필수는 @Valid로 표현되지 않아 여기서 판정한다(작업자(AI)_문서/04 §9 — A7)
             throw new BusinessRuleException("음독과 훈독 중 최소 하나는 있어야 합니다.");
         }
 
@@ -139,7 +139,7 @@ public class EditorService {
     }
 
     /**
-     * 자식 배열 규칙 (설계/04 §9 "수정만") — 요청의 모든 id가 <b>그 부모의 현재 자식</b>이어야 한다.
+     * 자식 배열 규칙 (작업자(AI)_문서/04 §9 "수정만") — 요청의 모든 id가 <b>그 부모의 현재 자식</b>이어야 한다.
      * 모르는 id(= 추가 시도)나 남의 자식 id가 섞이면 400. 요청에 없는 자식은 <b>그대로 둔다</b> —
      * 행 삭제를 표현할 방법 자체가 없다("추가·삭제 금지"가 이 한 곳으로 강제된다).
      */

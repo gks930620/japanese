@@ -4,10 +4,10 @@ import com.test.test.common.exception.BusinessRuleException;
 import java.util.Locale;
 
 /**
- * 과정 언어 (설계/03 §3 — {@code course.language})
+ * 과정 언어 (작업자(AI)_문서/03 §3 — {@code course.language})
  *
  * <p>코스·유닛·콘텐츠 테이블을 복제하지 않고 <b>조회 조건 하나로</b> 과정을 가른다.
- * 경로가 언어를 정하므로({@code /api/courses} = JA, {@code /api/en/**} = EN — 설계/04 §8 J-7)
+ * 경로가 언어를 정하므로({@code /api/courses} = JA, {@code /api/en/**} = EN — 작업자(AI)_문서/04 §8 J-7)
  * 이 값은 요청 파라미터가 아니라 컨트롤러가 고정해 서비스에 넘긴다.</p>
  */
 public enum CourseLanguage {

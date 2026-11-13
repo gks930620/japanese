@@ -8,7 +8,7 @@ import { AuthProvider } from "../context/AuthContext.jsx";
 import { CommunityListPage } from "./CommunityListPage.jsx";
 
 /**
- * 커뮤니티 목록 — 주소로 들어온 검색 상태 (설계/04 §5 · AC-A-41) — TDD Red, senior-dev 작성.
+ * 커뮤니티 목록 — 주소로 들어온 검색 상태 (작업자(AI)_문서/04 §5 · AC-A-41) — TDD Red, senior-dev 작성.
  *
  * 탈퇴 화면의 [내가 쓴 글 찾기]가 "내 닉네임으로 검색된 상태"로 커뮤니티를 연다.
  * 지금은 검색 상태가 화면 안에만 있어 주소로 전달되지 않는다 —
@@ -63,7 +63,7 @@ describe("주소로 들어온 검색 조건 (AC-A-41)", () => {
 /**
  * 페이지도 주소에서 온다 (2026-09-03 판정 L7 — TDD Red, senior-dev 작성).
  *
- * 설계/02 §4: "목록 화면의 상태(검색어·필터·정렬·**페이지**)는 컴포넌트 state가 아니라 주소 쿼리스트링에 둔다."
+ * 작업자(AI)_문서/02 §4: "목록 화면의 상태(검색어·필터·정렬·**페이지**)는 컴포넌트 state가 아니라 주소 쿼리스트링에 둔다."
  * 이 파일 머리의 규칙("주소가 목록 상태의 단일 출처")을 검색 조건에만 적용하고 페이지는 state로 남겨,
  * 3페이지에서 새로고침하면 1페이지로, 글을 열었다가 뒤로 오면 1페이지로 돌아간다. 자료실·보관함은 이미 지킨다.
  * 서버 보정(04 §1-5)이 있으므로 화면은 응답의 page를 신뢰해 주소를 되쓴다.
@@ -95,7 +95,7 @@ function renderPaged(route) {
   return fetchMock;
 }
 
-describe("페이지는 주소에서 온다 (L7 · 설계/02 §4)", () => {
+describe("페이지는 주소에서 온다 (L7 · 작업자(AI)_문서/02 §4)", () => {
   it("?page=2 로 열면 그 페이지를 조회한다", async () => {
     const fetchMock = renderPaged("/community?page=2");
 

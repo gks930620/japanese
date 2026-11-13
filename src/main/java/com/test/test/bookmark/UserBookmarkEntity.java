@@ -21,14 +21,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 보관함 1행 (설계/03 §4-1)
+ * 보관함 1행 (작업자(AI)_문서/03 §4-1)
  *
  * <p>UNIQUE(user_id, target_type, target_id)가 담기를 멱등으로 만들고,
  * INDEX(user_id, target_type)에 목록·개수 조회가 항상 걸린다.
  * {@code created_at}은 "최근 담은 순" 정렬의 유일한 근거다.</p>
  *
  * <p>콘텐츠 테이블에는 FK를 걸지 않는다 — 콘텐츠는 시드 전용이라 통째로 다시 적재될 수 있고,
- * FK를 걸면 재적재가 사용자 데이터에 막히거나 사용자 데이터가 함께 지워진다(설계/03 §4-1).</p>
+ * FK를 걸면 재적재가 사용자 데이터에 막히거나 사용자 데이터가 함께 지워진다(작업자(AI)_문서/03 §4-1).</p>
  */
 @Entity
 @Table(name = "user_bookmark",
@@ -51,7 +51,7 @@ public class UserBookmarkEntity {
     @Column(name = "target_type", nullable = false, length = 20)
     private BookmarkType targetType;
 
-    /** 어휘는 <b>표제어 대표 id</b>다 — 서버가 정규화한 뒤 저장한다(설계/03 §4-1) */
+    /** 어휘는 <b>표제어 대표 id</b>다 — 서버가 정규화한 뒤 저장한다(작업자(AI)_문서/03 §4-1) */
     @Column(name = "target_id", nullable = false)
     private Long targetId;
 

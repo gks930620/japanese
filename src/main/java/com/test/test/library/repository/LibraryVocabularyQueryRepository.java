@@ -37,10 +37,10 @@ public class LibraryVocabularyQueryRepository {
     }
 
     /**
-     * 주어진 어휘 id들이 속한 <b>병합 그룹의 모든 행</b>을 학습 순서로 (설계/03 §4-1 대표 id 정규화의 재료).
+     * 주어진 어휘 id들이 속한 <b>병합 그룹의 모든 행</b>을 학습 순서로 (작업자(AI)_문서/03 §4-1 대표 id 정규화의 재료).
      *
      * <p>같은 표기를 가진 행을 서브쿼리로 함께 끌어와 <b>한 번의 쿼리</b>로 끝낸다 —
-     * 유닛 학습의 {@code entryId}(설계/04 §6-1)를 어휘당 1쿼리로 채우면 N+1이 된다.</p>
+     * 유닛 학습의 {@code entryId}(작업자(AI)_문서/04 §6-1)를 어휘당 1쿼리로 채우면 N+1이 된다.</p>
      */
     public List<VocabularyRow> findGroupRowsByVocabularyIds(Collection<Long> vocabularyIds,
                                                            CourseLanguage language) {
@@ -67,7 +67,7 @@ public class LibraryVocabularyQueryRepository {
                 .join(UNIT_VOCABULARY.vocabulary, VOCABULARY)
                 .join(UNIT_VOCABULARY.unit, UNIT)
                 .join(UNIT.course, COURSE)
-                // 과정 언어로 먼저 가른다 — 병합 그룹에 다른 과정의 행이 섞이면 levels·senses가 어긋난다(설계/03 §3)
+                // 과정 언어로 먼저 가른다 — 병합 그룹에 다른 과정의 행이 섞이면 levels·senses가 어긋난다(작업자(AI)_문서/03 §3)
                 .where(COURSE.language.eq(language.code()))
                 .orderBy(COURSE.courseNo.asc(), UNIT.unitNo.asc(), UNIT_VOCABULARY.sortOrder.asc());
     }

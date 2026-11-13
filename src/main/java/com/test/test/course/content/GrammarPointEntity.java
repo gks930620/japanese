@@ -46,7 +46,7 @@ public class GrammarPointEntity {
     @OrderBy("sortOrder ASC")
     private List<GrammarRuleEntity> rules = new ArrayList<>();
 
-    // ── 편집 모드 도메인 메서드 (설계/04 §9) ─────────────────────────────────
+    // ── 편집 모드 도메인 메서드 (작업자(AI)_문서/04 §9) ─────────────────────────────────
 
     /** 설명 수정 — 표제(name·nameKo)는 시드 소관이라 받지 않는다 */
     public void updateExplanation(String explanation) {

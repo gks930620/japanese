@@ -11,9 +11,9 @@ import { resumeTarget } from "../lib/resume.js";
 import { alertClass, btnClass, cardClass } from "../components/ui/kitClass.js";
 
 /**
- * 마이페이지 허브 (설계/05 §7) — 읽기 전용 4항목 → 카드 4장.
+ * 마이페이지 허브 (작업자(AI)_문서/05 §7) — 읽기 전용 4항목 → 카드 4장.
  *
- * 로그인 방식 분기의 근거는 **`passwordChangeable` 플래그 하나**다(설계/04 §4-1).
+ * 로그인 방식 분기의 근거는 **`passwordChangeable` 플래그 하나**다(작업자(AI)_문서/04 §4-1).
  * 소셜 계정에는 [비밀번호 변경]을 **회색 비활성이 아니라 아예 렌더하지 않는다** —
  * 회색 버튼은 "언젠가 되는 것"으로 읽혀 사용자가 왜 안 되는지 찾게 만든다.
  */

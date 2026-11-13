@@ -1,5 +1,5 @@
 // senior-dev 작성 (2026-09-21) — **학습 도구(확인 문제·음성)는 일본어에만 켜진다**: 양방향 대칭 고정.
-// 근거: 설계/05 §16-1 · 설계/06 §11-9 · 설계/08 C-14(2026-08-25 판정 A-H2 — 문서가 이겨 영어에서 도구를 뺐다).
+// 근거: 작업자(AI)_문서/05 §16-1 · 작업자(AI)_문서/06 §11-9 · 작업자(AI)_문서/08 C-14(2026-08-25 판정 A-H2 — 문서가 이겨 영어에서 도구를 뺐다).
 //
 // **왜 이 파일이 따로 생겼나 — 기존 두 파일이 못 막는 구멍 둘**(08 C-11: 겹치는 것은 여기서 다시 고정하지 않는다)
 //   · 영어 스텝 바에 [확인 문제] 칩이 없다 → `UnitStudyPage.stepOrder.test.jsx`(칩 순서의 단일 기준)가 이미 고정한다.
@@ -24,7 +24,7 @@ import { UserDataProvider } from "../context/UserDataContext.jsx";
 import { UnitStudyPage } from "./UnitStudyPage.jsx";
 import { resetTtsForTest } from "../components/ttsStore.js";
 
-/** 실제 사용자 PC와 같은 조건 — ja 음성이 설치돼 있어 TTS 게이트(설계/09 §4 V11)가 열린다 */
+/** 실제 사용자 PC와 같은 조건 — ja 음성이 설치돼 있어 TTS 게이트(작업자(AI)_문서/09 §4 V11)가 열린다 */
 function stubJapaneseVoice() {
   vi.stubGlobal("speechSynthesis", {
     cancel: vi.fn(),

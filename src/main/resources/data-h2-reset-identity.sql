@@ -21,7 +21,7 @@ ALTER TABLE vocabulary ALTER COLUMN id RESTART WITH 10000;
 ALTER TABLE unit_grammar ALTER COLUMN id RESTART WITH 10000;
 ALTER TABLE unit_kanji ALTER COLUMN id RESTART WITH 10000;
 ALTER TABLE unit_vocabulary ALTER COLUMN id RESTART WITH 10000;
--- 영어 과정(설계/03 §7-3) — 런타임 INSERT는 없지만 다른 콘텐츠 테이블과 같은 규칙을 유지한다.
+-- 영어 과정(작업자(AI)_문서/03 §7-3) — 런타임 INSERT는 없지만 다른 콘텐츠 테이블과 같은 규칙을 유지한다.
 ALTER TABLE expression ALTER COLUMN id RESTART WITH 10000;
 ALTER TABLE expression_example ALTER COLUMN id RESTART WITH 10000;
 ALTER TABLE unit_expression ALTER COLUMN id RESTART WITH 10000;
