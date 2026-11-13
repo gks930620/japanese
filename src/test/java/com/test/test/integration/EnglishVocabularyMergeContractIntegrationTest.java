@@ -15,13 +15,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * 어휘 병합 키는 <b>표기 + 읽기</b>이고, <b>읽기는 일본어에서 {@code kana} · 영어에서 {@code ipa}</b>다
- * (설계/04 §3-7 병합 키 · 08 A-2 · 06 §11-3).
+ * (작업자(AI)_문서/04 §3-7 병합 키 · 08 A-2 · 06 §11-3).
  *
  * <p><b>왜 이 파일이 생겼나 (2026-09-23, senior-dev — TDD Red)</b>
  *
  * <p>규칙 자체는 처음부터 "읽기가 다르면 별개 행"이었다(08 A-2). 그런데 구현이 그 규칙을
  * {@code (word, kana)} 라는 <b>일본어 컬럼 이름</b>으로 박아 두었고, 영어 어휘는 {@code kana}가
- * <b>전량 NULL</b>이다(설계/06 §11-3 — {@code EnglishContentRuleIntegrationTest} 규칙 1이 그것을 강제한다).
+ * <b>전량 NULL</b>이다(작업자(AI)_문서/06 §11-3 — {@code EnglishContentRuleIntegrationTest} 규칙 1이 그것을 강제한다).
  * 그래서 영어에서는 키가 사실상 {@code word} 하나로 축약되고, <b>발음이 다른 동철이음어가 한 행으로 뭉개진다</b>.
  *
  * <p>학습자에게 나타나는 모습(2026-09-23 실서버 확인): 자료실에서 {@code close}를 찾으면
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *       {@code leave}는 한 행 + {@code senses} 2개다. <b>이 검사가 없으면 "다 갈라 버리는" 구현이 통과한다</b> —
  *       회귀 방지의 핵심이고, 품사를 병합 키에 넣는 대안을 배제하는 자리이기도 하다(08 A-7 참고).</li>
  *   <li>{@link #every_english_unit_vocabulary_entry_carries_its_own_pronunciation} — 위 둘의 <b>일반형</b>.
- *       유닛 학습의 {@code entryId}(설계/04 §6-1)도 같은 병합 규칙에서 나오므로(설계/03 §4-1),
+ *       유닛 학습의 {@code entryId}(작업자(AI)_문서/04 §6-1)도 같은 병합 규칙에서 나오므로(작업자(AI)_문서/03 §4-1),
  *       키가 틀리면 유닛에서 누른 단어가 <b>발음이 다른 표제어</b>로 연결된다. 특정 단어에 기대지 않는
  *       불변식이라 콘텐츠가 늘어도 그대로 산다.</li>
  * </ol>
@@ -62,7 +62,7 @@ class EnglishVocabularyMergeContractIntegrationTest extends ApiIntegrationTestSu
     private static final String CLOSE_VERB_IPA = "/kloʊz/";        // 닫다 · 문을 닫다 (E2 유닛 5)
     private static final String LEAVE_IPA = "/liːv/";              // E1 유닛 5 · E2 유닛 2 — 같은 발음
 
-    // ── 계약 1. 발음이 다르면 별개 행 (설계/04 §3-7 · 08 A-2) ────────────────
+    // ── 계약 1. 발음이 다르면 별개 행 (작업자(AI)_문서/04 §3-7 · 08 A-2) ────────────────
 
     /**
      * {@code close}는 형용사 {@code /kloʊs/}(가까운)와 동사 {@code /kloʊz/}(닫다)가 <b>다른 단어</b>다.
@@ -76,7 +76,7 @@ class EnglishVocabularyMergeContractIntegrationTest extends ApiIntegrationTestSu
         assertThat(rows.size())
                 .as("'close'는 발음이 둘(%s 가까운 / %s 닫다)이므로 자료실에 **2행**이어야 하는데 %s행이다."
                                 + " 병합 키의 둘째 값은 '읽기'이고 영어의 읽기는 kana가 아니라 ipa다"
-                                + "(설계/04 §3-7 · 08 A-2 · 06 §11-3). 지금 나온 행: %s",
+                                + "(작업자(AI)_문서/04 §3-7 · 08 A-2 · 06 §11-3). 지금 나온 행: %s",
                         CLOSE_ADJECTIVE_IPA, CLOSE_VERB_IPA, rows.size(), describe(rows))
                 .isEqualTo(2);
 
@@ -138,7 +138,7 @@ class EnglishVocabularyMergeContractIntegrationTest extends ApiIntegrationTestSu
     // ── 계약 3. 일반형 — 유닛 어휘의 entryId는 "자기 발음을 가진" 표제어를 가리킨다 ──
 
     /**
-     * 유닛 학습의 {@code entryId}(설계/04 §6-1)는 자료실 병합 규칙의 결과물이다(설계/03 §4-1 —
+     * 유닛 학습의 {@code entryId}(작업자(AI)_문서/04 §6-1)는 자료실 병합 규칙의 결과물이다(작업자(AI)_문서/03 §4-1 —
      * {@code LibraryVocabularyService.resolveEntryIds}가 단일 출처). 그러므로 병합 키가 틀리면
      * <b>유닛에서 누른 단어가 발음이 다른 표제어로 연결된다</b>.
      *
@@ -164,7 +164,7 @@ class EnglishVocabularyMergeContractIntegrationTest extends ApiIntegrationTestSu
                     JsonNode entry = entriesById.get(entryId);
                     assertThat(entry)
                             .as("%s 어휘 '%s'(id %s)의 entryId %s 가 자료실 표제어 목록에 없다"
-                                            + " — entryId는 자료실 1행의 id와 같은 값이다(설계/04 §6-1)",
+                                            + " — entryId는 자료실 1행의 id와 같은 값이다(작업자(AI)_문서/04 §6-1)",
                                     at, word, id, entryId)
                             .isNotNull();
 
@@ -174,7 +174,7 @@ class EnglishVocabularyMergeContractIntegrationTest extends ApiIntegrationTestSu
                     assertThat(text(entry.path("ipa")))
                             .as("%s 어휘 '%s'(id %s)의 발음은 %s 인데, entryId %s 로 열리는 자료실 표제어의 발음은 %s 다."
                                             + " 학습자는 유닛에서 배운 단어를 자료실에서 **다른 발음으로** 보게 된다 —"
-                                            + " 병합 키의 읽기가 영어에서 ipa여야 하는 이유다(설계/04 §3-7 · 08 A-2)",
+                                            + " 병합 키의 읽기가 영어에서 ipa여야 하는 이유다(작업자(AI)_문서/04 §3-7 · 08 A-2)",
                                     at, word, id, text(vocabulary.path("ipa")), entryId, text(entry.path("ipa")))
                             .isEqualTo(text(vocabulary.path("ipa")));
                     assertThat(text(entry.path("koApprox")))
@@ -198,7 +198,7 @@ class EnglishVocabularyMergeContractIntegrationTest extends ApiIntegrationTestSu
 
     /**
      * 이 변경이 <b>일본어 동작을 바꾸지 않는다</b>는 근거는 "일본어 행의 {@code ipa}는 전량 NULL"이라는
-     * 데이터 사실 하나뿐이다(계약 J-8 · 설계/06 §11-3). 그 전제가 깨지는 날 일본어 병합이
+     * 데이터 사실 하나뿐이다(계약 J-8 · 작업자(AI)_문서/06 §11-3). 그 전제가 깨지는 날 일본어 병합이
      * <b>아무 테스트도 깨뜨리지 않은 채</b> 달라지므로, 전제 자체를 여기서 고정한다.
      *
      * <p>{@code EnglishCourseApiIntegrationTest.japanese_vocabulary_library_carries_the_same_fields_as_null}과
@@ -212,7 +212,7 @@ class EnglishVocabularyMergeContractIntegrationTest extends ApiIntegrationTestSu
         for (JsonNode row : rows) {
             assertThat(row.path("ipa").isNull())
                     .as("일본어 자료실 어휘 '%s' 에 ipa '%s' 가 들어 있다. 일본어 행의 ipa는 전량 NULL이라는 전제 위에서만"
-                                    + " '읽기 = kana(없으면 ipa)'가 일본어 병합을 그대로 둔다(계약 J-8 · 설계/06 §11-3)",
+                                    + " '읽기 = kana(없으면 ipa)'가 일본어 병합을 그대로 둔다(계약 J-8 · 작업자(AI)_문서/06 §11-3)",
                             text(row.path("word")), text(row.path("ipa")))
                     .isTrue();
         }
@@ -259,11 +259,21 @@ class EnglishVocabularyMergeContractIntegrationTest extends ApiIntegrationTestSu
         }
     }
 
+    /**
+     * 유닛 하나 — <b>없으면 그 사실을 말하고 멈춘다.</b> 문구를
+     * {@code EnglishContentRuleIntegrationTest.unit()}과 맞춰 둔다(2026-11-13): 같은 404를 두 파일이
+     * <b>다른 말로</b> 설명하면, 계약을 먼저 올린 날 리포트를 읽는 사람이 한쪽은 "의도된 Red"로,
+     * 다른 한쪽은 "깨졌다"로 읽는다. 이 파일도 {@code CourseCatalog.ENGLISH}의 {@code unitCount}로 도는
+     * <b>전수 검증</b>이므로 콘텐츠보다 계약이 먼저 올라가는 그 창에서 똑같이 빨개진다.
+     */
     private JsonNode unit(long courseId, int unitNo) throws Exception {
         MvcResult result = mockMvc.perform(get("/api/en/courses/{courseId}/units/{unitNo}", courseId, unitNo))
                 .andReturn();
         assertThat(result.getResponse().getStatus())
-                .as("코스 %s 유닛 %s를 부르면 HTTP %s다 — 순회 범위는 CourseCatalog.ENGLISH의 unitCount다",
+                .as("코스 %s 유닛 %s를 부르면 HTTP %s다. 순회 범위는 CourseCatalog.ENGLISH의 unitCount이므로 "
+                                + "거기 적힌 수만큼 유닛이 실재해야 한다 — 아직 콘텐츠를 안 쓴 유닛이라면 이것이 "
+                                + "**의도된 Red**이고, 시드를 채우면 초록이 된다(표를 나중에 올리면 새 유닛이 "
+                                + "규칙 검사를 하나도 받지 않는다 — 작업자(AI)_문서/06 §11-11)",
                         courseId, unitNo, result.getResponse().getStatus())
                 .isEqualTo(200);
         return objectMapper.readTree(result.getResponse().getContentAsString()).path("data");

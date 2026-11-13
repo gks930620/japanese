@@ -3,7 +3,6 @@ package com.test.test.integration;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.everyItem;
@@ -17,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * 영어 과정 뼈대 통합테스트 (TDD Red — senior-dev 작성)
  *
- * <p>계약: `설계/04_API계약.md` §8 (영어 과정 API) (판정 J-6·J-7·J-8)
+ * <p>계약: `작업자(AI)_문서/04_API계약.md` §8 (영어 과정 API) (판정 J-6·J-7·J-8)
  *
  * <p><b>이 파일이 지키는 절대 조건은 "기존 일본어에 영향 0"이다.</b> 그래서 검증의 절반이
  * "영어가 일본어 응답에 섞이지 않는가 / 그 반대는 아닌가"이다 — 경로를 가른 이유가 그것이다.
@@ -27,8 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
 
-    private static final long EN_COURSE_1 = 101L; // 영어 대역(설계/03 §5-2 시드 대역)
-    private static final long EN_COURSE_2 = 102L; // E2 「일상 말하기」 — 2026-09-22 5/20으로 부분 공개
+    private static final long EN_COURSE_1 = 101L; // 영어 대역(작업자(AI)_문서/03 §5-2 시드 대역)
+    private static final long EN_COURSE_2 = 102L; // E2 「일상 말하기」 — 2026-09-22 5/20 → 2026-11-13 10/20 부분 공개
 
     /**
      * E1의 <b>계획</b> 유닛 수 — 시드 {@code data-course-en-content.sql}의 course 101 행({@code planned_unit_count = 15}).
@@ -37,21 +36,22 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      * (지금 열린 유닛 수·집계)이고, 계획 수는 <b>아직 만들지 않은 것에 대한 편집 계획</b>이라 성질이 다르다.
      * 한 줄에 섞으면 {@code unitCount}를 순회 범위로 쓰는 전수 검증이 <b>없는 유닛까지 돌아 전부 404</b>가 되는 길이 열린다.
      *
-     * <p>E1은 15에서 끝난다(기획 §3-3 · 설계/06 §11-12 ① — 공개 경계는 5의 배수).
+     * <p>E1은 15에서 끝난다(기획 §3-3 · 작업자(AI)_문서/06 §11-12 ① — 공개 경계는 5의 배수).
      * <b>2026-09-22 그 날이 왔다</b>: 열린 수가 15에 닿아 {@code totalUnits >= coursePlannedUnits}가 되었고,
-     * <b>사람이 플래그를 내리지 않아도</b> 완주가 됐다(설계/04 §2-3-A가 개수를 boolean 대신 쓴 이유).
+     * <b>사람이 플래그를 내리지 않아도</b> 완주가 됐다(작업자(AI)_문서/04 §2-3-A가 개수를 boolean 대신 쓴 이유).
      *
      * <p>⚠️ <b>이 상수가 15가 아니게 되는 날 읽을 것</b>: 계획이 늘어난다는 것은 E1이 <b>다시 부분 공개</b>가 된다는 뜻이고,
      * 그 순간 아래 {@link #the_last_unit_is_a_finished_course_because_the_plan_is_met}가 전제부터 실패한다.
-     * 그것이 곧 <b>"열린 데까지의 끝" 백엔드 커버리지를 복구하라</b>는 신호다(설계/08 C-30).
+     * 그것이 곧 <b>"열린 데까지의 끝" 백엔드 커버리지를 복구하라</b>는 신호다(작업자(AI)_문서/08 C-30).
      */
     private static final int E1_PLANNED_UNITS = 15;
 
     /**
      * E2의 <b>계획</b> 유닛 수 — 시드 {@code data-course-en-content.sql}의 course 102 행({@code planned_unit_count = 20}).
      *
-     * <p>{@link CourseCatalog#ENGLISH}의 {@code unitCount}(= 지금 열린 수, 5)와 <b>다른 값이라는 것이 요점</b>이다.
-     * E1에서는 두 값이 15로 같아져 "파생 구현인지 아닌지"를 영어 쪽에서 구분할 수 없었는데(설계/08 C-30),
+     * <p>{@link CourseCatalog#ENGLISH}의 {@code unitCount}(= 지금 열린 수, 2026-11-13 기준 10)와
+     * <b>다른 값이라는 것이 요점</b>이다.
+     * E1에서는 두 값이 15로 같아져 "파생 구현인지 아닌지"를 영어 쪽에서 구분할 수 없었는데(작업자(AI)_문서/08 C-30),
      * E2가 5/20으로 열리면서 <b>구분할 수 있는 실데이터가 돌아왔다.</b>
      *
      * <p>⚠️ <b>이 값과 열린 유닛 수가 같아지는 날(E2 20/20) 읽을 것</b>: 아래
@@ -61,7 +61,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
     private static final int E2_PLANNED_UNITS = 20;
 
     /**
-     * 부분 공개 코스의 안내 문구 — <b>E1이 쓰던 것과 글자 그대로 같다</b>(설계/06 §11-12 ③ R6 · 기획 E2 AC-25).
+     * 부분 공개 코스의 안내 문구 — <b>E1이 쓰던 것과 글자 그대로 같다</b>(작업자(AI)_문서/06 §11-12 ③ R6 · 기획 E2 AC-25).
      * 코스마다 다른 문구를 만들지 않는다는 규칙이라, 상수를 두고 <b>문자열 자체</b>를 단언한다.
      */
     private static final String PARTIAL_COURSE_NOTICE =
@@ -84,16 +84,35 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      * <b>2026-09-22 E2가 열리며 또 거짓</b>이 됐다 — 이름은 컴파일러가 봐주지 않아 <b>틀린 채로 초록</b>이다.
      * 세 번째 이름에는 숫자도 "코스 하나"도 넣지 않았다: 표를 따라간다는 사실만 적으면 콘텐츠가 자라도 이름이 낡지 않는다.
      * 고칠 곳은 {@link CourseCatalog#ENGLISH} 한 줄이다.
+     *
+     * <p><b>2026-11-13 단언을 jsonPath에서 AssertJ로 옮겼다</b>(senior-dev): 계약을 콘텐츠보다 먼저 올리는 날
+     * <b>이 테스트가 가장 먼저 빨개지는데</b> jsonPath의 실패 메시지는
+     * {@code JSON path "$.data[1].unitCount" expected:<10> but was:<5>} 한 줄이라
+     * <b>"깨졌다"로 읽힌다.</b> 같은 404·불일치를 {@code EnglishContentRuleIntegrationTest}는
+     * "아직 콘텐츠를 안 쓴 유닛이라면 의도된 Red"라고 말해 주는데 여기만 말을 안 하면,
+     * 리포트를 읽는 사람은 <b>한 배치 안에서 두 가지로 읽는다</b>.
      */
     @Test
     void the_english_course_list_follows_the_catalog_for_status_and_unit_count() throws Exception {
-        ResultActions response = mockMvc.perform(get("/api/en/courses")).andExpect(status().isOk());
+        MvcResult result = mockMvc.perform(get("/api/en/courses"))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode courses = objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
 
         for (int index = 0; index < CourseCatalog.ENGLISH.size(); index++) {
             CourseCatalog.Course course = CourseCatalog.ENGLISH.get(index);
-            response.andExpect(jsonPath("$.data[" + index + "].status")
-                            .value(course.available ? "AVAILABLE" : "PREPARING"))
-                    .andExpect(jsonPath("$.data[" + index + "].unitCount").value(course.unitCount));
+            JsonNode actual = courses.path(index);
+
+            assertThat(actual.path("status").asText())
+                    .as("코스 %s(%s)의 상태 — 기대치 표(CourseCatalog.ENGLISH)가 단일 출처다", course.id, course.title)
+                    .isEqualTo(course.available ? "AVAILABLE" : "PREPARING");
+            assertThat(actual.path("unitCount").asInt())
+                    .as("코스 %s(%s) — 목록은 유닛 %s개라고 말하는데 기대치 표는 %s개다. 표를 **콘텐츠보다 먼저** "
+                                    + "올리는 것이 이 프로젝트의 순서이므로(CourseCatalog.ENGLISH 주석), 시드가 아직 "
+                                    + "안 들어온 유닛이 있다면 이것이 **의도된 Red**이고 시드를 채우면 초록이 된다. "
+                                    + "반대로 시드가 다 들어왔는데 수가 다르면 **표가 틀린 것**이다",
+                            course.id, course.title, actual.path("unitCount").asInt(), course.unitCount)
+                    .isEqualTo(course.unitCount);
         }
     }
 
@@ -220,7 +239,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(jsonPath("$.data.summary.unitCount").value(0));
     }
 
-    // ── 부분 공개 코스 — coursePlannedUnits (설계/04 §2-3-A · 08 C-29·C-30) ─────
+    // ── 부분 공개 코스 — coursePlannedUnits (작업자(AI)_문서/04 §2-3-A · 08 C-29·C-30) ─────
     //
     // "다음 유닛이 없다"와 "이 코스를 끝냈다"는 다른 상태다. E1은 한때 15유닛 계획 중 10유닛만 열려 있어
     // 열린 마지막 유닛도 nextUnitNo: null이었고, 그것을 완주로 읽어 "🎉 끝까지 봤어요"라는 거짓 안내가 나갔다
@@ -231,7 +250,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
     //
     // 프론트는 유닛 응답 하나로 판정한다(호출 한 번 계약, 08 B-7) — 코스 상세를 따로 부르지 않는다.
     //
-    // ★ 2026-09-22 — **C-30이 포기했던 커버리지를 여기서 복구했다** (senior-dev, 설계/08 C-30 · 04 §2-3-A).
+    // ★ 2026-09-22 — **C-30이 포기했던 커버리지를 여기서 복구했다** (senior-dev, 작업자(AI)_문서/08 C-30 · 04 §2-3-A).
     //   경위: E1이 15/15가 되며 `totalUnits < coursePlannedUnits`인 **실데이터가 저장소에서 사라졌고**,
     //   상태 2를 서버 응답으로 태우던 테스트가 지워진 채 "없다"고 계약 표에 적혀 있었다(C-30 (a)·(c)·(d)).
     //   **E2가 5/20으로 열리면서 그 데이터가 되살아났다** → 아래
@@ -241,7 +260,8 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
     //     ② 마지막 유닛 전용이 아니다 ..... a_mid_course_english_unit_carries_the_same_planned_unit_count (E1)
     //     ③ totalUnits에서 파생하지 않는다 . CourseApiIntegrationTest.unit_study_last_unit_has_no_next_unit
     //        (일본어는 totalUnits=20인데 coursePlannedUnits=null — 파생 구현이면 거기 20이 실린다. C-11)
-    //        ★ E2가 5 ≠ 20이라 **영어 쪽에서도 다시 판별할 수 있게 됐다** — 아래 복구분이 같은 것을 한 번 더 본다.
+    //        ★ E2가 열린 수 ≠ 20이라 **영어 쪽에서도 다시 판별할 수 있게 됐다** — 아래 복구분이 같은 것을 한 번 더 본다.
+    //          (5/20 → 2026-11-13 10/20. 두 값이 여전히 다르므로 판별력은 그대로다.)
     //     ④ **상태 2(totalUnits < coursePlannedUnits)를 실데이터로 태운다** ... 복구분 (E2)
     //   비교식(moreUnitsComing) 자체는 화면의 것이고 `UnitStudyPage.partialCourse.test.jsx`가 픽스처로 고정한다.
     //   ★ 다음에 또 닫힐 때: E2가 20/20을 채우면 ④의 전제가 다시 거짓이 된다. 그때는 **숫자만 고쳐 살리지 말고**
@@ -255,7 +275,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      * {@code the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course}였고
      * <b>{@code totalUnits < coursePlannedUnits}</b>를 단언했다 — E1이 15/15가 되며 그 전제가 거짓이 됐다.
      * 숫자만 고쳐 살려 두지 않고 <b>지금 참인 것</b>을 단언하도록 다시 썼다: 계약이 약속한
-     * "개수를 쓰면 계획을 채우는 순간 <b>사람 손 없이</b> 완주가 된다"(설계/04 §2-3-A · 08 C-29)는
+     * "개수를 쓰면 계획을 채우는 순간 <b>사람 손 없이</b> 완주가 된다"(작업자(AI)_문서/04 §2-3-A · 08 C-29)는
      * 여태 <b>한 번도 테스트된 적이 없는</b> 절반이었고, 이번에 실제로 일어난 일이 정확히 그것이다.
      * <b>그 전신은 같은 이름으로 아래에 돌아와 있다</b>({@link #the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course}) —
      * E2가 5/20으로 열리며 전제가 될 실데이터가 생겼기 때문이다. 두 테스트는 <b>한 필드의 두 반대 상태</b>를 각각 맡는다.
@@ -277,7 +297,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
 
         JsonNode data = objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
         assertThat(data.has("coursePlannedUnits"))
-                .as("coursePlannedUnits 키가 응답에 없다(설계/04 §8 · §2-3-A) — 값 없음(null)과 필드 없음을 "
+                .as("coursePlannedUnits 키가 응답에 없다(작업자(AI)_문서/04 §8 · §2-3-A) — 값 없음(null)과 필드 없음을 "
                         + "구분하지 않아도 되는 것이 계약이라, 필드가 빠지면 화면은 조용히 '완주'로 되돌아간다")
                 .isTrue();
         assertThat(data.path("coursePlannedUnits").asInt())
@@ -287,13 +307,13 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
         assertThat(data.path("totalUnits").asInt())
                 .as("열린 유닛(%s)이 계획(%s)에 닿아야 완주다(moreUnitsComing = false). 여기서 열린 수가 계획에 "
                                 + "못 미치면 E1은 다시 '열린 데까지의 끝'이고, 그때는 그 상태를 직접 태우는 테스트를 "
-                                + "이 블록에 되살려야 한다(설계/08 C-30)",
+                                + "이 블록에 되살려야 한다(작업자(AI)_문서/08 C-30)",
                         data.path("totalUnits").asInt(), E1_PLANNED_UNITS)
                 .isGreaterThanOrEqualTo(E1_PLANNED_UNITS);
     }
 
     /**
-     * 계획을 채운 코스는 <b>"채우는 중" 안내를 남기지 않는다</b> (설계/06 §11-12 ③ R4 · 기획 AC-16).
+     * 계획을 채운 코스는 <b>"채우는 중" 안내를 남기지 않는다</b> (작업자(AI)_문서/06 §11-12 ③ R4 · 기획 AC-16).
      *
      * <p>C-29가 개수를 boolean 대신 쓴 덕에 <b>완주 판정은 자동</b>이 됐지만, 코스 카드·상세의 안내 문구를 지우는 것은
      * <b>사람 일로 남겨 두었다.</b> 사람 일로 남은 것은 잊힌다 — 그리고 잊히면 학습자는 <b>다시 두 화면에서 모순된 말</b>을
@@ -340,7 +360,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
     }
 
     /**
-     * ★ <b>복구분 (2026-09-22)</b> — 열린 데까지의 끝은 <b>완주가 아니다</b>(설계/04 §2-3-A 상태 2 · 08 C-30).
+     * ★ <b>복구분 (2026-09-22)</b> — 열린 데까지의 끝은 <b>완주가 아니다</b>(작업자(AI)_문서/04 §2-3-A 상태 2 · 08 C-30).
      *
      * <p>E2는 20유닛 계획 중 앞에서부터 5유닛만 열려 있다. 그 <b>마지막 열린 유닛</b>도 다음 유닛이 없으므로
      * {@code nextUnitNo: null}이고, 화면이 그것만 보면 "🎉 끝까지 봤어요"라는 <b>거짓 완주</b>를 말한다
@@ -354,6 +374,14 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      * 다음 코스를 싣고(구현상 {@code unitNo == totalUnits}), 상태 2에서 그것을 <b>무시하는 것은 화면의 일</b>이다
      * (프론트는 {@code moreUnitsComing}이 참이면 [유닛 목록으로 ›]를 보여준다 — §11-12 ④ R5).
      * 서버에서 이 값을 null로 만들어 "고치면" 상태 1·3의 분기가 무너진다. <b>고치지 말라는 뜻의 단언</b>이다.
+     *
+     * <p><b>★ 2026-11-13 — 대상이 유닛 5 → 10으로 옮겨 갔다</b>(E2 10/20 배치). <b>손으로 옮긴 것이 아니다</b>:
+     * 유닛 번호를 {@code english2.unitCount}로 부르기 때문에 {@link CourseCatalog#ENGLISH} 한 줄을 올리는 순간
+     * 같은 커밋 안에서 저절로 따라왔다 — 이것이 C-30이 (e)로 지시한 <b>"같은 커밋에서 옮겨 공백을 하루도 두지 않는다"</b>의
+     * 실제 모양이다. 유닛 10이 열려 유닛 5가 더 이상 끝이 아니게 되는 날 <b>커버리지가 조용히 사라지는</b> 흔한 사고
+     * (= 테스트는 초록인데 보는 자리가 틀린 것)가, 숫자를 박지 않은 덕에 아예 생기지 않았다.
+     * <b>유닛 5가 잃은 자리도 비어 있지 않다</b> — 이제 중간 유닛이 되어
+     * {@code EnglishContentRuleIntegrationTest} 규칙 7이 그 유닛의 1~5 복습 블록을 본다.
      */
     @Test
     void the_last_open_unit_of_a_partly_published_course_is_not_a_finished_course() throws Exception {
@@ -362,31 +390,49 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
         assertThat(english2.unitCount)
                 .as("이 테스트의 전제는 'E2가 계획(%s)보다 적게 열려 있다'는 것이다. E2가 계획을 채우면 이것은 완주가 "
                                 + "맞으므로, 그날 고칠 것은 이 단언이 아니라 **전제**다 — 대상을 다음 부분 공개 코스로 "
-                                + "옮기거나, 옮길 곳이 없으면 설계/08 C-30처럼 커버리지 공백을 계약 표에 적는다",
+                                + "옮기거나, 옮길 곳이 없으면 작업자(AI)_문서/08 C-30처럼 커버리지 공백을 계약 표에 적는다",
                         E2_PLANNED_UNITS)
                 .isLessThan(E2_PLANNED_UNITS);
 
         MvcResult result = mockMvc
                 .perform(get("/api/en/courses/{courseId}/units/{unitNo}", EN_COURSE_2, english2.unitCount))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.unitNo").value(english2.unitCount))
-                .andExpect(jsonPath("$.data.totalUnits").value(english2.unitCount))
-                .andExpect(jsonPath("$.data.nextUnitNo").value(nullValue())) // 열린 데까지의 끝 — 완주와 모양이 같다
-                .andExpect(jsonPath("$.data.coursePlannedUnits").value(E2_PLANNED_UNITS))
-                .andExpect(jsonPath("$.data.nextCourse").exists()) // 상태 2에서도 실린다 — 무시하는 것은 화면의 일
                 .andReturn();
 
+        // 상태 코드를 먼저, 말을 붙여 본다 — 이 테스트의 대상은 콘텐츠가 늘 때마다 스스로 옮겨 가므로(아래 javadoc)
+        // 계약을 먼저 올린 직후에는 **아직 시드가 없는 유닛**을 가리킨다. status().isOk()만 걸면 그 상태가 404 한 줄로 보인다.
+        assertThat(result.getResponse().getStatus())
+                .as("코스 %s(%s)의 마지막 열린 유닛은 기대치 표의 unitCount = %s인데 그 주소가 HTTP %s다. "
+                                + "이 테스트의 대상은 콘텐츠가 늘 때마다 **표를 따라 스스로 옮겨 간다**(유닛 5 → 10 → 15) — "
+                                + "계약을 콘텐츠보다 먼저 올린 직후라면 이것이 **의도된 Red**이고, 유닛 %s 시드가 들어오면 "
+                                + "초록이 된다. 같은 커밋에서 옮기는 것이 작업자(AI)_문서/08 C-30 (e)가 지시한 방식이다 "
+                                + "(공백이 하루도 생기지 않는다)",
+                        EN_COURSE_2, english2.title, english2.unitCount, result.getResponse().getStatus(),
+                        english2.unitCount)
+                .isEqualTo(200);
+
         JsonNode data = objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
+        assertThat(data.path("unitNo").asInt()).as("마지막 열린 유닛의 번호").isEqualTo(english2.unitCount);
+        assertThat(data.path("totalUnits").asInt())
+                .as("totalUnits는 **지금 열린** 유닛 수다 — 계획 수가 아니다").isEqualTo(english2.unitCount);
+        assertThat(data.path("nextUnitNo").isNull())
+                .as("열린 데까지의 끝이므로 다음 유닛이 없다 — **완주와 모양이 같다**는 것이 이 계약의 출발점이다")
+                .isTrue();
+        assertThat(data.path("coursePlannedUnits").asInt())
+                .as("E2의 계획 유닛 수는 %s다(시드 course.planned_unit_count)", E2_PLANNED_UNITS)
+                .isEqualTo(E2_PLANNED_UNITS);
+        assertThat(data.path("nextCourse").isObject())
+                .as("상태 2에서도 nextCourse는 실린다 — 무시하는 것은 화면의 일이다(서버에서 null로 '고치지' 말라는 뜻)")
+                .isTrue();
         assertThat(data.path("totalUnits").asInt())
                 .as("열린 유닛(%s)이 계획(%s)보다 적어야 이 코스가 '열린 데까지의 끝' 상태다. 두 값이 같아지면 "
-                                + "moreUnitsComing이 거짓이 되어 화면이 완주 축하를 띄운다(설계/04 §2-3-A)",
+                                + "moreUnitsComing이 거짓이 되어 화면이 완주 축하를 띄운다(작업자(AI)_문서/04 §2-3-A)",
                         data.path("totalUnits").asInt(), data.path("coursePlannedUnits").asInt())
                 .isLessThan(data.path("coursePlannedUnits").asInt());
     }
 
     /**
      * 부분 공개 코스는 <b>"채우는 중" 안내를 달고 있다</b> — 그리고 그 문구는 E1이 쓰던 것과 <b>글자 그대로 같다</b>
-     * (설계/06 §11-12 ③ R6 · 기획 E2 AC-25 · 예외 E-4).
+     * (작업자(AI)_문서/06 §11-12 ③ R6 · 기획 E2 AC-25 · 예외 E-4).
      *
      * <p>{@link #a_course_that_met_its_plan_carries_no_leftover_notice}의 <b>정확한 반대쪽</b>이다. 그쪽은
      * "채웠으면 지워라", 이쪽은 "채우는 중이면 말해라"다. 둘 다 없으면 코스 상세는 <b>어느 쪽으로 틀려도 조용하다</b> —
@@ -408,7 +454,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("AVAILABLE"))
                 .andExpect(jsonPath("$.data.notice").value(PARTIAL_COURSE_NOTICE))
-                .andExpect(jsonPath("$.data.description").isNotEmpty()); // AVAILABLE 코스의 소개는 비우지 않는다(설계/03 §7-4)
+                .andExpect(jsonPath("$.data.description").isNotEmpty()); // AVAILABLE 코스의 소개는 비우지 않는다(작업자(AI)_문서/03 §7-4)
     }
 
     /**
@@ -420,7 +466,7 @@ class EnglishCourseApiIntegrationTest extends ApiIntegrationTestSupport {
      *
      * <p>이 값이 낡으면 학습자는 <b>열려 있는 코스를 "준비중"으로 듣는다</b>(예외 E-2). 그리고 그 거짓은
      * 어디에도 로그를 남기지 않는다 — 운영 DB에 102 행이 이미 있어 <b>UPDATE를 손으로 실행하지 않으면
-     * 운영에서만</b> 그렇게 된다(설계/07 §1). 그래서 기대치를 문자열로 박지 않고 {@link CourseCatalog#ENGLISH}에서
+     * 운영에서만</b> 그렇게 된다(작업자(AI)_문서/07 §1). 그래서 기대치를 문자열로 박지 않고 {@link CourseCatalog#ENGLISH}에서
      * 받아온다: 표(= 열렸다는 사실)와 시드(= 응답)가 어긋나면 그 자체가 실패다.
      */
     @Test

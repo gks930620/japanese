@@ -18,13 +18,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * 영어 콘텐츠 규칙 전수 검증 (설계/06 §11) — senior-dev 작성.
+ * 영어 콘텐츠 규칙 전수 검증 (작업자(AI)_문서/06 §11) — senior-dev 작성.
  *
  * <p><b>왜 이 파일이 생겼나</b>: 기존 영어 테스트 3건({@code EnglishCourseApiIntegrationTest} ·
  * {@code EnglishCourseDetailIntegrationTest} · {@code EnglishPartOfSpeechContractIntegrationTest})은
  * <b>경로와 응답 모양</b>만 본다. 콘텐츠 전수 검증인 {@code CourseApiIntegrationTest}는
  * {@code CourseCatalog.available()}(= 일본어)만 순회하므로 <b>영어 콘텐츠는 어떤 규칙 검증도 받지 않았다</b>.
- * 계약 문서가 "테스트로 강제한다"고 적어 둔 표현 중복 금지조차 테스트가 없었다(설계/06 §11-11).
+ * 계약 문서가 "테스트로 강제한다"고 적어 둔 표현 중복 금지조차 테스트가 없었다(작업자(AI)_문서/06 §11-11).
  * 즉 <b>규칙을 어긴 영어 콘텐츠를 넣어도 {@code ./gradlew test}가 통과</b>하는 상태였고, 이 파일이 그것을 닫는다.
  *
  * <p><b>이 테스트가 보는 것은 데이터이지 필터가 아니다.</b> {@code EnglishPartOfSpeechContractIntegrationTest}는
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
 
-    // ── 규칙 1. kana 전량 NULL (설계/06 §11-3) ────────────────────────────────
+    // ── 규칙 1. kana 전량 NULL (작업자(AI)_문서/06 §11-3) ────────────────────────────────
 
     /**
      * <b>일본어와 정반대 방향의 검증이다.</b> 일본어는 "원문에 한자가 있으면 kana를 채워라"지만,
@@ -69,7 +69,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
                 Map.Entry<String, JsonNode> field = fields.next();
                 if ("kana".equals(field.getKey())) {
                     assertThat(field.getValue().isNull())
-                            .as("%s — 영어 콘텐츠의 kana는 전량 NULL이어야 한다(설계/06 §11-3). 들어온 값: '%s'",
+                            .as("%s — 영어 콘텐츠의 kana는 전량 NULL이어야 한다(작업자(AI)_문서/06 §11-3). 들어온 값: '%s'",
                                     where, field.getValue().asText())
                             .isTrue();
                 }
@@ -88,8 +88,10 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
      * 유닛 하나 — <b>없으면 그 사실을 말하고 멈춘다.</b>
      *
      * <p>{@code status().isOk()}만 걸어 두면 실패 메시지가 "expected:&lt;200&gt; but was:&lt;404&gt;" 한 줄이라
-     * <b>어느 코스의 몇 번 유닛이 비었는지</b>를 리포트를 열어야 알 수 있다. 이 파일의 네 검사가 전부 이 메서드를 지나므로
-     * 여기 한 곳만 말을 시키면 네 실패가 전부 읽히는 실패가 된다(전수 검증의 값어치는 메시지에 있다).
+     * <b>어느 코스의 몇 번 유닛이 비었는지</b>를 리포트를 열어야 알 수 있다. 이 파일의 <b>유닛 순회 검사</b>
+     * (규칙 1·2·3·4·6·7)가 전부 이 메서드를 지나므로, 여기 한 곳만 말을 시키면 그 실패가 전부 읽히는 실패가 된다
+     * (전수 검증의 값어치는 메시지에 있다). 검사 수를 세어 적지 않는 이유는 늘 때마다 이 주석이 낡기 때문이다 —
+     * 2026-11-13에 "네 검사"가 여섯이 되어 있었다.
      *
      * <p>코스를 <b>계획보다 먼저</b> 표에 올리는 것이 이 프로젝트의 순서다({@link CourseCatalog#ENGLISH} 주석) —
      * 그래서 콘텐츠가 들어오기 전의 404는 <b>고장이 아니라 의도된 Red</b>이고, 메시지가 그 사실까지 말해 준다.
@@ -102,7 +104,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
                 .as("코스 %s 유닛 %s를 부르면 HTTP %s다. 순회 범위는 CourseCatalog.ENGLISH의 unitCount이므로 "
                                 + "거기 적힌 수만큼 유닛이 실재해야 한다 — 아직 콘텐츠를 안 쓴 유닛이라면 이것이 "
                                 + "**의도된 Red**이고, 시드를 채우면 초록이 된다(표를 나중에 올리면 새 유닛이 "
-                                + "규칙 검사를 하나도 받지 않는다 — 설계/06 §11-11)",
+                                + "규칙 검사를 하나도 받지 않는다 — 작업자(AI)_문서/06 §11-11)",
                         courseId, unitNo, result.getResponse().getStatus())
                 .isEqualTo(200);
         return objectMapper.readTree(result.getResponse().getContentAsString()).path("data");
@@ -149,7 +151,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
         return node.isNull() || node.isMissingNode() ? "" : node.asText();
     }
 
-    // ── 규칙 2. 발음은 ipa + koApprox 둘 다 (설계/06 §11-3 · 08 F-18) ─────────
+    // ── 규칙 2. 발음은 ipa + koApprox 둘 다 (작업자(AI)_문서/06 §11-3 · 08 F-18) ─────────
 
     /**
      * 영어에는 kana가 없으므로 <b>발음을 전달하는 통로가 이 두 컬럼뿐</b>이고, 그래서 둘 다 필수다
@@ -184,18 +186,18 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
         String koApprox = text(item.path("koApprox"));
 
         assertThat(ipa)
-                .as("%s '%s' — ipa가 없다. 영어 발음은 ipa와 koApprox를 둘 다 채운다(설계/06 §11-3, 08 F-18)",
+                .as("%s '%s' — ipa가 없다. 영어 발음은 ipa와 koApprox를 둘 다 채운다(작업자(AI)_문서/06 §11-3, 08 F-18)",
                         where, label)
                 .isNotBlank();
         assertThat(koApprox)
-                .as("%s '%s' — koApprox가 없다. 한쪽만 채운 데이터는 미완성이다(설계/06 §11-3)", where, label)
+                .as("%s '%s' — koApprox가 없다. 한쪽만 채운 데이터는 미완성이다(작업자(AI)_문서/06 §11-3)", where, label)
                 .isNotBlank();
         assertThat(ipa)
                 .as("%s '%s' — ipa는 슬래시로 감싼다(예: /ˈmɔːrnɪŋ/)", where, label)
                 .startsWith("/").endsWith("/");
     }
 
-    // ── 규칙 3. 품사는 영어 7종만 (설계/06 §11-6) ─────────────────────────────
+    // ── 규칙 3. 품사는 영어 7종만 (작업자(AI)_문서/06 §11-6) ─────────────────────────────
 
     /**
      * 값의 집합이 일본어와 다르다. {@code I_ADJECTIVE}·{@code NA_ADJECTIVE}는 <b>활용 유형이 갈리는
@@ -225,18 +227,18 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
         String partOfSpeech = text(vocabulary.path("partOfSpeech"));
 
         assertThat(partOfSpeech)
-                .as("%s '%s' — 품사가 비었다. 모든 어휘에 값이 하나씩 들어간다(설계/06 §11-6)", where, word)
+                .as("%s '%s' — 품사가 비었다. 모든 어휘에 값이 하나씩 들어간다(작업자(AI)_문서/06 §11-6)", where, word)
                 .isNotBlank();
         assertThat(EnglishContentCatalog.JAPANESE_ONLY_PART_OF_SPEECH)
-                .as("%s '%s' — 일본어 전용 품사 '%s'를 영어에 그대로 가져왔다. 영어는 ADJECTIVE·PHRASE를 쓴다(설계/06 §11-6)",
+                .as("%s '%s' — 일본어 전용 품사 '%s'를 영어에 그대로 가져왔다. 영어는 ADJECTIVE·PHRASE를 쓴다(작업자(AI)_문서/06 §11-6)",
                         where, word, partOfSpeech)
                 .doesNotContain(partOfSpeech);
         assertThat(EnglishContentCatalog.ALLOWED_PART_OF_SPEECH)
-                .as("%s '%s' — 영어 품사 7종에 없는 코드 '%s'(설계/06 §11-6)", where, word, partOfSpeech)
+                .as("%s '%s' — 영어 품사 7종에 없는 코드 '%s'(작업자(AI)_문서/06 §11-6)", where, word, partOfSpeech)
                 .contains(partOfSpeech);
     }
 
-    // ── 규칙 4. 코스 내부 중복 금지 (계약 §B-1 · 설계/06 §11-5) ────────────────
+    // ── 규칙 4. 코스 내부 중복 금지 (계약 §B-1 · 작업자(AI)_문서/06 §11-5) ────────────────
 
     /**
      * ⚠️ <b>한자와 정반대다.</b> 한자는 코스 간 중복이 금지({@code kanji.letter} UNIQUE)지만,
@@ -244,7 +246,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
      * 그래서 {@code expression.text}에 UNIQUE를 걸지 않았다. 금지되는 것은 <b>한 코스 안에서 같은 것을 두 번 배우게 하는 것</b>뿐이다.
      * 그러므로 이 검사는 <b>코스마다 장부를 새로 편다</b> — 코스를 가로질러 모으면 허용된 재등장을 결함으로 잡는다.
      *
-     * <p>어휘도 같은 규칙이라 함께 본다(설계/06 §11-6 — 일본어 §7과 동일).
+     * <p>어휘도 같은 규칙이라 함께 본다(작업자(AI)_문서/06 §11-6 — 일본어 §7과 동일).
      * 계약 §B-1이 "테스트로 강제한다"고 적어 두고 <b>2026-09-08까지 비어 있던 자리</b>가 여기다.
      */
     @Test
@@ -278,7 +280,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
                 .isNull();
     }
 
-    // ── 규칙 5. 레벨 코드는 E1~E5, levelLabel은 쓰지 않는다 (설계/06 §11-2) ───
+    // ── 규칙 5. 레벨 코드는 E1~E5, levelLabel은 쓰지 않는다 (작업자(AI)_문서/06 §11-2) ───
 
     /**
      * 영어에는 JLPT가 없다. 레벨 값이 섞이면 자료실 필터가 400을 내므로 <b>콘텐츠에 JLPT 코드가 들어가는 순간
@@ -311,14 +313,14 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
 
             assertThat(levelCode)
                     .as("코스 '%s' — 영어 레벨 코드는 E1~E5다. JLPT 코드가 섞이면 그 항목은 영어 자료실에서 조회되지 않는다"
-                            + "(설계/06 §11-2)", title)
+                            + "(작업자(AI)_문서/06 §11-2)", title)
                     .matches(EnglishContentCatalog.LEVEL_CODE_PATTERN);
             assertThat(levelCode)
                     .as("코스 '%s' — 레벨 코드는 코스 번호와 일치한다(코스 %s → E%s)", title, courseNo, courseNo)
                     .isEqualTo("E" + courseNo);
             assertThat(text(course.path("levelLabel")))
                     .as("코스 '%s' — 영어는 levelLabel을 표시에 쓰지 않으므로 코드와 같은 값이어야 한다."
-                            + " 표시용 문구를 넣으면 화면이 그것을 필터에 넘겨 0건이 된다(설계/06 §11-2)", title)
+                            + " 표시용 문구를 넣으면 화면이 그것을 필터에 넘겨 0건이 된다(작업자(AI)_문서/06 §11-2)", title)
                     .isEqualTo(levelCode);
 
             assertNoCefrCode(title, "코스 '" + title + "' 코스명");
@@ -344,7 +346,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
     private void assertEnglishLevel(String level, String where) {
         assertThat(EnglishContentCatalog.levelCodes())
                 .as("%s — 레벨 '%s'는 영어 코드가 아니다. 영어 콘텐츠의 레벨은 그 유닛이 속한 코스의 level_code에서"
-                        + " 파생된다(설계/06 §11-2)", where, level)
+                        + " 파생된다(작업자(AI)_문서/06 §11-2)", where, level)
                 .contains(level);
     }
 
@@ -352,12 +354,12 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
         for (String cefr : EnglishContentCatalog.CEFR_CODES) {
             assertThat(Pattern.compile("\b" + cefr + "\b").matcher(value).find())
                     .as("%s에 CEFR 코드 '%s'가 노출됐다. CEFR는 내부 난이도 참고선일 뿐 학습자에게 보이지 않는다"
-                            + "(설계/06 §11-2). 문구: '%s'", where, cefr, value)
+                            + "(작업자(AI)_문서/06 §11-2). 문구: '%s'", where, cefr, value)
                     .isFalse();
         }
     }
 
-    // ── 규칙 6. 유닛 구성 수량 (설계/06 §11-4 · §11-5 · §11-7 · §11-8) ────────
+    // ── 규칙 6. 유닛 구성 수량 (작업자(AI)_문서/06 §11-4 · §11-5 · §11-7 · §11-8) ────────
 
     /**
      * <b>콘텐츠를 채우기 전에 치는 그물이다.</b> §11-4의 수량 표는 2026-09-21까지 "사람이 지켜야 하는 것"이었다 —
@@ -397,7 +399,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
     private void assertGrammars(JsonNode unit, String at) {
         JsonNode grammars = unit.path("grammars");
         assertThat(grammars.size())
-                .as("%s — 문법이 %s개다. 유닛당 %s~%s개여야 한다(설계/06 §11-4). 넘치면 다음 유닛으로 옮긴다",
+                .as("%s — 문법이 %s개다. 유닛당 %s~%s개여야 한다(작업자(AI)_문서/06 §11-4). 넘치면 다음 유닛으로 옮긴다",
                         at, grammars.size(),
                         EnglishContentCatalog.MIN_GRAMMARS_PER_UNIT, EnglishContentCatalog.MAX_GRAMMARS_PER_UNIT)
                 .isBetween(EnglishContentCatalog.MIN_GRAMMARS_PER_UNIT, EnglishContentCatalog.MAX_GRAMMARS_PER_UNIT);
@@ -405,7 +407,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
         for (JsonNode grammar : grammars) {
             String name = text(grammar.path("name"));
             assertThat(grammar.path("examples").size())
-                    .as("%s 문법 '%s' — 예문이 %s개다. 문법 하나당 %s개 이상이어야 한다(설계/06 §11-4·§11-8)."
+                    .as("%s 문법 '%s' — 예문이 %s개다. 문법 하나당 %s개 이상이어야 한다(작업자(AI)_문서/06 §11-4·§11-8)."
                                     + " 설명만 있고 예문이 없는 문법은 학습자에게 규칙만 던지는 것이다",
                             at, name, grammar.path("examples").size(),
                             EnglishContentCatalog.MIN_EXAMPLES_PER_GRAMMAR)
@@ -429,16 +431,16 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
     private void assertDialog(JsonNode unit, CourseCatalog.Course course, String at) {
         JsonNode dialog = unit.path("dialog");
         assertThat(dialog.isObject())
-                .as("%s — 회화가 없다(dialog = %s). 유닛당 정확히 1편이다(설계/06 §11-7)", at, dialog)
+                .as("%s — 회화가 없다(dialog = %s). 유닛당 정확히 1편이다(작업자(AI)_문서/06 §11-7)", at, dialog)
                 .isTrue();
         assertThat(text(dialog.path("title")))
-                .as("%s 회화 — 한국어 장면 제목이 비었다(설계/06 §11-7 예: '첫 출근 날, 옆자리에서')", at)
+                .as("%s 회화 — 한국어 장면 제목이 비었다(작업자(AI)_문서/06 §11-7 예: '첫 출근 날, 옆자리에서')", at)
                 .isNotBlank();
 
         JsonNode lines = dialog.path("lines");
         int minLines = EnglishContentCatalog.minDialogLinesOf(course);
         assertThat(lines.size())
-                .as("%s 회화 '%s' — 대사가 %s줄이다. %s 코스는 %s~%s줄이어야 한다(설계/06 §11-7 · §11-12 ②)."
+                .as("%s 회화 '%s' — 대사가 %s줄이다. %s 코스는 %s~%s줄이어야 한다(작업자(AI)_문서/06 §11-7 · §11-12 ②)."
                                 + " 하한은 코스가 올라갈수록 길어지고(E1·E2 4 · E3·E4 6 · E5 8), 상한 12는"
                                 + " 회화가 한 스텝에 통째로 들어가기 때문에 둔 난간이다",
                         at, text(dialog.path("title")), lines.size(), course.levelCode,
@@ -448,12 +450,12 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
         Set<String> speakers = new HashSet<>();
         for (JsonNode line : lines) {
             assertThat(text(line.path("speaker")))
-                    .as("%s 회화 — 화자 이름이 빈 대사가 있다. 화면이 화자 배지를 그리지 못한다(설계/06 §11-7)", at)
+                    .as("%s 회화 — 화자 이름이 빈 대사가 있다. 화면이 화자 배지를 그리지 못한다(작업자(AI)_문서/06 §11-7)", at)
                     .isNotBlank();
             speakers.add(text(line.path("speaker")));
         }
         assertThat(speakers.size())
-                .as("%s 회화 '%s' — 화자가 %s명(%s)이다. %s명 이상이어야 한다. 1인 낭독 장면은 만들지 않는다(설계/06 §11-7)",
+                .as("%s 회화 '%s' — 화자가 %s명(%s)이다. %s명 이상이어야 한다. 1인 낭독 장면은 만들지 않는다(작업자(AI)_문서/06 §11-7)",
                         at, text(dialog.path("title")), speakers.size(), speakers,
                         EnglishContentCatalog.MIN_DIALOG_SPEAKERS)
                 .isGreaterThanOrEqualTo(EnglishContentCatalog.MIN_DIALOG_SPEAKERS);
@@ -463,7 +465,7 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
     private void assertExpressions(JsonNode unit, String at) {
         JsonNode expressions = unit.path("expressions");
         assertThat(expressions.size())
-                .as("%s — 표현이 %s개다. 유닛당 %s~%s개여야 한다(설계/06 §11-4). 일본어 한자 자리이며,"
+                .as("%s — 표현이 %s개다. 유닛당 %s~%s개여야 한다(작업자(AI)_문서/06 §11-4). 일본어 한자 자리이며,"
                                 + " 모자라면 그 유닛의 회화·문법과 같은 테마에서 더 뽑는다(§11-5)",
                         at, expressions.size(),
                         EnglishContentCatalog.MIN_EXPRESSIONS_PER_UNIT, EnglishContentCatalog.MAX_EXPRESSIONS_PER_UNIT)
@@ -473,10 +475,10 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
         for (JsonNode expression : expressions) {
             String label = text(expression.path("text"));
             assertThat(label)
-                    .as("%s — 표기가 빈 표현이 있다(설계/06 §11-5)", at)
+                    .as("%s — 표기가 빈 표현이 있다(작업자(AI)_문서/06 §11-5)", at)
                     .isNotBlank();
             assertThat(expression.path("examples").size())
-                    .as("%s 표현 '%s' — 예문이 %s개다. 표현 하나당 %s개 이상이어야 한다(설계/06 §11-5)."
+                    .as("%s 표현 '%s' — 예문이 %s개다. 표현 하나당 %s개 이상이어야 한다(작업자(AI)_문서/06 §11-5)."
                                     + " 통째로 외워 쓰는 덩어리는 쓰이는 문장 없이는 외울 수 없다",
                             at, label, expression.path("examples").size(),
                             EnglishContentCatalog.MIN_EXAMPLES_PER_EXPRESSION)
@@ -484,11 +486,97 @@ class EnglishContentRuleIntegrationTest extends ApiIntegrationTestSupport {
         }
     }
 
+    // ── 규칙 7. 공개 경계는 5의 배수 · 복습 블록은 직전 5유닛을 끌어온다 (작업자(AI)_문서/06 §11-12 ①) ──
+
+    /**
+     * <b>그물 밖을 보는 유일한 검사다.</b> 규칙 1~6은 전부 "열려 있다고 적힌 유닛"을 훑는다 —
+     * 즉 {@link CourseCatalog#ENGLISH}의 {@code unitCount}가 7이면 7개를 검사하고 <b>초록을 준다</b>.
+     * 그런데 7은 공개해서는 안 되는 수다(작업자(AI)_문서/06 §11-12 ① 1): 유닛 10의 정리에 붙는
+     * <b>6~10 복습 블록이 직전 5유닛의 실재를 요구</b>하므로, 5의 배수가 아닌 자리에서 끊으면
+     * 다음 배치의 복습 블록이 <b>반쯤 빈 채로</b> 학습자에게 간다(기획 E2 예외 E-3).
+     *
+     * <p><b>왜 2026-11-13까지 없었나</b>: §11-11 6번이 이 규칙을 *"배포 시점의 판단이라 시드 상태만 보는
+     * 테스트로는 잡지 않는다"* 로 분류해 두었다. 그 분류가 틀렸다 — 공개 경계는
+     * <b>시드 상태에서 계산되는 사실</b>({@code course_unit} 행 수)이고, 기대치 표의 {@code unitCount}가
+     * 서버 응답과 맞는지는 이미 {@link EnglishCourseApiIntegrationTest}가 고정하고 있다.
+     * R4·R6을 테스트로 내린 것과 <b>정확히 같은 근거</b>(사람이 쓴 문구가 아니라 계산되는 사실)이므로 여기서 닫는다.
+     *
+     * <p><b>복습 블록을 함께 보는 이유</b>: 경계만 보면 "10까지 열렸다"는 사실만 지키고
+     * <b>그 10번째 유닛이 실제로 1~10의 문법을 끌어오는지</b>는 아무도 보지 않는다. 복습 블록은
+     * 신규 시드 없이 {@code unit_grammar} 매핑에서 조립되므로(작업자(AI)_문서/03 §7-11-A), 매핑이 빠진 유닛은
+     * 404가 아니라 <b>조용히 적은 칩</b>으로 나타난다 — 404는 규칙 1~6이 잡지만 이건 아무도 안 잡는다.
+     *
+     * <p>영어 쪽에 복습 블록 검증이 <b>한 줄도 없었다</b>는 것도 함께 적어 둔다: 구현은 언어 공통
+     * ({@code CourseService.buildReview} → {@code UnitStudyBase.review})이고 일본어 쪽
+     * {@code CourseApiIntegrationTest.unit_study_review_block_appears_only_on_every_fifth_unit}가
+     * <b>주기 규칙</b>을 고정한다. 여기서 보는 것은 그 주기가 아니라 <b>영어 콘텐츠가 그 주기를 채우는가</b>다(08 C-11).
+     */
+    @Test
+    void english_courses_open_on_a_five_unit_boundary_and_every_fifth_unit_reviews_the_previous_five()
+            throws Exception {
+        int boundary = EnglishContentCatalog.UNIT_PUBLISH_BOUNDARY;
+
+        for (CourseCatalog.Course course : EnglishContentCatalog.availableCourses()) {
+            assertThat(course.unitCount % boundary)
+                    .as("코스 %s(%s) — 열린 유닛이 %s개다. 공개 경계는 언제나 %s의 배수여야 한다"
+                                    + "(작업자(AI)_문서/06 §11-12 ① 1). %s개에서 끊으면 다음 %s의 배수 유닛의 정리에 붙는"
+                                    + " 복습 블록이 직전 %s유닛을 다 끌어오지 못해 **반쯤 빈 채로** 나간다"
+                                    + "(기획 E2 예외 E-3). 늘릴 때는 5개 단위로 늘린다",
+                            course.id, course.title, course.unitCount, boundary,
+                            course.unitCount, boundary, boundary)
+                    .isZero();
+
+            for (int unitNo = 1; unitNo <= course.unitCount; unitNo++) {
+                JsonNode review = unit(course.id, unitNo).path("review");
+                String at = "코스 " + course.id + "(" + course.title + ") 유닛 " + unitNo;
+
+                if (unitNo % boundary != 0) {
+                    assertThat(review.isNull() || review.isMissingNode())
+                            .as("%s — 복습 블록은 %s의 배수 유닛에만 붙는다(작업자(AI)_문서/03 §7-11-A). 들어온 값: %s",
+                                    at, boundary, review)
+                            .isTrue();
+                    continue;
+                }
+
+                assertThat(review.isObject())
+                        .as("%s — %s의 배수 유닛인데 복습 블록이 없다(review = %s). 정리 스텝의 '지금까지 배운 것'이"
+                                        + " 통째로 사라진다(작업자(AI)_문서/03 §7-11-A)",
+                                at, boundary, review)
+                        .isTrue();
+                assertThat(review.path("fromUnitNo").asInt())
+                        .as("%s 복습 블록 — 구간 시작이 %s다. 자기를 포함한 직전 %s유닛이므로 %s여야 한다",
+                                at, review.path("fromUnitNo").asInt(), boundary, unitNo - boundary + 1)
+                        .isEqualTo(unitNo - boundary + 1);
+                assertThat(review.path("toUnitNo").asInt())
+                        .as("%s 복습 블록 — 구간 끝은 자기 유닛 번호다", at)
+                        .isEqualTo(unitNo);
+
+                JsonNode grammarNames = review.path("grammarNames");
+                int min = boundary * EnglishContentCatalog.MIN_GRAMMARS_PER_UNIT;
+                int max = boundary * EnglishContentCatalog.MAX_GRAMMARS_PER_UNIT;
+                assertThat(grammarNames.size())
+                        .as("%s 복습 블록(%s~%s) — 문법 칩이 %s개다. 유닛당 %s~%s개 × %s유닛이므로 %s~%s개여야 한다."
+                                        + " 모자라면 그 구간의 어느 유닛에 unit_grammar 매핑이 빠진 것이다 —"
+                                        + " 404가 아니라 **조용히 적은 칩**으로 나타나는 결함이고, 학습자는"
+                                        + " 배운 것 중 일부가 복습에서 사라진 것을 모른다",
+                                at, review.path("fromUnitNo").asInt(), unitNo, grammarNames.size(),
+                                EnglishContentCatalog.MIN_GRAMMARS_PER_UNIT,
+                                EnglishContentCatalog.MAX_GRAMMARS_PER_UNIT, boundary, min, max)
+                        .isBetween(min, max);
+                for (JsonNode name : grammarNames) {
+                    assertThat(text(name))
+                            .as("%s 복습 블록에 빈 문법 이름이 있다 — 칩이 빈칸으로 그려진다", at)
+                            .isNotBlank();
+                }
+            }
+        }
+    }
+
     /** 어휘 15~20개 (§11-4) */
     private void assertVocabularies(JsonNode unit, String at) {
         JsonNode vocabularies = unit.path("vocabularies");
         assertThat(vocabularies.size())
-                .as("%s — 어휘가 %s개다. 유닛당 %s~%s개여야 한다(설계/06 §11-4, 일본어와 같은 값)",
+                .as("%s — 어휘가 %s개다. 유닛당 %s~%s개여야 한다(작업자(AI)_문서/06 §11-4, 일본어와 같은 값)",
                         at, vocabularies.size(),
                         EnglishContentCatalog.MIN_VOCABULARIES_PER_UNIT,
                         EnglishContentCatalog.MAX_VOCABULARIES_PER_UNIT)
